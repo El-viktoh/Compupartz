@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Repair Status | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= STATUS DASHBOARD (HI-TECH) ================= -->
+<div class="w-[100vw] relative left-1/2 -translate-x-1/2 bg-[#0a0a0c] text-white -mt-10 py-20 px-6 min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <!-- Glow effects -->
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#008BC6]/10 rounded-full blur-[100px] -z-10 animate-pulseGlow"></div>
+    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#ff7200]/5 rounded-full blur-[100px] -z-10 animate-pulseGlow" style="animation-delay: 1.5s;"></div>
+
+    <div class="max-w-4xl w-full relative z-10 animate-fadeIn text-center">
+        
+        <div class="mb-12">
+            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-4">Diagnostics Radar</h4>
+            <h1 class="text-4xl md:text-5xl font-outfit font-black mb-4 uppercase tracking-widest text-white">
+                Status: <span class="{% if ticket.status == 'completed' %}text-green-500{% elif ticket.status == 'in_progress' %}text-[#ff7200]{% else %}text-[#008BC6]{% endif %}">
+                    {{ ticket.status|title }}
+                </span>
+            </h1>
+            <p class="text-gray-500 font-light text-sm tracking-widest uppercase">
+                Ticket ID: <span class="text-white">{{ ticket.ticket_id }}</span>
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8 text-left">
+            <!-- Left Panel: Device Info -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white/5 backdrop-blur-2xl border border-white/10 p-8 rounded-[2rem] relative overflow-hidden group">
+                    <div class="absolute -top-12 -right-12 w-24 h-24 bg-[#008BC6]/5 rounded-full blur-2xl group-hover:bg-[#008BC6]/10 transition-all"></div>
+                    
+                    <h4 class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] mb-6">Device Specifications</h4>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1">Customer</label>
+                            <p class="text-sm font-bold text-white tracking-wide">{{ ticket.customer_name }}</p>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1">Hardware</label>
+                            <p class="text-sm font-bold text-white tracking-wide">{{ ticket.device }}</p>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1">Registration Date</label>
+                            <p class="text-xs text-gray-400 font-light">{{ ticket.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-md border border-white/5 p-6 rounded-2xl flex items-center justify-between">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">Contact Lab</span>
+                    <a href="https://wa.me/233XXXXXXXXX" class="text-[10px] font-black uppercase tracking-widest text-[#25D366] hover:text-white transition-colors">WhatsApp &rarr;</a>
+                </div>
+            </div>
+
+            <!-- Right Panel: Timeline -->
+            <div class="lg:col-span-2">
+                <div class="bg-white/5 backdrop-blur-2xl border border-white/10 p-8 md:p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+                    <h4 class="text-xs font-black uppercase tracking-[0.2em] text-white mb-10 text-center md:text-left">Repair Milestone Pipeline</h4>
+                    
+                    <div class="relative">
+                        <!-- Vertical line -->
+                        <div class="absolute left-6 md:left-8 top-0 bottom-0 w-px bg-white/10"></div>
+                        
+                        <div class="space-y-12 relative z-10">
+                            <!-- Step 1 -->
+                            <div class="flex gap-8 group">
+                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status in 'pending in_progress completed' %}border-[#008BC6]/50 shadow-[0_0_15px_rgba(0,139,198,0.2)]{% else %}border-white/5{% endif %} rounded-2xl flex items-center justify-center text-xl transition-all">
+                                    📝
+                                </div>
+                                <div class="pt-2">
+                                    <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status in 'pending in_progress completed' %}text-white{% else %}text-gray-600{% endif %}">Request Initialized</h5>
+                                    <p class="text-[11px] text-gray-500 font-light mt-1">Order registered and diagnostic path assigned.</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="flex gap-8 group">
+                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status in 'in_progress completed' %}border-[#ff7200]/50 shadow-[0_0_15px_rgba(255,114,0,0.2)]{% else %}border-white/5{% endif %} rounded-2xl flex items-center justify-center text-xl transition-all">
+                                    🛠️
+                                </div>
+                                <div class="pt-2">
+                                    <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status in 'in_progress completed' %}text-white{% else %}text-gray-600{% endif %}">Active Restoration</h5>
+                                    <p class="text-[11px] text-gray-500 font-light mt-1">Technicians are executing hardware/software fixes.</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div class="flex gap-8 group">
+                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status == 'completed' %}border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.2)]{% else %}border-white/5{% endif %} rounded-2xl flex items-center justify-center text-xl transition-all">
+                                    🚀
+                                </div>
+                                <div class="pt-2">
+                                    <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status == 'completed' %}text-white{% else %}text-gray-600{% endif %}">System Deployed</h5>
+                                    <p class="text-[11px] text-gray-500 font-light mt-1">Final stress tests passed. Ready for re-entry.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'track_repair_lookup' %}" class="inline-block mt-12 text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] hover:text-white transition-colors">
+            &larr; Switch Navigation ID
+        </a>
+    </div>
+</div>
+
+{% endblock %}

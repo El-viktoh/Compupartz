@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Track Order{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-6">Order Tracking</h1>
+
+<div class="bg-white p-6 rounded-lg shadow max-w-2xl">
+
+    <p class="mb-2"><strong>Order ID:</strong> {{ order.id }}</p>
+    <p class="mb-2"><strong>Name:</strong> {{ order.name }}</p>
+    <p class="mb-2"><strong>Phone:</strong> {{ order.phone }}</p>
+    <p class="mb-2"><strong>Total:</strong> GHS {{ order.total_amount }}</p>
+
+    <hr class="my-4">
+
+    <p class="mb-2">
+        <strong>Payment Status:</strong>
+        <span class="font-semibold">
+            {{ order.payment_status|title }}
+        </span>
+    </p>
+
+    <p class="mb-4">
+        <strong>Order Status:</strong>
+        <span class="font-semibold text-blue-600">
+            {{ order.status|title }}
+        </span>
+    </p>
+
+    <h3 class="text-lg font-semibold mb-3">Items</h3>
+
+    {% for item in order.items.all %}
+        <div class="flex justify-between border-b py-2">
+            <span>{{ item.product_name }} × {{ item.quantity }}</span>
+            <span>GHS {{ item.price }}</span>
+        </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

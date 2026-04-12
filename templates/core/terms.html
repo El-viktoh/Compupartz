@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service | Compupartz{% endblock %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto px-6 py-12">
+    
+    <div class="mb-12">
+        <h1 class="text-4xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest mb-4">Terms of <span class="text-[#008BC6]">Service</span></h1>
+        <p class="text-gray-500 dark:text-gray-400 text-sm tracking-widest uppercase">Last Updated: April 2026</p>
+    </div>
+
+    <div class="prose prose-blue dark:prose-invert max-w-none space-y-8 text-gray-700 dark:text-gray-300 leading-relaxed">
+        
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">1. Agreement to Terms</h2>
+            <p>
+                These Terms of Service ("Terms") govern your use of services provided by Compupartz ("we," "our," or "us"), including electronics repair, data recovery, and related services. By using our services or submitting a computer for repair, you agree to these Terms. If you do not agree to these Terms, please do not use our services. For questions about these Terms, please <a href="https://wa.me/233540322533" class="text-[#ff7200] font-bold hover:underline">contact us</a> before proceeding.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">2. Repair Assessments & Fees</h2>
+            <p>
+                We respectfully request you to consider our services first, as we may incur an additional fee for repairing devices that have been repair-attempted. If the device is not fixed, we will apply a surcharge (bench fee) which is communicated before we accept your device.
+            </p>
+            <p>
+                We kindly request you to provide a visual description prior to your device's repair, as we are not responsible for any malfunctioning or poor performance of your device, including SSD, battery, screen, keyboard, or any other part that may be damaged upon the device's return to life.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">3. Cost Estimates & Approvals</h2>
+            <p>
+                We shall inform you of the repair cost prior to the final repair of your devices. Most often quoted prices are estimates and may vary based on diagnosis findings; we therefore request you to ensure that the contact number provided is one that can be easily accessible. We will obtain your approval before performing work that exceeds the quoted estimate. Complex repairs may require additional labor charges disclosed upfront.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">4. Delivery, Storage & Abandonment</h2>
+            <p>
+                Kindly ensure that the delivery of your laptop is arranged, even if it's repaired. We are not liable for any damages after a one-week period, which would cost a storage fee of <strong>GH₵ 190.00 monthly</strong>. 
+            </p>
+            <p>
+                Devices are considered abandoned if you fail to respond to our communications for 3 consecutive times, or if you fail to arrange payment within 10 days of service completion.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">5. Right to Refuse Service</h2>
+            <p>We reserve the right to refuse service in the following circumstances:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li>The device contains illegal content or was obtained illegally</li>
+                <li>The repair is beyond our technical capabilities or is unsafe to perform</li>
+                <li>The customer has violated these Terms in the past</li>
+                <li>The customer engages in abusive, threatening, or harassing behavior</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">6. Dispute Resolution & Governing Law</h2>
+            <p>
+                If you have a dispute with us, please <a href="https://wa.me/233540322533" class="text-[#ff7200] font-bold hover:underline">contact us</a> first. We commit to working in good faith to resolve issues informally.
+            </p>
+            <p>
+                These Terms are governed by the laws of the Republic of Ghana. Any legal action must be brought in the district courts located in Adum, Kumasi.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">7. Privacy & Modifications</h2>
+            <p>
+                We take your privacy seriously. Your data will be accessed only to the extent necessary to perform services and securely deleted within 30 days of service completion. For complete details, please review our <a href="{% url 'privacy_policy' %}" class="text-[#008BC6] font-bold hover:underline">Privacy Policy</a>.
+            </p>
+            <p>
+                We reserve the right to modify these Terms at any time. Changes will be effective immediately upon posting to our website.
+            </p>
+        </section>
+
+    </div>
+
+    <div class="mt-20 pt-10 border-t border-gray-100 dark:border-white/5 text-center">
+        <button onclick="window.print()" class="text-xs font-black uppercase tracking-widest text-gray-500 hover:text-[#ff7200] transition-colors">
+            Print Terms of Service &rarr;
+        </button>
+    </div>
+
+</div>
+
+{% endblock %}

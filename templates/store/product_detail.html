@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} | Compupartz{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-6 py-12">
+
+    <!-- TOP SECTION: SCREENSHOT REPLICATION -->
+    <div class="grid md:grid-cols-[1fr_1fr] gap-12 lg:gap-20 items-start mb-20">
+
+        <!-- LEFT: IMAGE GALLERY -->
+        <div class="reveal-element">
+            <!-- Main Image (Massive soft gray container like screenshot) -->
+            <div
+                class="bg-[#f8f8f8] dark:bg-gray-800 rounded-sm flex items-center justify-center p-12 mb-4 aspect-square overflow-hidden relative shadow-sm border border-transparent dark:border-gray-700 group">
+                <img id="mainImage" src="{{ product.image.url }}"
+                    class="w-full h-full object-contain drop-shadow-md transition-transform duration-700 group-hover:scale-125 cursor-zoom-in">
+            </div>
+
+            <!-- Thumbnails (Row of soft gray containers) -->
+            <div class="grid grid-cols-4 gap-4">
+                <div class="bg-[#f8f8f8] dark:bg-gray-800 rounded-sm cursor-pointer p-3 border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-500 transition-colors aspect-square flex items-center justify-center"
+                    onclick="changeImage(this, '{{ product.image.url }}')">
+                    <img src="{{ product.image.url }}" class="w-full h-full object-contain gallery-img">
+                </div>
+
+                {% for img in product.images.all %}
+                <div class="bg-[#f8f8f8] dark:bg-gray-800 rounded-sm cursor-pointer p-3 border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-500 transition-colors aspect-square flex items-center justify-center"
+                    onclick="changeImage(this, '{{ img.image.url }}')">
+                    <img src="{{ img.image.url }}" class="w-full h-full object-contain gallery-img">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- RIGHT: PRODUCT INFO -->
+        <div class="reveal-element flex flex-col h-full pt-4">
+
+            <!-- Title & Blurb -->
+            <h1 class="text-3xl md:text-[40px] font-outfit font-bold text-gray-900 dark:text-white leading-tight mb-3">
+                {{ product.name }}
+            </h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                {{ product.description|truncatewords:20 }}
+            </p>
+
+            <!-- Stars (Green like screenshot) -->
+            <div class="flex items-center gap-2 mb-8 border-b border-gray-100 dark:border-gray-800 pb-8">
+                <div class="flex text-green-600 text-sm">
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= avg_rating %} <span>★</span>
+                        {% else %}
+                        <span class="text-gray-300 dark:text-gray-700">★</span>
+                        {% endif %}
+                        {% endfor %}
+                </div>
+                <span class="text-gray-500 text-sm font-medium">
+                    ({{ reviews|length }})
+                </span>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-10">
+                <p class="font-outfit text-2xl md:text-3xl font-extrabold text-brandBlue dark:text-orange-500 mb-1">
+                    GHS {{ product.price }}
+                </p>
+                <p class="text-xs text-gray-500">Suggested payments with 6 months special financing</p>
+            </div>
+
+            <!-- Quantity & Stock Row (Visual mockup preserving exact logic) -->
+            <div class="flex items-center gap-8 mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
+                <div
+                    class="flex items-center bg-[#f8f8f8] dark:bg-gray-800 rounded-full px-4 py-2 border border-gray-200 dark:border-gray-700 shadow-inner">
+                    <button
+                        class="text-gray-500 hover:text-orange-500 font-bold px-3 text-lg transition-colors">−</button>
+                    <span class="font-outfit font-bold text-base px-4 text-gray-900 dark:text-white">1</span>
+                    <button
+                        class="text-gray-500 hover:text-orange-500 font-bold px-3 text-lg transition-colors">+</button>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-gray-900 dark:text-white">Only <span class="text-[#ff7200]">12
+                            Items</span> Left!</p>
+                    <p class="text-xs text-gray-500">Don't miss it</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-4 mb-10">
+                <a href="/store/product/{{ product.id }}/"
+                    class="bg-[#ff7200] text-white py-3.5 rounded-full text-center font-bold hover:bg-[#e66600] transition-colors">
+                    Buy Now
+                </a>
+
+                <button
+                    class="add-to-cart-btn border border-gray-900 dark:border-white text-gray-900 dark:text-white py-3.5 rounded-full font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
+                    Add to Cart
+                </button>
+            </div>
+
+            <!-- Information Cards (Delivery / Returns) -->
+            <div class="space-y-4">
+
+                <div
+                    class="border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md p-5 flex items-start gap-4">
+                    <div class="text-[#ff7200] text-xl mt-0.5">🚚</div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1">Free Delivery</h4>
+                        <p class="text-xs text-gray-500 underline cursor-pointer decoration-gray-300">Enter your Postal
+                            code for Delivery Availability</p>
+                    </div>
+                </div>
+
+                <div
+                    class="border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md p-5 flex items-start gap-4">
+                    <div class="text-[#ff7200] text-xl mt-0.5">📦</div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1">Return Delivery</h4>
+                        <p class="text-xs text-gray-500">Free 30days Delivery Returns. <span
+                                class="underline cursor-pointer decoration-gray-300">Details</span></p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= BOTTOM SECTION: TABS ================= -->
+    <div
+        class="reveal-element bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden max-w-5xl mx-auto">
+
+        <div class="flex border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 relative">
+            <!-- Sliding Underline -->
+            <div id="tabIndicator"
+                class="absolute bottom-0 left-0 h-1 bg-[#ff7200] transition-all duration-300 rounded-full"></div>
+
+            <button class="tab-btn flex-1 py-5 font-outfit font-bold text-[#ff7200] transition-all relative z-10"
+                data-tab="desc">
+                Description
+            </button>
+            <button
+                class="tab-btn flex-1 py-5 font-outfit font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-all relative z-10"
+                data-tab="reviews">
+                Reviews
+            </button>
+        </div>
+
+        <div class="p-8">
+            <!-- DESCRIPTION -->
+            <div id="desc" class="tab-content animate-fadeIn">
+                <div
+                    class="prose prose-blue dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed space-y-4">
+                    {{ product.description|linebreaks }}
+                </div>
+            </div>
+
+            <!-- ================= REVIEWS ================= -->
+            <div id="reviews" class="tab-content hidden animate-fadeIn">
+
+                <div
+                    class="flex items-center gap-4 mb-8 bg-gray-50 dark:bg-gray-700/30 p-6 rounded-lg border border-gray-100 dark:border-gray-700">
+                    <div class="text-5xl font-black text-gray-900 dark:text-white">{{ avg_rating }}</div>
+                    <div>
+                        <div class="text-green-600 text-xl flex gap-1 mb-1">
+                            {% for i in "12345" %}
+                            {% if forloop.counter <= avg_rating %} <span>★</span>
+                                {% else %}
+                                <span class="text-gray-300 dark:text-gray-600">★</span>
+                                {% endif %}
+                                {% endfor %}
+                        </div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            Based on {{ reviews|length }} reviews
+                        </p>
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                <form method="POST" action="/store/product/{{ product.id }}/review/"
+                    class="mb-10 bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+                    {% csrf_token %}
+                    <h3 class="font-bold text-gray-900 dark:text-white mb-4">Write a Review</h3>
+
+                    <!-- ⭐ INTERACTIVE STARS -->
+                    <div class="flex gap-1 mb-4 text-3xl">
+                        {% for i in "12345" %}
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="rating" value="{{ i }}" required class="hidden">
+                            <span
+                                class="star text-gray-300 dark:text-gray-600 hover:text-green-600 transition-colors drop-shadow-sm">★</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <textarea name="comment" placeholder="Share your experience with this product..." required
+                        class="w-full bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 p-4 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-[#ff7200]/50 text-gray-900 dark:text-white transition-all min-h-[120px] resize-y"></textarea>
+
+                    <button
+                        class="bg-[#ff7200] hover:bg-[#e66600] text-white font-bold px-6 py-3 rounded-xl shadow-md transition-colors w-full sm:w-auto">
+                        Submit Review
+                    </button>
+                </form>
+                {% else %}
+                <div
+                    class="bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 text-orange-800 dark:text-orange-300 p-4 rounded-xl mb-8 flex items-center justify-between">
+                    <p class="text-sm font-medium">Please log in to leave a review.</p>
+                    <a href="/accounts/login/"
+                        class="bg-white dark:bg-gray-800 text-[#ff7200] font-bold px-4 py-2 rounded-lg text-sm shadow-sm hover:shadow transition-shadow">Login</a>
+                </div>
+                {% endif %}
+
+                <!-- REVIEWS LIST -->
+                <div class="space-y-6">
+                    {% for review in reviews %}
+                    <div
+                        class="bg-gray-50 dark:bg-gray-700/30 p-5 rounded-md border border-gray-100 dark:border-gray-700">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full border border-gray-100 dark:border-white/10 overflow-hidden shadow-sm shrink-0">
+                                    {% if review.user.profile.avatar %}
+                                        <img src="{{ review.user.profile.avatar.url }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full bg-gradient-to-br from-[#ff7200] to-orange-600 text-white flex items-center justify-center font-bold text-lg">
+                                            {{ review.user.username|slice:":1"|upper }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-900 dark:text-white">{{ review.user.username }}</p>
+                                    <div class="text-green-600 text-xs flex gap-0.5 mt-0.5">
+                                        {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %} <span>★</span>
+                                            {% else %}
+                                            <span class="text-gray-300 dark:text-gray-600">★</span>
+                                            {% endif %}
+                                            {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <p
+                                class="text-xs font-medium text-gray-400 bg-white dark:bg-gray-800 px-2.5 py-1 rounded-full border border-gray-100 dark:border-gray-600">
+                                {{ review.created_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <p
+                            class="text-gray-600 dark:text-gray-300 mt-4 leading-relaxed bg-white dark:bg-gray-800 p-4 rounded-md border border-gray-100 dark:border-gray-700/50">
+                            {{ review.comment }}
+                        </p>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-10 px-4">
+                        <div class="text-4xl mb-3 opacity-50 grayscale mx-auto">💬</div>
+                        <p class="text-gray-500 dark:text-gray-400 font-medium">No reviews yet. Be the first to share
+                            your thoughts!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MOBILE STICKY BAR ================= -->
+    <div
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 p-4 z-40 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.1)] mb-[-1px] reveal-element active">
+        <div class="flex flex-col">
+            <span class="text-[10px] text-gray-500 uppercase font-black tracking-widest">Total</span>
+            <span class="font-outfit font-black text-brandBlue dark:text-orange-500 text-lg line-clamp-1">GHS {{
+                product.price }}</span>
+        </div>
+        <div class="flex gap-2">
+            <button
+                class="add-to-cart-btn bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full font-bold text-sm shadow-lg active:scale-95 transition-all"
+                data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
+                Cart
+            </button>
+            <a href="/store/product/{{ product.id }}/"
+                class="bg-[#ff7200] text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg shadow-orange-500/20 active:scale-95 transition-all">
+                Buy Now
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ================= JS ================= -->
+<script>
+    // IMAGE SWITCH
+    function changeImage(el, url) {
+        document.getElementById("mainImage").src = url;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // ✅ ADD TO CART (Legacy functionality protected)
+        document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const productId = this.dataset.productId;
+                const productName = this.dataset.productName;
+
+                this.disabled = true;
+                this.innerText = "Adding...";
+
+                fetch("/cart/ajax/add/", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "product_id=" + productId
+                })
+                    .then(res => res.json())
+                    .then(() => {
+                        this.disabled = false;
+                        this.innerText = "Add to Cart";
+
+                        if (typeof loadCart === "function") loadCart();
+                        if (typeof loadCartCount === "function") loadCartCount();
+
+                        if (typeof showToast === "function") {
+                            showToast(productName + " added to cart 🛒");
+                        }
+                    });
+            });
+        });
+
+        // ✅ ⭐ STAR INPUT
+        document.querySelectorAll("form .star").forEach((star, index, stars) => {
+            star.addEventListener("click", function () {
+                const value = index + 1;
+                this.closest("form").querySelector(`input[value="${value}"]`).checked = true;
+
+                stars.forEach((s, i) => {
+                    if (i <= index) {
+                        s.classList.remove("text-gray-300");
+                        s.classList.add("text-green-600");
+                    } else {
+                        s.classList.add("text-gray-300");
+                        s.classList.remove("text-green-600");
+                    }
+                });
+            });
+        });
+
+        // ✅ TAB INDICATOR LOGIC
+        const tabs = document.querySelectorAll('.tab-btn');
+        const indicator = document.getElementById('tabIndicator');
+
+        function updateIndicator(target) {
+            if (!indicator || !target) return;
+            indicator.style.width = target.offsetWidth + 'px';
+            indicator.style.left = target.offsetLeft + 'px';
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                updateIndicator(this);
+
+                tabs.forEach(t => {
+                    t.classList.remove('text-[#ff7200]', 'font-bold');
+                    t.classList.add('text-gray-500', 'dark:text-gray-400', 'font-semibold');
+                });
+
+                this.classList.add('text-[#ff7200]', 'font-bold');
+                this.classList.remove('text-gray-500', 'dark:text-gray-400', 'font-semibold');
+
+                document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+                document.getElementById(this.dataset.tab).classList.remove("hidden");
+            });
+
+            // Init first tab
+            if (tab.dataset.tab === 'desc') {
+                setTimeout(() => updateIndicator(tab), 100); // Slight delay to ensure layout is ready
+            }
+        });
+
+        // ✅ Smooth scroll for images
+        document.querySelectorAll('.gallery-img').forEach(img => {
+            img.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+    });
+</script>
+
+{% endblock %}

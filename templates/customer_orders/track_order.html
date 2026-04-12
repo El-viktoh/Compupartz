@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Order Telemetry | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= PREMIUM ORDER STATUS ================= -->
+<div class="w-[100vw] relative left-1/2 -translate-x-1/2 bg-gray-50 dark:bg-[#0a0a0c] text-gray-900 dark:text-white -mt-10 py-16 px-6 min-h-[90vh] overflow-hidden transition-colors duration-500">
+    
+    <!-- Background Accents (Dark Mode Only) -->
+    <div class="hidden dark:block absolute top-0 right-0 w-[600px] h-[600px] bg-[#008BC6]/5 rounded-full blur-[120px] -z-10 animate-pulseGlow"></div>
+    <div class="hidden dark:block absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#ff7200]/5 rounded-full blur-[120px] -z-10 animate-pulseGlow" style="animation-delay: 1.5s;"></div>
+
+    <div class="max-w-4xl mx-auto relative z-10 animate-fadeIn">
+        
+        <div class="mb-12 text-center md:text-left">
+            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] mb-4">Live Telemetry</h4>
+            <h1 class="text-4xl md:text-5xl font-outfit font-black mb-4 uppercase tracking-widest text-gray-900 dark:text-white">
+                Transmission <span class="text-[#ff7200]">Status</span>
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 font-light text-sm md:text-base tracking-wide max-w-2xl">
+                Real-time monitoring of your orders through the logistics network.
+            </p>
+        </div>
+
+        {% if error %}
+            <div class="mb-10 bg-red-500/10 border border-red-500/20 p-6 rounded-2xl backdrop-blur-md animate-slideUp">
+                <p class="text-xs font-black uppercase tracking-widest text-red-500 text-center">{{ error }}</p>
+                <div class="text-center mt-4">
+                    <a href="{% url 'track_lookup' %}" class="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white">&larr; Return to Tracking</a>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if order %}
+            <div class="grid lg:grid-cols-[1fr_350px] gap-8 items-start">
+                
+                <!-- LEFT: PROGRESS TIMELINE -->
+                <div class="space-y-8 animate-slideUp">
+                    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-8 md:p-10 rounded-[2.5rem] shadow-xl dark:shadow-2xl relative overflow-hidden">
+                        
+                        <h3 class="text-xs font-black uppercase tracking-[0.3em] text-[#008BC6] mb-12">Logistics Pipeline</h3>
+
+                        {% with status=order.status %}
+                        <div class="relative space-y-12 pl-10 border-l-2 border-gray-100 dark:border-white/5 ml-4">
+                            
+                            <!-- STEP 1: PENDING -->
+                            <div class="relative">
+                                <div class="absolute -left-[51px] top-0 w-5 h-5 rounded-full bg-gray-50 dark:bg-[#0a0a0c] border-2 shadow-[0_0_15px_rgba(0,139,198,0.3)] transition-all duration-500
+                                    {% if status == 'pending' or status == 'processing' or status == 'ready' or status == 'completed' %} border-[#008BC6] bg-[#008BC6] {% else %} border-gray-300 dark:border-white/10 {% endif %}">
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-black uppercase tracking-widest {% if status == 'pending' or status == 'processing' or status == 'ready' or status == 'completed' %} text-gray-900 dark:text-white {% else %} text-gray-400 {% endif %}">Order Initialized</h4>
+                                    <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">Transmission received and verified.</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 2: PROCESSING -->
+                            <div class="relative">
+                                <div class="absolute -left-[51px] top-0 w-5 h-5 rounded-full bg-gray-50 dark:bg-[#0a0a0c] border-2 transition-all duration-500 shadow-[0_0_15px_rgba(0,139,198,0.3)]
+                                    {% if status == 'processing' or status == 'ready' or status == 'completed' %} border-[#008BC6] bg-[#008BC6] {% else %} border-gray-300 dark:border-white/10 {% endif %}">
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-black uppercase tracking-widest {% if status == 'processing' or status == 'ready' or status == 'completed' %} text-gray-900 dark:text-white {% else %} text-gray-400 {% endif %}">Configuration in Progress</h4>
+                                    <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">Hardware is being prepared for shipment.</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 3: READY / DELIVERED -->
+                            <div class="relative">
+                                <div class="absolute -left-[51px] top-0 w-5 h-5 rounded-full bg-gray-50 dark:bg-[#0a0a0c] border-2 transition-all duration-500 shadow-[0_0_15px_rgba(37,211,102,0.3)]
+                                    {% if status == 'ready' or status == 'completed' %} border-[#25D366] bg-[#25D366] {% else %} border-gray-300 dark:border-white/10 {% endif %}">
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-black uppercase tracking-widest {% if status == 'ready' or status == 'completed' %} text-gray-900 dark:text-white {% else %} text-gray-400 {% endif %}">Delivery Successful</h4>
+                                    <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">Items have reached the destination coordinates.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                        {% endwith %}
+
+                        <!-- STATUS BADGE -->
+                        <div class="mt-16 pt-10 border-t border-gray-100 dark:border-white/5 text-center">
+                            <span class="inline-block px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg transition-all
+                                {% if order.status == 'pending' %} bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 {% endif %}
+                                {% if order.status == 'processing' %} bg-[#008BC6]/10 text-[#008BC6] border border-[#008BC6]/30 {% endif %}
+                                {% if order.status == 'ready' or order.status == 'completed' %} bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 shadow-[#25D366]/20 {% endif %}
+                                {% if order.status == 'cancelled' %} bg-red-500/10 text-red-500 border border-red-500/30 {% endif %}
+                            ">
+                                {{ order.status|title }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: BRIEFING SUMMARY -->
+                <div class="space-y-8 animate-slideUp" style="animation-delay: 200ms;">
+                    
+                    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-xl">
+                        <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff7200] mb-8">Technical Briefing</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-gray-400">Order Reference</label>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white">#TRANS-{{ order.id }}</p>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-gray-400">Recipient</label>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-tight">{{ order.name }}</p>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-gray-400">Timestamp</label>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white">{{ order.created_at|date:"M d, Y H:i" }}</p>
+                            </div>
+                            <div class="pt-6 border-t border-gray-100 dark:border-white/5 flex justify-between items-center">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-gray-400">Total Value</label>
+                                <p class="text-base font-black text-[#008BC6]">GHS {{ order.total_amount }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-10">
+                            <a href="{% url 'track_lookup' %}" class="block text-center bg-gray-950 text-white dark:bg-white/10 dark:hover:bg-white/20 py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all">
+                                New Search
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- LOOKUP FORM (FALLBACK/RE-SEARCH) -->
+                    {% if not order %}
+                    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-xl text-center">
+                         <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-6">Enter Order ID to initiate telemetry.</p>
+                         <form method="GET" action="{% url 'track_order' %}" class="space-y-4">
+                            <input type="text" name="tracking_id" placeholder="ORDER ID" required class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#008BC6]">
+                            <button type="submit" class="w-full bg-brandBlue text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest">Track Status</button>
+                         </form>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% else %}
+             <!-- RE-SEARCH BLOC -->
+             <div class="max-w-md mx-auto bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-10 rounded-[2.5rem] shadow-xl text-center">
+                 <p class="text-xs text-gray-500 uppercase tracking-widest mb-6">Transmission not found. Re-target identifier.</p>
+                 <form method="GET" action="{% url 'track_order' %}" class="space-y-4">
+                    <input type="text" name="tracking_id" placeholder="ENTER ORDER ID" required class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xs focus:outline-none focus:border-[#008BC6]">
+                    <button type="submit" class="w-full bg-[#008BC6] text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Re-Initialize</button>
+                 </form>
+             </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

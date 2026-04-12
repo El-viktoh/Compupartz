@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tech Hub | Compupartz Hardware Intelligence{% endblock %}
+
+{% block content %}
+
+<!-- ================= PREMIUM SUBTLE BLOG LIST ================= -->
+<div class="max-w-7xl mx-auto px-6 py-12 animate-fadeIn">
+
+    <!-- HEADER -->
+    <div class="mb-12 md:mb-16">
+        <h1 class="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-[#008BC6] mb-4">Intelligence Archive</h1>
+        <h2 class="text-3xl md:text-5xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-tight leading-none mb-6">
+            Tech <span class="text-brandBlue">Pulse</span>
+        </h2>
+        <p class="text-gray-500 dark:text-gray-400 font-light text-[10px] md:text-sm tracking-widest uppercase">Latest briefings from the hardware frontier.</p>
+    </div>
+
+    <!-- FEED -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+        {% for post in posts %}
+        <article class="group relative bg-white/50 dark:bg-white/5 backdrop-blur-md border border-gray-100 dark:border-white/10 rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-brandBlue/5 flex flex-col">
+            
+            <!-- IMAGE AREA -->
+            <div class="aspect-[16/10] overflow-hidden relative">
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent z-10"></div>
+                {% if post.featured_image %}
+                    <img src="{{ post.featured_image.url }}" class="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110">
+                {% else %}
+                    <div class="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Media Pending</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="p-8 flex-1 flex flex-col">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-[10px] font-black py-1 px-3 rounded-full bg-brandBlue/10 text-brandBlue uppercase tracking-widest">
+                        {{ post.category.name|default:"General" }}
+                    </span>
+                    <span class="text-[10px] text-gray-400 font-medium tracking-tight">
+                        {{ post.reading_time }} Min Read
+                    </span>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 line-clamp-2 leading-snug group-hover:text-brandBlue transition-colors">
+                    <a href="{% url 'blog:post_detail' post.slug %}">
+                        {{ post.title }}
+                    </a>
+                </h3>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400 font-light leading-relaxed mb-8 line-clamp-3">
+                    {{ post.excerpt }}
+                </p>
+
+                <div class="mt-auto pt-6 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+                    <span class="text-[10px] text-gray-400 uppercase tracking-widest font-black">{{ post.created_at|date:"M d, Y" }}</span>
+                    <a href="{% url 'blog:post_detail' post.slug %}" class="text-[10px] font-black uppercase tracking-widest text-[#ff7200] hover:translate-x-1 transition-transform">
+                        Read Intel &rarr;
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <div class="col-span-full py-24 text-center">
+             <p class="text-xs font-black uppercase tracking-widest text-gray-400">Hub is currently offline. Return shortly for briefings.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

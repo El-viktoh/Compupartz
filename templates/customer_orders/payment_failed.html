@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Failed{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow text-center">
+    <h1 class="text-3xl font-bold text-red-600 mb-4">
+        Payment Failed
+    </h1>
+
+    <p class="mb-6">
+        Your payment could not be verified.
+        Please try again.
+    </p>
+
+    <a href="/cart/" class="text-blue-600 hover:underline">
+        Return to Cart
+    </a>
+</div>
+{% endblock %}

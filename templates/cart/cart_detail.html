@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart | Compupartz{% endblock %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto">
+
+    <h1 class="text-3xl font-bold mb-8">Your Cart</h1>
+
+    {% if cart %}
+
+        <div class="space-y-6">
+
+            {% for item in cart %}
+                <div id="cart-item-{{ item.id }}" class="bg-white p-5 rounded-xl shadow flex items-center justify-between transition">
+
+                    <!-- LEFT -->
+                    <div class="flex items-center gap-5">
+
+                        <!-- IMAGE -->
+                        {% if item.image %}
+                            <img src="{{ item.image }}" class="w-20 h-20 object-cover rounded-lg">
+                        {% else %}
+                            <div class="w-20 h-20 bg-gray-200 flex items-center justify-center text-xs rounded-lg">
+                                No Image
+                            </div>
+                        {% endif %}
+
+                        <!-- DETAILS -->
+                        <div>
+                            <p class="font-semibold text-lg">
+                                {{ item.name }}
+                            </p>
+
+                            <p class="text-sm text-gray-500">
+                                GHS {{ item.price|floatformat:2 }}
+                            </p>
+
+                            <p class="text-sm text-gray-700 mt-1">
+                                Subtotal:
+                                <span class="font-semibold" id="subtotal-{{ item.id }}">
+                                    GHS {{ item.total|floatformat:2 }}
+                                </span>
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="text-right">
+
+                        <p class="mb-2 font-medium">
+                            Qty: <span id="qty-{{ item.id }}">{{ item.quantity }}</span>
+                        </p>
+
+                        <div class="flex gap-2 justify-end">
+
+                            <button
+                                class="update-cart px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                                data-id="{{ item.id }}"
+                                data-action="decrease">
+                                -
+                            </button>
+
+                            <button
+                                class="update-cart px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                                data-id="{{ item.id }}"
+                                data-action="increase">
+                                +
+                            </button>
+
+                            <button
+                                class="update-cart px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                data-id="{{ item.id }}"
+                                data-action="remove">
+                                Remove
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            {% endfor %}
+
+            <!-- TOTAL -->
+            <div class="text-right mt-8">
+
+                <p class="text-2xl font-bold text-brandBlue">
+                    Total: GHS 
+                    <span id="cart-total">
+                        {{ cart_total|floatformat:2 }}
+                    </span>
+                </p>
+
+                <a href="/cart/checkout/"
+                   class="mt-4 inline-block bg-brandOrange text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">
+                    Proceed to Checkout
+                </a>
+
+            </div>
+
+        </div>
+
+    {% else %}
+        <p class="text-gray-500">Your cart is empty.</p>
+    {% endif %}
+
+</div>
+
+<!-- ========================= -->
+<!-- ✅ FULLY DYNAMIC SCRIPT -->
+<!-- ========================= -->
+<script>
+function getCSRFToken() {
+    return document.cookie
+        .split("; ")
+        .find(row => row.startsWith("csrftoken="))
+        ?.split("=")[1];
+}
+
+function updateCartBadge(count) {
+    const badge = document.getElementById("cart-badge");
+    if (badge) {
+        badge.innerText = count;
+        badge.style.display = count > 0 ? "block" : "none";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".update-cart").forEach(button => {
+        button.addEventListener("click", function () {
+
+            const productId = this.dataset.id;
+            const action = this.dataset.action;
+
+            fetch("/cart/ajax/update/", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRFToken(),
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `product_id=${productId}&action=${action}`
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                updateCartBadge(data.cart_count);
+
+                // REMOVE ITEM
+                if (action === "remove" || !data.item) {
+                    const item = document.getElementById(`cart-item-${productId}`);
+                    if (item) item.remove();
+                } else {
+                    // UPDATE QTY
+                    document.getElementById(`qty-${productId}`).innerText =
+                        data.item.quantity;
+
+                    // UPDATE SUBTOTAL
+                    document.getElementById(`subtotal-${productId}`).innerText =
+                        "GHS " + (data.item.price * data.item.quantity).toFixed(2);
+                }
+
+                // UPDATE TOTAL
+                document.getElementById("cart-total").innerText =
+                    parseFloat(data.total).toFixed(2);
+
+            });
+
+        });
+    });
+
+});
+</script>
+
+{% endblock %}

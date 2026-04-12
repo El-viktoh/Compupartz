@@ -1,0 +1,710 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Compupartz{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: "#008BC6",
+                        brandOrange: "#FF7200",
+                    },
+                    animation: {
+                        scaleIn: 'scaleIn 0.3s ease-out forwards',
+                        fadeIn: 'fadeIn 0.4s ease-out forwards',
+                        slideUp: 'slideUp 0.4s ease-out forwards',
+                        pulseGlow: 'pulseGlow 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 0px rgba(0, 139, 198, 0.5)' },
+                            '50%': { boxShadow: '0 0 15px rgba(0, 139, 198, 0.8)' },
+                        },
+                        revealUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }    
+    </script>
+
+    <script>
+        // Check local storage or system preference to prevent flashing before page load
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    {% include "partials/toast.html" %}
+
+
+    <style>
+        :root {
+            --scroll-size: 8px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: var(--scroll-size);
+            height: var(--scroll-size);
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(153, 61, 0, 0.3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 114, 0, 0.5);
+        }
+
+        .font-outfit { font-family: 'Outfit', sans-serif; }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .reveal-element {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .reveal-element.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Navbar dynamic styles */
+        #main-nav {
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        #main-nav.scrolled {
+            background: rgba(15, 16, 20, 0.85); /* Dark matching the hero */
+            backdrop-filter: blur(16px);
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom-color: rgba(255, 114, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-[Inter] min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- ================= QUICK VIEW MODAL ================= -->
+    <div id="quickViewModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity duration-300 px-4">
+
+        <div
+            class="bg-white dark:bg-gray-800 rounded-md max-w-2xl w-full p-6 lg:p-8 relative shadow-2xl animate-scaleIn border border-gray-100 dark:border-gray-700">
+
+            <!-- CLOSE -->
+            <button onclick="closeQuickView()"
+                class="absolute top-4 right-5 text-3xl font-light text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition">
+                &times;
+            </button>
+
+            <!-- CONTENT -->
+            <div id="quickViewContent"></div>
+
+        </div>
+
+    </div>
+    <!-- ================= CART ================= -->
+    <div id="cartOverlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-40 transition-opacity duration-300"></div>
+
+    <div id="cartDrawer"
+        class="fixed top-0 right-0 h-full w-96 max-w-full bg-white dark:bg-gray-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col border-l border-gray-100 dark:border-gray-700">
+
+        <div class="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-700">
+            <h2 class="text-xl font-bold dark:text-gray-100">Your Cart</h2>
+            <button onclick="closeCart()"
+                class="text-3xl text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition">&times;</button>
+        </div>
+
+        <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
+
+        <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+            <p class="flex justify-between text-lg font-bold mb-5 dark:text-gray-100">
+                <span>Total</span>
+                <span id="cartTotal" class="text-brandBlue">GHS 0.00</span>
+            </p>
+
+            <a href="/cart/checkout/"
+                class="flex items-center justify-center w-full bg-gradient-to-r from-brandOrange to-orange-500 text-white text-center py-4 rounded-xl font-bold shadow-lg hover:shadow-orange-500/30 hover:-translate-y-0.5 transition-all duration-300 active:scale-95">
+                Proceed to Checkout
+            </a>
+        </div>
+    </div>
+
+    <!-- ================= NAVBAR ================= -->
+    <nav id="main-nav"
+        class="bg-gradient-to-r from-[#993d00] to-orange-950 sticky top-0 z-40 shadow-xl border-b border-orange-900/50">
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4 md:gap-6">
+
+            <!-- MOBILE HAMBURGER (Left) -->
+            <button onclick="toggleSidebar()" class="md:hidden text-white/90 hover:text-white transition-colors p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+
+            <!-- LOGO -->
+            <a href="/" class="flex items-center gap-2 transform hover:scale-105 transition bg-white px-3 py-1.5 rounded-[1rem] shadow-[0_0_15px_rgba(255,255,255,0.3)] border border-white/20">
+                <img src="{% static 'images/Logo-Only.png' %}" class="h-8 md:h-9">
+            </a>
+
+
+            <!-- NAV LINKS -->
+            <div
+                class="hidden md:flex items-center gap-8 font-medium text-sm text-white/90 tracking-wide">
+                <a href="/store/" class="hover:text-white transition-colors">Store</a>
+                <a href="/repair/" class="hover:text-white transition-colors">Repair</a>
+                <a href="/order/track/"
+                    class="hover:text-white transition-colors">Track</a>
+                <a href="{% url 'blog:post_list' %}" class="hover:text-white transition-colors">Tech Hub</a>
+            </div>
+
+
+            <!-- 🔍 SEARCH -->
+            <form action="/store/" method="GET" class="hidden md:flex flex-1 max-w-xl group relative mx-auto">
+
+                <div
+                    class="flex w-full rounded-md overflow-hidden shadow-inner border border-white/20 bg-white/5 focus-within:ring-2 focus-within:ring-white/50 transition-all backdrop-blur-md">
+                    <input type="text" name="q" placeholder="Search laptops, parts..." value="{{ request.GET.q }}"
+                        class="w-full px-5 py-2.5 text-sm outline-none bg-white text-gray-900 placeholder-gray-500">
+
+                    <button type="submit"
+                        class="bg-white/10 text-white px-6 text-sm font-bold hover:bg-white/20 transition border-l border-white/10">
+                        Search
+                    </button>
+                </div>
+
+            </form>
+
+
+            <!-- RIGHT SIDE -->
+            <div class="flex items-center gap-5 ml-auto text-white/90">
+
+                <button id="theme-toggle" type="button" class="text-white/80 hover:text-white hover:bg-white/10 focus:outline-none rounded-lg text-sm p-2 transition-colors duration-200">
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 4.22a1 1 0 01-1.415 1.415l-.708-.708a1 1 0 011.415-1.415l.708.708zM17 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4.22-4.22a1 1 0 011.415-1.415l.708.708a1 1 0 01-1.415 1.415l-.708-.708zM3 10a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                </button>
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="relative group">
+                    <div class="w-10 h-10 rounded-full border-2 border-brandOrange/30 group-hover:border-brandOrange overflow-hidden transition-all duration-300 shadow-[0_0_15px_rgba(255,114,0,0.1)] group-hover:shadow-[0_0_15px_rgba(255,114,0,0.3)]">
+                        {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <div class="w-full h-full bg-brandOrange/10 flex items-center justify-center text-brandOrange font-bold text-sm">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </a>
+
+                <a href="/accounts/logout/"
+                    class="text-xs font-bold text-white hover:bg-white/10 px-3 py-1.5 rounded transition-colors border border-white/20 ml-2">Logout</a>
+                {% else %}
+                <a href="/accounts/login/" class="text-sm font-bold hover:text-white transition-colors">Login</a>
+                <a href="/signup/" class="text-xs font-bold text-white bg-brandOrange hover:bg-orange-600 px-4 py-2 rounded-full transition-all ml-2 shadow-lg shadow-brandOrange/20">Join</a>
+                {% endif %}
+
+
+                <!-- CART -->
+                <div class="relative cursor-pointer hover:opacity-80 transition group" onclick="openCart()">
+
+                    <span class="text-2xl transform group-hover:scale-110 transition inline-block drop-shadow-md">🛒</span>
+
+                    <span id="cartCount"
+                        class="absolute -top-2 -right-2 bg-white text-orange-600 text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-lg hidden border-2 border-orange-600">
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- ================= MOBILE SIDEBAR ================= -->
+    <div id="mobileSidebar" class="fixed inset-0 z-[60] invisible transition-all duration-300">
+        <!-- Overlay -->
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        
+        <!-- Sidebar Content -->
+        <div id="sidebarPanel" class="absolute top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+            <div class="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
+                <span class="text-xl font-outfit font-black tracking-tight dark:text-white uppercase">Command <span class="text-brandBlue">Hub</span></span>
+                <button onclick="toggleSidebar()" class="text-gray-400 hover:text-brandOrange transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 space-y-2">
+                <a href="/store/" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
+                    <span class="text-lg">🛒</span> Store
+                </a>
+                <a href="/repair/" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
+                    <span class="text-lg">🛠️</span> Repair
+                </a>
+                <a href="/order/track/" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
+                    <span class="text-lg">📦</span> Track
+                </a>
+                <a href="{% url 'blog:post_list' %}" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
+                    <span class="text-lg">📰</span> Tech Hub
+                </a>
+                <hr class="my-4 border-gray-100 dark:border-gray-800">
+                
+                {% if not user.is_authenticated %}
+                <div class="grid grid-cols-2 gap-3 pt-4">
+                    <a href="/accounts/login/" class="flex justify-center items-center py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-[10px] font-black uppercase tracking-widest dark:text-white">Login</a>
+                    <a href="/signup/" class="flex justify-center items-center py-3 rounded-xl bg-brandOrange text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brandOrange/20">Join</a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="p-6 border-t border-gray-100 dark:border-gray-800">
+                <p class="text-[9px] text-gray-400 uppercase tracking-widest font-black text-center">&copy; 2026 COMPUPARTZ HQ</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= CONTENT ================= -->
+    <main class="max-w-7xl mx-auto px-6 py-10 flex-grow w-full">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-gradient-to-b from-gray-900 to-black text-gray-300 mt-auto border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
+
+            <div class="space-y-4">
+                <h3 class="text-2xl font-bold text-white tracking-tight">Compupartz</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">
+                    Trusted laptop repairs, genuine parts, and accessories across Ghana. Your premier tech solution.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-6 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-brandBlue"></span> Quick Links
+                </h4>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="/" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
+                                class="text-gray-600">→</span> Home</a></li>
+                    <li><a href="/store/" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
+                                class="text-gray-600">→</span> Store</a></li>
+                    <li><a href="/repair/" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
+                                class="text-gray-600">→</span> Repairs</a></li>
+                    <li><a href="/order/track/"
+                            class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
+                                class="text-gray-600">→</span> Track Order</a></li>
+                    <li><a href="{% url 'terms' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
+                                class="text-gray-600">→</span> Terms of Service</a></li>
+                    <li><a href="{% url 'privacy_policy' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
+                                class="text-gray-600">→</span> Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-6 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-brandOrange"></span> Contact
+                </h4>
+                <ul class="text-sm space-y-4">
+                    <li class="flex items-center gap-3">
+                        <span class="bg-gray-800 p-2 rounded-lg text-lg">📞</span> +233 XX XXX XXXX
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="bg-gray-800 p-2 rounded-lg text-lg">📧</span> support@compupartz.com
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="bg-gray-800 p-2 rounded-lg text-lg">📍</span> Accra, Ghana
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-6">Need Help?</h4>
+                <a href="https://wa.me/233XXXXXXXXX"
+                    class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-brandOrange to-orange-500 text-white px-6 py-3.5 rounded-full font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 w-full lg:w-auto">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                    </svg>
+                    Chat on WhatsApp
+                </a>
+            </div>
+
+        </div>
+
+        <div class="border-t border-gray-800/80 py-8 text-center text-sm text-gray-500">
+            © 2026 Compupartz. Built for excellence. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- ================= JS ================= -->
+    <script>
+
+        function getCSRFToken() {
+            return document.cookie.split("; ").find(row => row.startsWith("csrftoken="))?.split("=")[1];
+        }
+
+        function openCart() {
+            document.getElementById("cartDrawer").classList.remove("translate-x-full");
+            document.getElementById("cartOverlay").classList.remove("hidden");
+        }
+
+        function closeCart() {
+            document.getElementById("cartDrawer").classList.add("translate-x-full");
+            document.getElementById("cartOverlay").classList.add("hidden");
+        }
+
+        // ✅ QUICK VIEW (SAFE)
+        document.addEventListener("click", function (e) {
+            const quickBtn = e.target.closest(".quick-view-btn");
+            if (quickBtn) {
+                const name = quickBtn.dataset.name;
+                const price = quickBtn.dataset.price;
+                const image = quickBtn.dataset.image;
+                const id = quickBtn.dataset.id;
+
+                document.getElementById("quickViewContent").innerHTML = `
+    <div class="grid md:grid-cols-2 gap-8 items-center">
+
+        <!-- IMAGE -->
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-sm p-6 flex items-center justify-center border border-gray-100 dark:border-gray-600 shadow-inner overflow-hidden">
+            <img src="${image}" class="h-56 object-contain drop-shadow-md hover:scale-105 transition-transform duration-300">
+        </div>
+
+        <!-- INFO -->
+        <div class="flex flex-col h-full justify-center">
+
+            <h2 class="text-2xl font-bold mb-3 text-gray-900 dark:text-white leading-tight">
+                ${name}
+            </h2>
+
+            <p class="text-brandBlue text-3xl font-extrabold mb-6 tracking-tight">
+                GHS ${price}
+            </p>
+
+            <div class="flex gap-4">
+
+                <button onclick="quickAddToCart(${id}, '${name}')"
+                    class="flex-1 bg-gradient-to-r from-brandOrange to-orange-500 text-white py-3.5 rounded-full font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:-translate-y-0.5 transition-all duration-300 active:scale-95">
+                    Add to Cart
+                </button>
+
+                <a href="/store/product/${id}/"
+                   class="flex-1 text-center border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-3.5 rounded-full font-bold hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-300">
+                    View Details
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+`;
+
+                document.getElementById("quickViewModal").classList.remove("hidden");
+                document.getElementById("quickViewModal").classList.add("flex");
+            }
+        });
+
+        function closeQuickView() {
+            const modal = document.getElementById("quickViewModal");
+            modal.classList.add("hidden");
+        }
+
+        // ✅ QUICK ADD (DOES NOT INTERFERE)
+        function quickAddToCart(productId, productName) {
+            fetch("/cart/ajax/add/", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRFToken(),
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "product_id=" + productId
+            })
+                .then(res => res.json())
+                .then(() => {
+                    loadCart();
+                    loadCartCount();
+                    setTimeout(openCart, 150);
+                    closeQuickView();
+
+                    if (typeof showToast === "function") {
+                        showToast(productName + " added to cart 🛒");
+                    }
+                });
+        }
+
+        // ✅ UPDATE CART
+        function updateCart(productId, action) {
+            fetch("/cart/ajax/update/", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRFToken(),
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `product_id=${productId}&action=${action}`
+            })
+                .then(res => res.json())
+                .then(() => {
+                    loadCart();
+                    loadCartCount();
+                });
+        }
+
+        // ✅ LOAD CART (UPGRADED UI)
+        function loadCart() {
+            fetch("/cart/ajax/")
+                .then(res => res.json())
+                .then(data => {
+
+                    const container = document.getElementById("cartItems");
+                    const total = document.getElementById("cartTotal");
+
+                    container.innerHTML = "";
+
+                    if (!data.items || data.items.length === 0) {
+                        container.innerHTML = `
+                <div class="text-center py-24 px-4">
+                    <div class="text-6xl mb-6 opacity-50 grayscale mx-auto">🛍️</div>
+                    <p class="text-gray-500 dark:text-gray-400 mb-6 text-lg">Your cart is empty.</p>
+                    <a href="/store/" class="inline-block bg-gradient-to-r from-brandBlue to-blue-500 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300">
+                        Start Shopping
+                    </a>
+                </div>
+            `;
+                        total.innerText = "GHS 0.00";
+                        return;
+                    }
+
+                    data.items.forEach(item => {
+                        container.innerHTML += `
+                <div class="flex items-center gap-5 border-b border-gray-100 dark:border-gray-700 pb-5 pt-2 group">
+
+                    <div class="w-20 h-20 rounded-md flex-shrink-0 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 flex items-center justify-center p-2 overflow-hidden shadow-inner">
+                        <img src="${item.image || ''}" class="w-full h-full object-contain drop-shadow-sm group-hover:scale-110 transition-transform duration-300">
+                    </div>
+
+                    <div class="flex-1 min-w-0 py-1">
+                        <p class="text-sm font-bold text-gray-900 dark:text-white truncate mb-1">${item.name}</p>
+
+                        <div class="flex flex-wrap items-center gap-3 mt-2">
+                            <div class="flex items-center bg-white dark:bg-gray-800 rounded-md p-0.5 border border-gray-200 dark:border-gray-600 shadow-sm">
+                                <button onclick="updateCart('${item.id}', 'decrease')" class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">−</button>
+                                <span class="w-8 text-center text-sm font-bold dark:text-white">${item.quantity}</span>
+                                <button onclick="updateCart('${item.id}', 'increase')" class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">+</button>
+                            </div>
+                            <button onclick="updateCart('${item.id}', 'remove')" class="text-xs font-semibold text-red-500 hover:text-red-600 hover:underline transition-all">Remove</button>
+                        </div>
+                    </div>
+
+                    <div class="text-right flex-shrink-0 py-1">
+                        <p class="text-sm font-extrabold text-brandBlue">
+                            GHS ${Number(item.total).toFixed(2)}
+                        </p>
+                    </div>
+
+                </div>
+            `;
+                    });
+
+                    total.innerText = "GHS " + Number(data.total).toFixed(2);
+                });
+        }
+
+        // ✅ COUNT
+        function loadCartCount() {
+            fetch("/cart/ajax/count/")
+                .then(res => res.json())
+                .then(data => {
+                    const badge = document.getElementById("cartCount");
+                    badge.innerText = data.count;
+                    badge.style.display = data.count > 0 ? "inline-block" : "none";
+                });
+        }
+
+        // INIT
+        document.addEventListener("DOMContentLoaded", function () {
+            loadCart();
+            loadCartCount();
+            document.getElementById("cartOverlay").addEventListener("click", closeCart);
+
+            // ✅ Theme Toggle Init
+            var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+            var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                themeToggleLightIcon.classList.remove('hidden');
+            } else {
+                themeToggleDarkIcon.classList.remove('hidden');
+            }
+
+            var themeToggleBtn = document.getElementById('theme-toggle');
+
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', function() {
+                    themeToggleDarkIcon.classList.toggle('hidden');
+                    themeToggleLightIcon.classList.toggle('hidden');
+
+                    if (localStorage.getItem('color-theme')) {
+                        if (localStorage.getItem('color-theme') === 'light') {
+                            document.documentElement.classList.add('dark');
+                            localStorage.setItem('color-theme', 'dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.setItem('color-theme', 'light');
+                        }
+                    } else {
+                        if (document.documentElement.classList.contains('dark')) {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.setItem('color-theme', 'light');
+                        } else {
+                            document.documentElement.classList.add('dark');
+                            localStorage.setItem('color-theme', 'dark');
+                        }
+                    }
+                });
+            }
+
+            // ✅ Navbar Scroll Logic
+            const nav = document.getElementById('main-nav');
+            const handleScroll = () => {
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            };
+            window.addEventListener('scroll', handleScroll);
+            handleScroll();
+
+            // ✅ Intersection Observer for Reveal
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-element').forEach(el => observer.observe(el));
+        });
+
+        document.addEventListener("click", function (e) {
+            const addBtn = e.target.closest(".add-to-cart-btn");
+            if (addBtn) {
+
+                const btn = addBtn;
+                const productId = btn.dataset.productId;
+                const productName = btn.dataset.productName || "Item";
+
+                btn.disabled = true;
+                btn.innerText = "Adding...";
+
+                fetch("/cart/ajax/add/", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCSRFToken(),
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "product_id=" + productId
+                })
+                    .then(res => res.json())
+                    .then(() => {
+
+                        btn.disabled = false;
+                        btn.innerText = "Add";
+
+                        loadCart();
+                        loadCartCount();
+
+                        setTimeout(openCart, 150);
+
+                        if (typeof showToast === "function") {
+                            showToast(productName + " added to cart 🛒");
+                        }
+
+                    });
+            }
+
+        });
+
+    </script>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const panel = document.getElementById('sidebarPanel');
+            if (!sidebar || !overlay || !panel) return;
+            
+            const isVisible = !sidebar.classList.contains('invisible');
+            
+            if (isVisible) {
+                overlay.classList.replace('opacity-100', 'opacity-0');
+                panel.classList.replace('translate-x-0', '-translate-x-full');
+                setTimeout(() => sidebar.classList.add('invisible'), 300);
+                document.body.style.overflow = '';
+            } else {
+                sidebar.classList.remove('invisible');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => {
+                    overlay.classList.add('opacity-100');
+                    overlay.classList.remove('opacity-0');
+                    panel.classList.replace('-translate-x-full', 'translate-x-0');
+                }, 10);
+            }
+        }
+    </script>
+</body>
+
+</html>

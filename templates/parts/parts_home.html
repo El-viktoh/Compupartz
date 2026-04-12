@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Parts | Compupartz{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-6">Laptop Parts</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    {% for part in parts %}
+        <div class="bg-white p-5 rounded-lg shadow hover:shadow-lg transition">
+
+            {% if part.image %}
+                <img
+                    src="{{ part.image.url }}"
+                    alt="{{ part.name }}"
+                    class="w-full h-40 object-cover rounded-lg mb-4"
+                >
+            {% else %}
+                <div class="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
+                    <span class="text-gray-500 text-sm">No image</span>
+                </div>
+            {% endif %}
+
+            <a
+                href="/store/product/{{ part.id }}/"
+                class="text-lg font-semibold text-blue-600 hover:underline"
+            >
+                {{ part.name }}
+            </a>
+
+            <p class="text-gray-600 mt-2">
+                {{ part.description }}
+            </p>
+
+            <p class="text-blue-600 font-bold mt-3">
+                GHS {{ part.price }}
+            </p>
+
+        </div>
+    {% empty %}
+        <p>No parts available yet.</p>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+
+

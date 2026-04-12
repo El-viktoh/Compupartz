@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Book Repair | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= BOOKING DASHBOARD (DYNAMIC MODE) ================= -->
+<div class="w-[100vw] relative left-1/2 -translate-x-1/2 bg-gray-50 dark:bg-[#0a0a0c] text-gray-900 dark:text-white -mt-10 py-20 px-6 min-h-[90vh] overflow-hidden transition-colors duration-500">
+    
+    <!-- Background Accents (Dark Mode Only) -->
+    <div class="hidden dark:block absolute top-0 right-0 w-[500px] h-[500px] bg-[#008BC6]/10 rounded-full blur-[100px] -z-10 animate-pulseGlow"></div>
+    <div class="hidden dark:block absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#ff7200]/5 rounded-full blur-[100px] -z-10 animate-pulseGlow" style="animation-delay: 1.5s;"></div>
+
+    <div class="max-w-4xl mx-auto relative z-10">
+        
+        <div class="text-center mb-16 animate-fadeIn">
+            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] mb-4">Diagnostics Lab</h4>
+            <h1 class="text-4xl md:text-5xl font-outfit font-black mb-4 uppercase tracking-widest text-gray-900 dark:text-white">
+                Initialize <span class="text-[#008BC6]">Repair</span> Ticket
+            </h1>
+            <p class="text-gray-400 dark:text-gray-400 font-light text-sm md:text-base tracking-wide">
+                Provide your device specifications and issue details to generate a unique tracking ID.
+            </p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-12 items-start">
+            <!-- Info Sidebar -->
+            <div class="lg:w-1/3 space-y-8 animate-slideUp">
+                <div class="bg-white/70 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/5 rounded-2xl p-6 shadow-sm dark:shadow-none">
+                    <h4 class="text-xs font-black uppercase tracking-widest text-[#008BC6] mb-4">Quick Info</h4>
+                    <ul class="space-y-4 text-[11px] text-gray-500 dark:text-gray-400 font-light leading-relaxed">
+                        <li class="flex gap-3"><span class="text-[#008BC6]">⚡</span> Repairs typically diagnosed within 24 hours.</li>
+                        <li class="flex gap-3"><span class="text-[#008BC6]">⚡</span> Real-time tracking available post-submission.</li>
+                        <li class="flex gap-3"><span class="text-[#008BC6]">⚡</span> Genuine parts used for all components.</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-gradient-to-br from-[#ff7200]/10 to-transparent dark:from-[#ff7200]/20 dark:to-transparent border border-[#ff7200]/20 rounded-2xl p-6">
+                    <h4 class="text-xs font-black uppercase tracking-widest text-[#ff7200] mb-2">Need Help?</h4>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 font-light mb-4 text-balance">Our technical lab is open for remote consultation during business hours.</p>
+                    <a href="https://wa.me/233XXXXXXXXX" target="_blank" class="text-[10px] font-black uppercase tracking-widest text-[#ff7200] dark:text-white flex items-center gap-2 hover:translate-x-1 transition-all">
+                        Consult Lab &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Form Card -->
+            <div class="lg:w-2/3 w-full animate-slideUp" style="animation-delay: 150ms;">
+                <form method="POST" class="bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-8 md:p-12 rounded-[2.5rem] shadow-xl dark:shadow-2xl relative overflow-hidden group">
+                    <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#008BC6]/5 rounded-full blur-[80px] pointer-events-none transition-all duration-700"></div>
+                    
+                    {% csrf_token %}
+
+                    <div class="space-y-6 relative z-10">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#008BC6]/80 ml-1">Full Name</label>
+                                {{ form.customer_name }}
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#008BC6]/80 ml-1">Phone Number</label>
+                                {{ form.customer_phone }}
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#008BC6]/80 ml-1">Email Address</label>
+                            {{ form.customer_email }}
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#ff7200]/80 ml-1">Device Model</label>
+                            {{ form.device }}
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#ff7200]/80 ml-1">Issue Description</label>
+                            {{ form.issue_description }}
+                        </div>
+
+                        <div class="flex items-center gap-4 bg-gray-50 dark:bg-white/5 p-5 rounded-2xl border border-gray-100 dark:border-white/5 hover:border-[#008BC6]/30 transition-all shadow-inner sm:shadow-none">
+                            {{ form.in_person }}
+                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-300 cursor-pointer">
+                                I prefer in-person repair (Drop-off)
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-[#ff7200] to-orange-500 hover:from-orange-500 hover:to-orange-600 shadow-[0_0_25px_rgba(255,114,0,0.2)] text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] transition-all transform hover:-translate-y-1 active:scale-95 text-xs shadow-orange-500/30">
+                            Submit Repair Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pay Online | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= PAYMENT GATEWAY (DYNAMIC MODE) ================= -->
+<div class="w-[100vw] relative left-1/2 -translate-x-1/2 bg-gray-50 dark:bg-[#0a0a0c] text-gray-900 dark:text-white -mt-10 py-24 px-6 min-h-[80vh] flex items-center justify-center overflow-hidden transition-colors duration-500">
+    
+    <!-- Background Accents (Dark Mode Only) -->
+    <div class="hidden dark:block absolute top-0 right-0 w-[500px] h-[500px] bg-[#008BC6]/10 rounded-full blur-[100px] -z-10 animate-pulseGlow"></div>
+    <div class="hidden dark:block absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#ff7200]/5 rounded-full blur-[100px] -z-10 animate-pulseGlow" style="animation-delay: 1.5s;"></div>
+
+    <div class="max-w-xl w-full relative z-10 animate-fadeIn text-center">
+        
+        <div class="mb-12">
+            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] mb-4">Secure Gateway</h4>
+            <h1 class="text-4xl md:text-5xl font-outfit font-black mb-4 uppercase tracking-widest text-gray-900 dark:text-white">
+                Complete <span class="text-[#ff7200]">Payment</span>
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 font-light text-sm md:text-base tracking-wide">
+                Authorize your transaction via Paystack to finalize your order.
+            </p>
+        </div>
+
+        <div class="bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-8 md:p-12 rounded-[2.5rem] shadow-xl dark:shadow-2xl relative overflow-hidden group text-center">
+            
+            <div class="space-y-6 relative z-10">
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-2">Order Reference</span>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white tracking-widest">#{{ order.id }}</p>
+                </div>
+
+                <div class="py-10">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-4">Authorized Amount</span>
+                    <p class="text-5xl font-outfit font-black text-[#008BC6]">GHS {{ order.total_amount }}</p>
+                </div>
+
+                <div class="pt-4">
+                    <button
+                        onclick="payWithPaystack()"
+                        class="w-full bg-gradient-to-r from-[#008BC6] to-blue-500 hover:from-blue-500 hover:to-blue-600 shadow-[0_0_25px_rgba(0,139,198,0.2)] text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] transition-all transform hover:-translate-y-1 active:scale-95 text-xs shadow-blue-500/30"
+                    >
+                        Initiate Paystack Transfer
+                    </button>
+                </div>
+                
+                <p class="text-[10px] text-gray-400 font-light mt-6">
+                    Encryption standard 256-bit SSL secured.
+                </p>
+            </div>
+        </div>
+
+        <a href="{% url 'checkout' %}" class="inline-block mt-12 text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-[#008BC6] transition-colors">
+            &larr; Back to Order Details
+        </a>
+    </div>
+</div>
+
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
+<script>
+function payWithPaystack() {
+    var handler = PaystackPop.setup({
+        key: "{{ paystack_public_key }}",
+        email: "customer@compupartz.com",
+        amount: {{ order.total_amount|floatformat:2 }} * 100,
+        currency: "GHS",
+        ref: "{{ reference }}",
+
+        callback: function(response) {
+            window.location.href = "/order/verify/" + response.reference + "/";
+        },
+
+        onClose: function() {
+            alert("Payment cancelled");
+        }
+    });
+
+    handler.openIframe();
+}
+</script>
+
+{% endblock %}

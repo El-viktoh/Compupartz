@@ -1,0 +1,76 @@
+<div
+    class="group bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 rounded-xl p-3 shadow-md hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 w-full flex flex-col hover:-translate-y-2 border-transparent hover:border-orange-500/30">
+
+    <!-- IMAGE CONTAINER (Matches screenshot's soft gray #f8f8f8 background) -->
+    <div
+        class="bg-[#f8f8f8] dark:bg-gray-800 rounded-sm relative flex items-center justify-center overflow-hidden mb-4 p-4 aspect-square">
+        {% if product.image %}
+        <img src="{{ product.image.url }}"
+            class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+        {% else %}
+        <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm relative z-10">
+            No image
+        </div>
+        {% endif %}
+
+        <!-- QUICK VIEW (Remains functional as old, just hidden until hover) -->
+        <button
+            class="quick-view-btn absolute top-4 right-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 z-20 hover:scale-105"
+            data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}"
+            data-image="{% if product.image %}{{ product.image.url }}{% endif %}" title="Quick View">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-5 h-5 text-gray-700 dark:text-gray-200">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- DETAILS: TITLE & PRICE ROW -->
+    <div class="flex justify-between items-start mb-1 gap-2">
+        <h3 class="font-outfit font-bold text-gray-900 dark:text-white text-base leading-tight line-clamp-2 pr-2">
+            {{ product.name }}
+        </h3>
+        <p class="font-outfit font-black text-brandBlue dark:text-orange-500 text-sm whitespace-nowrap pt-0.5">
+            GHS {{ product.price }}
+        </p>
+    </div>
+
+    <!-- SUBTITLE (CATEGORY) -->
+    <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-2 truncate">
+        {{ product.category }} {% if product.stock_status == "In Stock" %}• Available{% endif %}
+    </p>
+
+    <!-- RATING STARS -->
+    <div class="flex items-center gap-1.5 mb-4">
+        <div class="flex text-green-600 dark:text-green-500 text-xs">
+            {% for i in "12345" %}
+            {% if forloop.counter <= product.avg_rating %} <span>★</span>
+                {% else %}
+                <span class="text-gray-300 dark:text-gray-600">★</span>
+                {% endif %}
+                {% endfor %}
+        </div>
+        <span class="text-gray-400 dark:text-gray-500 text-[10px] font-medium">
+            ({{ product.review_count }})
+        </span>
+    </div>
+
+    <!-- ACTION BUTTONS: Add to Cart & Buy -->
+    <div class="flex gap-2 mt-auto">
+        <!-- Add to Cart (Hollow style from screenshot) -->
+        <button
+            class="add-to-cart-btn flex-1 border border-gray-900 dark:border-gray-400 py-2 rounded-full text-[13px] font-medium text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors active:scale-95"
+            data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
+            Add to Cart
+        </button>
+
+        <!-- BUY NOW (Solid orange kept to respect previous command) -->
+        <a href="/store/product/{{ product.id }}/"
+            class="flex-none bg-[#ff7200] text-white px-4 py-2 rounded-full text-[13px] font-bold shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-center">
+            Buy
+        </a>
+    </div>
+
+</div>

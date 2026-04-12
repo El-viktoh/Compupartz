@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Checkout | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= CHECKOUT DASHBOARD ================= -->
+<div class="w-[100vw] relative left-1/2 -translate-x-1/2 bg-gray-50 dark:bg-[#0a0a0c] text-gray-900 dark:text-white -mt-10 py-16 px-6 min-h-[90vh] overflow-hidden transition-colors duration-500">
+    
+    <!-- Background Accents (Dark Mode Only) -->
+    <div class="hidden dark:block absolute top-0 right-0 w-[500px] h-[500px] bg-[#008BC6]/5 rounded-full blur-[100px] -z-10 animate-pulseGlow"></div>
+    <div class="hidden dark:block absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#ff7200]/5 rounded-full blur-[100px] -z-10 animate-pulseGlow" style="animation-delay: 1.5s;"></div>
+
+    <div class="max-w-6xl mx-auto relative z-10">
+        
+        <div class="mb-12 animate-fadeIn">
+            {% if user.is_authenticated %}
+                <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff7200] mb-4">Identity Synchronized</h4>
+            {% else %}
+                <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] mb-4">Guest Transmission</h4>
+            {% endif %}
+            
+            <h1 class="text-4xl md:text-5xl font-outfit font-black mb-4 uppercase tracking-widest text-gray-900 dark:text-white">
+                Finalize <span class="text-[#ff7200]">Transmission</span>
+            </h1>
+            
+            {% if not user.is_authenticated %}
+                <p class="text-gray-500 dark:text-gray-400 font-light text-sm md:text-base tracking-wide max-w-2xl">
+                    Review your configuration and provide delivery coordinates. 
+                    <a href="{% url 'login' %}?next={% url 'checkout' %}" class="text-[#008BC6] font-black hover:underline ml-1">Login here</a> for faster priority access.
+                </p>
+            {% else %}
+                <p class="text-gray-500 dark:text-gray-400 font-light text-sm md:text-base tracking-wide max-w-2xl">
+                    Authorized session detected. Confirm your saved coordinates or update them below.
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-10 items-start">
+            
+            <!-- LEFT: SHIPPING FORM -->
+            <div class="animate-slideUp">
+                <form method="POST" class="bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-8 md:p-12 rounded-[2.5rem] shadow-xl dark:shadow-2xl relative overflow-hidden group">
+                    <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#008BC6]/5 rounded-full blur-[80px] pointer-events-none transition-all duration-700"></div>
+                    
+                    {% csrf_token %}
+
+                    <h3 class="text-xs font-black uppercase tracking-[0.3em] text-[#008BC6] mb-8">Shipment Destination</h3>
+
+                    <div class="space-y-6 relative z-10">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#008BC6]/80 ml-1">Full Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Recipient Name"
+                                value="{% if user.is_authenticated %}{{ user.first_name }} {{ user.last_name }}{% endif %}"
+                                required
+                                class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                            >
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#008BC6]/80 ml-1">Phone Number</label>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    placeholder="+233 XXX XX"
+                                    required
+                                    class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                >
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#008BC6]/80 ml-1">Email (Updates)</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="contact@domain.com"
+                                    value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"
+                                    required
+                                    class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#008BC6]/80 ml-1">Delivery Address</label>
+                            <textarea
+                                name="address"
+                                placeholder="Exact location, house number, or landmark..."
+                                required
+                                class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-6 py-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                            ></textarea>
+                        </div>
+
+                        <!-- ACTIONS -->
+                        <div class="pt-6 space-y-4">
+                            <button type="submit" name="action" value="pay" class="w-full bg-gradient-to-r from-[#ff7200] to-orange-500 hover:from-orange-500 hover:to-orange-600 shadow-[0_0_25px_rgba(255,114,0,0.2)] text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] transition-all transform hover:-translate-y-1 active:scale-95 text-xs">
+                                Pay Online (MoMo / Card)
+                            </button>
+                            <button type="submit" name="action" value="whatsapp" class="w-full bg-[#25D366]/10 dark:bg-[#25D366]/5 border border-[#25D366]/30 text-[#25D366] py-5 rounded-2xl font-black uppercase tracking-[0.2em] transition-all hover:bg-[#25D366] hover:text-white text-xs">
+                                Order via WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- RIGHT: ORDER SUMMARY -->
+            <div class="animate-slideUp" style="animation-delay: 200ms;">
+                <div class="bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-8 md:p-10 rounded-[2.5rem] shadow-xl dark:shadow-2xl relative overflow-hidden">
+                    <h3 class="text-xs font-black uppercase tracking-[0.3em] text-[#008BC6] mb-8">Configuration Summary</h3>
+
+                    {% if cart %}
+                        <div class="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            {% for item in cart %}
+                                <div class="flex items-center gap-6 border-b border-gray-100 dark:border-white/5 pb-6 last:border-0">
+                                    <div class="relative w-24 h-24 shrink-0 overflow-hidden rounded-2xl border border-gray-100 dark:border-white/10">
+                                        {% if item.image %}
+                                            <img src="{{ item.image }}" class="w-full h-full object-cover" alt="{{ item.name }}">
+                                        {% else %}
+                                            <div class="w-full h-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-[10px] text-gray-400">NO MEDIA</div>
+                                        {% endif %}
+                                        <div class="absolute top-1 right-1 bg-[#ff7200] text-white text-[9px] font-black px-2 py-0.5 rounded-full">x{{ item.quantity }}</div>
+                                    </div>
+                                    
+                                    <div class="flex-1">
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide leading-tight mb-1">{{ item.name }}</p>
+                                        <p class="text-xs text-[#008BC6] font-black tracking-widest">GHS {{ item.total }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- TOTALS -->
+                        <div class="mt-10 pt-10 border-t-2 border-dashed border-gray-100 dark:border-white/10">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">Subtotal</span>
+                                <span class="text-sm font-bold text-gray-900 dark:text-white">GHS {{ cart_total }}</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-8">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">Delivery</span>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-[#25D366]">Calculated at Dispatch</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center bg-[#008BC6]/5 p-6 rounded-2xl border border-[#008BC6]/20">
+                                <span class="text-sm font-black uppercase tracking-widest text-gray-900 dark:text-white">Grand Total</span>
+                                <span class="text-2xl font-outfit font-black text-[#008BC6]">GHS {{ cart_total }}</span>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="text-center py-20">
+                            <p class="text-gray-500 text-sm font-light">Inventory access denied. Your cart is empty.</p>
+                            <a href="{% url 'store_home' %}" class="inline-block mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-[#008BC6] hover:text-[#ff7200]">Return to Store &rarr;</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <a href="{% url 'cart_detail' %}" class="inline-block mt-12 text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-[#008BC6] transition-colors">
+            &larr; Modify Configuration
+        </a>
+    </div>
+</div>
+
+{% endblock %}

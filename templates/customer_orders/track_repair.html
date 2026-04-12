@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Track Repair | Compupartz{% endblock %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto">
+
+    <h1 class="text-3xl font-bold mb-6 text-center">
+        Track Your Repair
+    </h1>
+
+    {% if error %}
+        <div class="bg-red-50 text-red-700 border border-red-200 p-4 rounded-lg mb-6 text-center">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if ticket %}
+
+    <!-- REPAIR INFO -->
+    <div class="bg-white p-6 rounded-lg shadow mb-8">
+        <p><strong>Repair Ticket:</strong> #{{ ticket.ticket_id }}</p>
+        <p><strong>Name:</strong> {{ ticket.customer_name }}</p>
+        <p><strong>Phone:</strong> {{ ticket.customer_phone }}</p>
+        <p><strong>Device:</strong> {{ ticket.device }}</p>
+        <p><strong>Issue:</strong> {{ ticket.issue_description }}</p>
+        <p><strong>Submitted on:</strong> {{ ticket.created_at|date:"M d, Y H:i" }}</p>
+    </div>
+
+    <!-- STATUS TRACKER -->
+    <div class="bg-white p-6 rounded-lg shadow">
+
+        <h2 class="text-xl font-semibold mb-6">Repair Progress</h2>
+
+        {% with status=ticket.status %}
+
+        <div class="space-y-6">
+
+            <!-- STEP 1 -->
+            <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full
+                    {% if status == 'pending' or status == 'in_progress' or status == 'completed' %}
+                        bg-green-600
+                    {% else %}
+                        bg-gray-300
+                    {% endif %}
+                ">
+                </div>
+                <span class="ml-4 font-medium">Request Received</span>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full
+                    {% if status == 'in_progress' or status == 'completed' %}
+                        bg-green-600
+                    {% else %}
+                        bg-gray-300
+                    {% endif %}
+                ">
+                </div>
+                <span class="ml-4 font-medium">Repair In Progress</span>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full
+                    {% if status == 'completed' %}
+                        bg-green-600
+                    {% else %}
+                        bg-gray-300
+                    {% endif %}
+                ">
+                </div>
+                <span class="ml-4 font-medium">Completed</span>
+            </div>
+
+        </div>
+
+        {% endwith %}
+
+        <!-- STATUS BADGE -->
+        <div class="mt-8 text-center">
+            <span class="inline-block px-5 py-2 rounded-full text-white text-sm font-semibold
+                {% if ticket.status == 'pending' %}bg-yellow-500{% endif %}
+                {% if ticket.status == 'in_progress' %}bg-blue-600{% endif %}
+                {% if ticket.status == 'completed' %}bg-green-600{% endif %}
+            ">
+                {{ ticket.status|title }}
+            </span>
+        </div>
+
+        <!-- HELPFUL MESSAGE -->
+        <div class="mt-6 text-center text-gray-600 text-sm">
+            {% if ticket.status == "pending" %}
+                Your repair request has been received and is awaiting review.
+            {% elif ticket.status == "in_progress" %}
+                Your device is currently being repaired.
+            {% elif ticket.status == "completed" %}
+                Your repair has been completed. Thank you!
+            {% endif %}
+        </div>
+
+        <!-- CONTACT SUPPORT -->
+        <div class="mt-6 text-center">
+            <a
+                href="https://wa.me/233XXXXXXXXX"
+                target="_blank"
+                class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+            >
+                Chat on WhatsApp
+            </a>
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <!-- TRACKING LOOKUP FORM -->
+    <div class="bg-white p-6 rounded-lg shadow text-center">
+
+        <p class="text-gray-600 mb-4">
+            Enter your Repair Ticket ID to track your repair.
+        </p>
+
+        <form method="GET" action="{% url 'track_repair' %}" class="flex gap-3 justify-center">
+            <input
+                type="text"
+                name="ticket_id"
+                placeholder="Enter Ticket ID"
+                required
+                class="border p-3 rounded w-2/3"
+            >
+            <button
+                type="submit"
+                class="bg-brandBlue text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition"
+            >
+                Track Repair
+            </button>
+        </form>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

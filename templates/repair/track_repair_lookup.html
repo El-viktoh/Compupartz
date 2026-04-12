@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Track Repair | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= TRACKING LOOKUP (DYNAMIC MODE) ================= -->
+<div class="w-[100vw] relative left-1/2 -translate-x-1/2 bg-gray-50 dark:bg-[#0a0a0c] text-gray-900 dark:text-white -mt-10 py-24 px-6 min-h-[80vh] flex items-center justify-center overflow-hidden transition-colors duration-500">
+    
+    <!-- Background Accents (Dark Mode Only) -->
+    <div class="hidden dark:block absolute top-0 right-0 w-[500px] h-[500px] bg-[#008BC6]/10 rounded-full blur-[100px] -z-10 animate-pulseGlow"></div>
+    <div class="hidden dark:block absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#ff7200]/5 rounded-full blur-[100px] -z-10 animate-pulseGlow" style="animation-delay: 1.5s;"></div>
+
+    <div class="max-w-xl w-full relative z-10 animate-fadeIn text-center">
+        
+        <div class="mb-12">
+            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] mb-4">Diagnostics Radar</h4>
+            <h1 class="text-4xl md:text-5xl font-outfit font-black mb-4 uppercase tracking-widest text-gray-900 dark:text-white">
+                Repair <span class="text-[#008BC6]">Radar</span>
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 font-light text-sm md:text-base tracking-wide">
+                Monitor your laptop's journey through our restoration labs.
+            </p>
+        </div>
+
+        <form method="POST" class="bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-8 md:p-12 rounded-[2.5rem] shadow-xl dark:shadow-2xl relative overflow-hidden text-left group">
+            <!-- Internal Glow -->
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#008BC6]/5 rounded-full blur-[80px] pointer-events-none transition-all duration-700"></div>
+
+            {% csrf_token %}
+
+            <div class="space-y-8 relative z-10">
+                <div class="space-y-3">
+                    <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#008BC6] ml-1">Repair Ticket ID</label>
+                    <input
+                        type="text"
+                        name="ticket_id"
+                        placeholder="e.g. REP-10023"
+                        required
+                        class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 font-medium tracking-wider"
+                    >
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-[#008BC6] ml-1">Phone Number</label>
+                    <input
+                        type="tel"
+                        name="phone"
+                        placeholder="e.g. +233 XXX XX"
+                        required
+                        class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 font-medium tracking-wider"
+                    >
+                </div>
+
+                <div class="pt-4">
+                    <button
+                        type="submit"
+                        class="w-full bg-gradient-to-r from-[#008BC6] to-blue-500 hover:from-blue-500 hover:to-blue-600 shadow-[0_0_25px_rgba(0,139,198,0.2)] text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] transition-all transform hover:-translate-y-1 active:scale-95 text-xs shadow-blue-500/30"
+                    >
+                        Locate My Device
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <a href="{% url 'repair_home' %}" class="inline-block mt-12 text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-[#008BC6] transition-colors">
+            &larr; Back to Lab Navigation
+        </a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Repair Services | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= REPAIR HERO (HI-TECH) ================= -->
+<div class="w-[100vw] relative left-1/2 -translate-x-1/2 bg-[#0a0a0c] text-white -mt-10 pt-16 pb-24 overflow-hidden border-b border-white/5">
+    <!-- Glow effects -->
+    <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-[#008BC6]/10 rounded-full blur-[120px] -z-10 animate-pulseGlow"></div>
+    <div class="absolute bottom-10 left-0 w-[500px] h-[500px] bg-[#ff7200]/5 rounded-full blur-[100px] -z-10 animate-pulseGlow" style="animation-delay: 1s;"></div>
+    
+    <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
+        <div class="animate-fadeIn text-center mb-16">
+            <div class="inline-block bg-[#008BC6]/20 border border-[#008BC6]/30 text-[#008BC6] text-[10px] font-black px-3 py-1 rounded-full mb-6 uppercase tracking-widest">
+                Professional Diagnostics
+            </div>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-outfit font-black leading-[1.1] mb-6 tracking-widest uppercase animate-slideUp">
+                TRUSTED<br><span class="text-[#008BC6]">REPAIR SERVICES</span>
+            </h1>
+            <p class="text-gray-400 text-base md:text-lg mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+                Expert-level laptop restoration from microscopic soldering to complex software orchestration. We deliver precision with a 100% transparency guarantee.
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{% url 'book_repair' %}" class="bg-gradient-to-r from-[#ff7200] to-orange-500 hover:from-orange-500 hover:to-orange-600 shadow-[0_0_20px_rgba(255,114,0,0.3)] text-white px-10 py-4 rounded-full font-bold transition-all text-sm uppercase tracking-widest shadow-orange-500/30">
+                    Book Repair Request
+                </a>
+                <a href="{% url 'track_repair_lookup' %}" class="border border-white/20 text-white px-10 py-4 rounded-full font-bold hover:bg-white/5 hover:border-white/40 transition-all text-sm uppercase tracking-widest">
+                    Track Your Ticket
+                </a>
+            </div>
+        </div>
+
+        <!-- SPECIALTIES GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <!-- Hardware -->
+            <div class="reveal-element bg-[#16171d]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:border-[#008BC6]/30 transition-all duration-500 group relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-[#008BC6]/5 rounded-full blur-2xl group-hover:bg-[#008BC6]/10 transition-all"></div>
+                <div class="text-3xl mb-6 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-transform">🔬</div>
+                <h4 class="font-bold text-sm text-white mb-3 uppercase tracking-widest">Micro-Soldering</h4>
+                <p class="text-xs text-gray-500 leading-relaxed font-light">Advanced motherboard component repair and water damage restoration at the chip level.</p>
+                <div class="mt-6 w-8 h-1 bg-[#008BC6] rounded-full opacity-50"></div>
+            </div>
+
+            <!-- Display -->
+            <div class="reveal-element bg-[#16171d]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:border-[#ff7200]/30 transition-all duration-500 group relative overflow-hidden" style="transition-delay: 100ms;">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-[#ff7200]/5 rounded-full blur-2xl group-hover:bg-[#ff7200]/10 transition-all"></div>
+                <div class="text-3xl mb-6 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-transform">🖥️</div>
+                <h4 class="font-bold text-sm text-white mb-3 uppercase tracking-widest">Display Labs</h4>
+                <p class="text-xs text-gray-500 leading-relaxed font-light">Precision screen replacements for OLED, Retina, and 4K panels with zero dead-pixel guarantee.</p>
+                <div class="mt-6 w-8 h-1 bg-[#ff7200] rounded-full opacity-50"></div>
+            </div>
+
+            <!-- Battery -->
+            <div class="reveal-element bg-[#16171d]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:border-purple-500/30 transition-all duration-500 group relative overflow-hidden" style="transition-delay: 200ms;">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-all"></div>
+                <div class="text-3xl mb-6 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-transform">🔋</div>
+                <h4 class="font-bold text-sm text-white mb-3 uppercase tracking-widest">Power Systems</h4>
+                <p class="text-xs text-gray-500 leading-relaxed font-light">Battery health optimization, genuine cell replacements, and charging circuit diagnostics.</p>
+                <div class="mt-6 w-8 h-1 bg-purple-500 rounded-full opacity-50"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= THE PROCESS (TIMELINE) ================= -->
+<section class="max-w-7xl mx-auto px-6 py-24 relative overflow-hidden">
+    <div class="text-center mb-16">
+        <h2 class="text-2xl md:text-3xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest mb-4">Our Professional Process</h2>
+        <p class="text-gray-500 dark:text-gray-400 text-sm font-light">Efficient, trackable restoration in four simple steps</p>
+    </div>
+
+    <div class="grid md:grid-cols-4 gap-8 relative">
+        <!-- Connecting Line (Desktop) -->
+        <div class="hidden md:block absolute top-12 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-white/10 to-transparent"></div>
+        
+        <!-- Step 1 -->
+        <div class="relative z-10 text-center group">
+            <div class="w-24 h-24 mx-auto bg-white dark:bg-[#16171d] rounded-2xl border border-gray-100 dark:border-white/5 shadow-xl flex items-center justify-center text-3xl mb-6 group-hover:border-[#008BC6]/50 transition-all duration-500 group-hover:-translate-y-2">
+                📝
+            </div>
+            <h5 class="font-bold text-xs uppercase tracking-widest text-[#008BC6] mb-2">Step 01</h5>
+            <h4 class="font-black text-gray-900 dark:text-white mb-3 uppercase text-sm tracking-wide">Request Online</h4>
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-light px-4">Fill out our hi-tech diagnostic form to initiate your repair ticket.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="relative z-10 text-center group">
+            <div class="w-24 h-24 mx-auto bg-white dark:bg-[#16171d] rounded-2xl border border-gray-100 dark:border-white/5 shadow-xl flex items-center justify-center text-3xl mb-6 group-hover:border-[#ff7200]/50 transition-all duration-500 group-hover:-translate-y-2">
+                📦
+            </div>
+            <h5 class="font-bold text-xs uppercase tracking-widest text-[#ff7200] mb-2">Step 02</h5>
+            <h4 class="font-black text-gray-900 dark:text-white mb-3 uppercase text-sm tracking-wide">Ship or Drop</h4>
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-light px-4">Send your device via express courier or drop it at our premium labs.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="relative z-10 text-center group">
+            <div class="w-24 h-24 mx-auto bg-white dark:bg-[#16171d] rounded-2xl border border-gray-100 dark:border-white/5 shadow-xl flex items-center justify-center text-3xl mb-6 group-hover:border-[#008BC6]/50 transition-all duration-500 group-hover:-translate-y-2">
+                🛠️
+            </div>
+            <h5 class="font-bold text-xs uppercase tracking-widest text-[#008BC6] mb-2">Step 03</h5>
+            <h4 class="font-black text-gray-900 dark:text-white mb-3 uppercase text-sm tracking-wide">Expert Service</h4>
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-light px-4">Our technicians restore your system using genuine components.</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="relative z-10 text-center group">
+            <div class="w-24 h-24 mx-auto bg-white dark:bg-[#16171d] rounded-2xl border border-gray-100 dark:border-white/5 shadow-xl flex items-center justify-center text-3xl mb-6 group-hover:border-[#ff7200]/50 transition-all duration-500 group-hover:-translate-y-2">
+                🚚
+            </div>
+            <h5 class="font-bold text-xs uppercase tracking-widest text-[#ff7200] mb-2">Step 04</h5>
+            <h4 class="font-black text-gray-900 dark:text-white mb-3 uppercase text-sm tracking-wide">Tracked Delivery</h4>
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-light px-4">Receive your device back with a full diagnostic repair report.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ================= SUPPORT OPTIONS ================= -->
+<section class="max-w-7xl mx-auto px-6 mb-24">
+    <div class="bg-gradient-to-r from-[#008BC6] to-blue-500 rounded-[2rem] p-1 shadow-2xl">
+        <div class="bg-white dark:bg-[#0a0a0c] rounded-[1.9rem] p-10 md:p-16 relative overflow-hidden">
+            <!-- Background glow -->
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#008BC6]/10 rounded-full blur-[80px]"></div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center relative z-10">
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-outfit font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tight">Need Urgent Assistance?</h2>
+                    <p class="text-gray-500 dark:text-gray-400 mb-10 text-lg font-light leading-relaxed">
+                        Speak directly with our technical support team for real-time diagnostics and urgent repair scheduling.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="https://wa.me/233XXXXXXXXX" target="_blank" class="bg-[#25D366] text-white px-8 py-4 rounded-full font-bold flex items-center gap-3 hover:scale-105 transition-transform shadow-lg shadow-[#25D366]/20">
+                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                             WhatsApp Support
+                        </a>
+                        <a href="mailto:support@compupartz.com" class="border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white px-8 py-4 rounded-full font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                             Email Response Lab
+                        </a>
+                    </div>
+                </div>
+                <!-- Visual Element -->
+                <div class="relative hidden md:block">
+                     <div class="w-full aspect-square bg-gradient-to-br from-[#008BC6]/20 to-transparent rounded-full border border-white/5 flex items-center justify-center p-12">
+                         <div class="w-full h-full bg-[#16171d] rounded-full flex items-center justify-center text-7xl shadow-2xl relative">
+                             💻
+                             <!-- Orbiting items -->
+                             <div class="absolute -top-4 -left-4 w-12 h-12 bg-[#008BC6] rounded-full blur-xl opacity-40"></div>
+                             <div class="absolute -bottom-4 -right-4 w-12 h-12 bg-[#ff7200] rounded-full blur-xl opacity-40"></div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

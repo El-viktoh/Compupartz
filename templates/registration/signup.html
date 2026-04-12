@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign Up | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= PREMIUM SIGNUP DASHBOARD ================= -->
+<div class="w-[100vw] relative left-1/2 -translate-x-1/2 bg-white dark:bg-[#0a0a0c] text-gray-900 dark:text-white -mt-10 py-16 px-6 min-h-[90vh] flex items-center justify-center overflow-hidden transition-colors duration-500">
+    
+    <div class="max-w-2xl w-full relative z-10 animate-fadeIn text-center">
+        
+        <div class="mb-10">
+            <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
+                Create <span class="text-brandOrange">an Account</span>
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">
+                Join our premium network of technical enthusiasts.
+            </p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-900/50 p-8 md:p-12 rounded-[2rem] shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 relative overflow-hidden group text-left transition-all duration-500">
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-brandOrange/5 rounded-full blur-[80px] pointer-events-none transition-all duration-700 group-hover:bg-brandOrange/10"></div>
+            
+            <form method="post" class="space-y-6 relative z-10">
+                {% csrf_token %}
+
+                <!-- NAME GRID -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">First Name</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Last Name</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+
+                <!-- EMAIL & USERNAME -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <p class="text-[9px] text-red-500 mt-1 uppercase font-bold tracking-widest">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <p class="text-[9px] text-red-500 mt-1 uppercase font-bold tracking-widest">{{ form.username.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="space-y-2">
+                    <label class="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Security Key (Password)</label>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        {% for field in form %}
+                            {% if "password" in field.name %}
+                                <div class="relative group">
+                                    <input
+                                        type="{{ field.field.widget.input_type }}"
+                                        name="{{ field.name }}"
+                                        id="{{ field.id_for_label }}"
+                                        placeholder="{{ field.label }}*"
+                                        class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brandOrange/50 focus:border-brandOrange transition-all hover:border-brandOrange/30 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                    >
+                                    {% if field.errors %}
+                                        <p class="text-[8px] text-red-500 mt-1 uppercase font-bold tracking-widest leading-tight">{{ field.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p class="text-[9px] text-gray-400 font-light mt-2 ml-1 italic">Security keys must be at least 8 characters for encryption stability.</p>
+                </div>
+
+                <div class="pt-6">
+                    <button type="submit" class="w-full bg-brandOrange text-white py-5 rounded-2xl font-bold uppercase tracking-[0.1em] transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg shadow-brandOrange/20 hover:shadow-brandOrange/40">
+                        Finalize Registration
+                    </button>
+                </div>
+            </form>
+
+            <div class="relative z-10 mt-10 pt-10 border-t border-gray-100 dark:border-white/5 text-center">
+                <p class="text-[12px] text-gray-500 dark:text-gray-400 font-medium mb-3">
+                    Already part of the network?
+                </p>
+                <a href="{% url 'login' %}" class="text-[11px] font-bold uppercase tracking-widest text-brandOrange hover:text-orange-600 transition-colors flex items-center justify-center gap-2">
+                    Access Portal <span class="text-lg">&rarr;</span>
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+{% endblock %}

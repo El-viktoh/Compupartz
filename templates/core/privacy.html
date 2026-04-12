@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy | Compupartz{% endblock %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto px-6 py-12">
+    
+    <div class="mb-12">
+        <h1 class="text-4xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest mb-4">Privacy <span class="text-[#ff7200]">Policy</span></h1>
+        <p class="text-gray-500 dark:text-gray-400 text-sm tracking-widest uppercase">Last Updated: April 2026</p>
+    </div>
+
+    <div class="prose prose-blue dark:prose-invert max-w-none space-y-10 text-gray-700 dark:text-gray-300 leading-relaxed">
+        
+        <section>
+            <p class="text-lg font-medium">
+                Compupartz ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our services, visit our website, or interact with us.
+            </p>
+            <p>
+                As a data recovery and electronics repair business, we understand the sensitive nature of the data you entrust to us. We take this responsibility seriously and have implemented industry-standard security measures to protect your information.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">Information We Collect</h2>
+            <h3 class="text-sm font-black uppercase text-[#008BC6] mb-3">1. Personal Information</h3>
+            <ul class="list-disc pl-6 space-y-2 mb-6">
+                <li>Name, email address, phone number, and shipping address</li>
+                <li>Payment information (processed securely through third-party processors)</li>
+                <li>Device information (make, model, serial number, symptoms)</li>
+                <li>Communication history with our team</li>
+            </ul>
+
+            <h3 class="text-sm font-black uppercase text-[#008BC6] mb-3">2. Data from Your Devices</h3>
+            <p>During data recovery or repair services, we may access:</p>
+            <ul class="list-disc pl-6 space-y-2 mb-4">
+                <li>Files, documents, photos, and other data stored on your device</li>
+                <li>Device diagnostics and system logs</li>
+                <li>Account credentials (only when necessary and immediately discarded)</li>
+            </ul>
+            <p class="bg-[#008BC6]/10 text-[#008BC6] p-4 rounded-xl text-sm font-bold border-l-4 border-[#008BC6]">
+                Important: We access your data only to the extent necessary to diagnose issues, perform repairs, or recover your data. We do not browse, copy, or retain your personal files beyond what is required for service delivery.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">How We Use Your Information</h2>
+            <ul class="list-disc pl-6 space-y-2">
+                <li>Provide, maintain, and improve our repair and data recovery services</li>
+                <li>Communicate about your service request and status updates</li>
+                <li>Process payments and prevent fraud</li>
+                <li>Comply with legal obligations and resolve disputes</li>
+                <li>Improve our website and customer experience</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">Security Measures</h2>
+            <p>We implement industry-standard security measures to protect your information:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Physical Security:</strong> Devices are stored in a secure, access-controlled facility</li>
+                <li><strong>Access Controls:</strong> Only authorized technicians access customer devices</li>
+                <li><strong>Encryption:</strong> Sensitive data transmissions are encrypted using SSL/TLS</li>
+                <li><strong>Secure Data Destruction:</strong> Customer data is securely wiped after service completion</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">Data Retention</h2>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="p-5 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-[#ff7200] mb-2">Device Data</p>
+                    <p class="text-sm font-bold">Deleted within 30 days of completion</p>
+                </div>
+                <div class="p-5 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-[#ff7200] mb-2">Customer Info</p>
+                    <p class="text-sm font-bold">Retained for 1-3 years (Warranty)</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">Contact Information</h2>
+            <div class="p-8 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl shadow-sm">
+                <div class="space-y-4 text-sm font-medium">
+                    <p class="flex items-center gap-3"><span class="text-[#ff7200]">📍</span> Kotei-Deduako road, Adom junction. KNUST, Kumasi.</p>
+                    <p class="flex items-center gap-3"><span class="text-[#ff7200]">📞</span> <a href="tel:+233540322533" class="hover:text-[#ff7200]">0540 322 533</a></p>
+                    <p class="flex items-center gap-3"><span class="text-[#ff7200]">📧</span> <a href="mailto:info@compupartz.com" class="hover:text-[#ff7200]">info@compupartz.com</a></p>
+                </div>
+                <div class="mt-8">
+                    <a href="https://wa.me/233540322533" class="inline-block bg-[#25D366] text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-green-500/20 active:scale-95 transition-all">
+                        Chat on WhatsApp
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock %}

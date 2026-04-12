@@ -1,0 +1,35 @@
+<div id="cartDrawer" class="fixed top-0 right-0 w-full md:w-96 h-full bg-white shadow-xl transform translate-x-full transition duration-300 z-50 flex flex-col">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center p-5 border-b">
+        <h2 class="text-lg font-semibold">Your Cart</h2>
+        <button onclick="toggleCart()" class="text-xl">&times;</button>
+    </div>
+
+    <!-- ITEMS -->
+    <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-4">
+        <!-- JS will inject items -->
+    </div>
+
+    <!-- FOOTER -->
+    <div class="p-5 border-t">
+
+        <div class="flex justify-between mb-4">
+            <span class="font-semibold">Total</span>
+            <span id="cartTotal" class="font-bold text-brandBlue">GHS 0</span>
+        </div>
+
+        <a href="/cart/checkout/"
+           class="block bg-brandOrange text-white text-center py-3 rounded-lg font-semibold">
+            Checkout
+        </a>
+
+    </div>
+
+</div>
+
+<!-- OVERLAY -->
+<div id="cartOverlay"
+     onclick="toggleCart()"
+     class="fixed inset-0 bg-black bg-opacity-40 hidden z-40">
+</div>
