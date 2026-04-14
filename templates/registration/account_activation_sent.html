@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center py-24 px-4 relative overflow-hidden">
+    <!-- Background Decor -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-brandOrange/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div class="max-w-md w-full bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-100 dark:border-white/10 rounded-[2.5rem] p-12 text-center shadow-2xl relative z-10">
+        <div class="w-24 h-24 bg-gradient-to-br from-brandOrange to-orange-400 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl shadow-brandOrange/20 animate-bounce-slow">
+            <span class="text-4xl">📧</span>
+        </div>
+
+        <h1 class="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-4">Activation Required</h1>
+        
+        <p class="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
+            Command authorization initialized. We've sent a secure verification link to your inbox. Please authorize your email to complete your setup.
+        </p>
+
+        <div class="bg-gray-50 dark:bg-white/5 rounded-2xl p-6 mb-8 border border-gray-100 dark:border-white/5">
+            <p class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Check your inbox for</p>
+            <p class="text-sm font-black text-brandOrange uppercase tracking-widest">Compupartz Activation</p>
+        </div>
+
+        <a href="{% url 'login' %}" class="inline-flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-brandOrange dark:hover:text-brandOrange transition-colors group">
+            <span class="transform group-hover:-translate-x-1 transition-transform">←</span> Back to Login
+        </a>
+    </div>
+</div>
+
+<style>
+    @keyframes bounce-slow {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    .animate-bounce-slow { animation: bounce-slow 4s ease-in-out infinite; }
+</style>
+{% endblock %}
