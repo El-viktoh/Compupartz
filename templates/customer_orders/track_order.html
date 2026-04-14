@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Order Telemetry | Compupartz{% endblock %}
+{% block title %}Order Tracking | Compupartz{% endblock %}
 
 {% block content %}
 
@@ -15,9 +15,9 @@
     <div class="max-w-4xl mx-auto relative z-10 animate-fadeIn">
         
         <div class="mb-12 text-center md:text-left">
-            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] mb-4">Live Telemetry</h4>
+            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] mb-4">Live Update</h4>
             <h1 class="text-4xl md:text-5xl font-outfit font-black mb-4 uppercase tracking-widest text-gray-900 dark:text-white">
-                Transmission <span class="text-[#ff7200]">Status</span>
+                Order <span class="text-[#ff7200]">Status</span>
             </h1>
             <p class="text-gray-500 dark:text-gray-400 font-light text-sm md:text-base tracking-wide max-w-2xl">
                 Real-time monitoring of your orders through the logistics network.
@@ -52,7 +52,7 @@
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-black uppercase tracking-widest {% if status == 'pending' or status == 'processing' or status == 'ready' or status == 'completed' %} text-gray-900 dark:text-white {% else %} text-gray-400 {% endif %}">Order Initialized</h4>
-                                    <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">Transmission received and verified.</p>
+                                    <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">Order received and verified.</p>
                                 </div>
                             </div>
 
@@ -104,7 +104,7 @@
                         <div class="space-y-6">
                             <div class="space-y-1">
                                 <label class="text-[9px] font-black uppercase tracking-widest text-gray-400">Order Reference</label>
-                                <p class="text-sm font-bold text-gray-900 dark:text-white">#TRANS-{{ order.id }}</p>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white">#ORDER-{{ order.id }}</p>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[9px] font-black uppercase tracking-widest text-gray-400">Recipient</label>
@@ -130,7 +130,7 @@
                     <!-- LOOKUP FORM (FALLBACK/RE-SEARCH) -->
                     {% if not order %}
                     <div class="bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-xl text-center">
-                         <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-6">Enter Order ID to initiate telemetry.</p>
+                         <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-6">Enter Order ID to initiate tracking.</p>
                          <form method="GET" action="{% url 'track_order' %}" class="space-y-4">
                             <input type="text" name="tracking_id" placeholder="ORDER ID" required class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#008BC6]">
                             <button type="submit" class="w-full bg-brandBlue text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest">Track Status</button>
@@ -143,7 +143,7 @@
         {% else %}
              <!-- RE-SEARCH BLOC -->
              <div class="max-w-md mx-auto bg-white/80 dark:bg-white/5 backdrop-blur-2xl border border-gray-200 dark:border-white/10 p-10 rounded-[2.5rem] shadow-xl text-center">
-                 <p class="text-xs text-gray-500 uppercase tracking-widest mb-6">Transmission not found. Re-target identifier.</p>
+                 <p class="text-xs text-gray-500 uppercase tracking-widest mb-6">Order not found. Re-target identifier.</p>
                  <form method="GET" action="{% url 'track_order' %}" class="space-y-4">
                     <input type="text" name="tracking_id" placeholder="ENTER ORDER ID" required class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xs focus:outline-none focus:border-[#008BC6]">
                     <button type="submit" class="w-full bg-[#008BC6] text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Re-Initialize</button>

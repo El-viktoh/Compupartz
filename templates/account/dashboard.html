@@ -28,10 +28,10 @@
 
             <div>
                 <h1 class="text-3xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-wider">
-                    {{ user.first_name|default:user.username }}'s <span class="text-brandBlue">Command</span>
+                    Welcome <span class="text-brandOrange">{{ user.first_name|default:user.username }}</span>
                 </h1>
                 <p class="text-gray-500 dark:text-gray-400 text-sm font-light uppercase tracking-widest">
-                    {{ user.email }} • Technical Access Level: Authorized
+                    {{ user.email }}
                 </p>
             </div>
         </div>
@@ -47,7 +47,7 @@
         <!-- RECENT ORDERS -->
         <div class="bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 p-8 rounded-[2rem] shadow-xl">
             <div class="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/5 pb-6">
-                <h2 class="text-lg font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest">Recent Transmissions</h2>
+                <h2 class="text-lg font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest">Recent Orders</h2>
                 <span class="text-[9px] font-black bg-brandBlue/10 text-brandBlue px-2 py-1 rounded-full uppercase tracking-tighter">Orders</span>
             </div>
 
@@ -76,7 +76,7 @@
                 </div>
             {% else %}
                 <div class="text-center py-12">
-                    <p class="text-gray-400 text-xs font-light tracking-widest uppercase">No transmission data found.</p>
+                    <p class="text-gray-400 text-xs font-light tracking-widest uppercase">No order data found.</p>
                 </div>
             {% endif %}
         </div>

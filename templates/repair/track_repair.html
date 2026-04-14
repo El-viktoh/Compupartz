@@ -14,7 +14,7 @@
     <div class="max-w-4xl w-full relative z-10 animate-fadeIn text-center">
         
         <div class="mb-12">
-            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-4">Diagnostics Radar</h4>
+            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-4">Repair Monitoring</h4>
             <h1 class="text-4xl md:text-5xl font-outfit font-black mb-4 uppercase tracking-widest text-white">
                 Status: <span class="{% if ticket.status == 'completed' %}text-green-500{% elif ticket.status == 'in_progress' %}text-[#ff7200]{% else %}text-[#008BC6]{% endif %}">
                     {{ ticket.status|title }}
@@ -71,7 +71,7 @@
                                     📝
                                 </div>
                                 <div class="pt-2">
-                                    <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status in 'pending in_progress completed' %}text-white{% else %}text-gray-600{% endif %}">Request Initialized</h5>
+                                    <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status in 'pending in_progress completed' %}text-white{% else %}text-gray-600{% endif %}">REQUEST SUBMITTED</h5>
                                     <p class="text-[11px] text-gray-500 font-light mt-1">Order registered and diagnostic path assigned.</p>
                                 </div>
                             </div>

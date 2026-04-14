@@ -273,7 +273,9 @@
         <!-- Sidebar Content -->
         <div id="sidebarPanel" class="absolute top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
             <div class="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
-                <span class="text-xl font-outfit font-black tracking-tight dark:text-white uppercase">Command <span class="text-brandBlue">Hub</span></span>
+                <a href="/" class="flex items-center gap-2">
+                    <img src="{% static 'images/Logo-Only.png' %}" class="h-7 w-auto object-contain">
+                </a>
                 <button onclick="toggleSidebar()" class="text-gray-400 hover:text-brandOrange transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
