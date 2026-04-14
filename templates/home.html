@@ -6,7 +6,7 @@
 {% block content %}
 
 <div
-    class="relative -mx-6 px-6 sm:-mx-0 sm:px-0 bg-[#0a0a0c] text-gray-100 -mt-24 pt-32 pb-16 overflow-hidden border-b border-white/5 sm:w-screen sm:left-1/2 sm:-translate-x-1/2">
+    class="relative -mx-6 px-6 sm:-mx-0 sm:px-0 bg-[#0a0a0c] text-gray-100 -mt-24 pt-20 sm:pt-32 pb-16 overflow-hidden border-b border-white/5 sm:w-screen sm:left-1/2 sm:-translate-x-1/2">
     <!-- Glow effects -->
     <div
         class="absolute top-0 right-0 w-[600px] h-[600px] bg-[#008BC6]/20 rounded-full blur-[120px] -z-10 animate-pulseGlow">
@@ -17,7 +17,7 @@
     <div class="max-w-7xl mx-auto px-6 relative z-10 w-full mb-8">
 
         <!-- HERO SECTION -->
-        <section class="flex flex-col md:grid md:grid-cols-2 gap-12 md:gap-16 items-center py-10 md:py-16">
+        <section class="flex flex-col md:grid md:grid-cols-2 gap-12 md:gap-16 items-center py-6 md:py-16">
             <div class="animate-fadeIn flex flex-col items-center md:items-start text-center md:text-left w-full">
                 <div
                     class="inline-block bg-[#ff7200]/20 border border-[#ff7200]/30 text-[#ff7200] text-[10px] font-black px-3 py-1 rounded-full mb-6 uppercase tracking-widest">
@@ -97,8 +97,7 @@
                         class="text-xl opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">🛠️</span>
                     <div>
                         <h4 class="font-bold text-[13px] text-white mb-1.5 uppercase tracking-wide">Expert Repairs</h4>
-                        <p class="text-[11px] text-gray-500 leading-relaxed font-light">Motherboards, screen
-                            replacements & complex system diagnostic fixes.</p>
+                        <p class="text-[11px] text-gray-500 leading-relaxed font-light">Laptop motherboard repairs , screen backlight issues, premium macbook repairs...</p>
                     </div>
                 </div>
                 <div class="pt-4 md:pt-0 md:px-6 flex gap-4 items-start group">
@@ -106,8 +105,7 @@
                         class="text-xl opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">💻</span>
                     <div>
                         <h4 class="font-bold text-[13px] text-white mb-1.5 uppercase tracking-wide">Genuine Parts</h4>
-                        <p class="text-[11px] text-gray-500 leading-relaxed font-light">Premium authentic batteries,
-                            adaptive chargers, displays & accessories.</p>
+                        <p class="text-[11px] text-gray-500 leading-relaxed font-light">Genuine macbook screens,batteries, chargers, lcd screens, OLED panels and others...</p>
                     </div>
                 </div>
                 <div class="pt-4 md:pt-0 md:px-6 flex gap-4 items-start group">
@@ -142,7 +140,7 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
 
                 <a href="/store/?category=laptop"
-                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(0,139,198,0.15)] hover:shadow-[0_0_50px_rgba(0,139,198,0.4)] transition-all duration-500 border border-[#008BC6]/30 aspect-[3/4] flex flex-col justify-end p-6">
+                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(0,139,198,0.15)] hover:shadow-[0_0_50px_rgba(0,139,198,0.4)] transition-all duration-500 border border-[#008BC6]/30 aspect-[3/4] flex flex-col justify-end p-4 sm:p-6">
                     <img src="{% static 'images/neon_laptop.png' %}" alt="Laptops"
                         class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 z-0 rounded-none">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent z-10">
@@ -154,16 +152,16 @@
                     <div class="relative z-20">
                         <span
                             class="bg-[#008BC6] text-white text-[9px] font-black px-2 py-0.5 rounded-sm uppercase mb-3 inline-block tracking-widest">Premium</span>
-                        <h3 class="text-lg font-black text-white mb-1.5 uppercase tracking-wide">Laptops</h3>
-                        <p class="text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">High performance machines.</p>
+                        <h3 class="text-base sm:text-lg font-black text-white mb-1.5 uppercase tracking-wide">Laptops</h3>
+                        <p class="text-[10px] sm:text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">High performance machines.</p>
                         <div
-                            class="w-8 h-8 rounded-full bg-[#008BC6]/20 border border-[#008BC6]/50 flex items-center justify-center text-[#008BC6] ml-auto group-hover:bg-[#008BC6] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(0,139,198,0.3)]">
+                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#008BC6]/20 border border-[#008BC6]/50 flex items-center justify-center text-[#008BC6] ml-auto group-hover:bg-[#008BC6] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(0,139,198,0.3)]">
                             &rarr;</div>
                     </div>
                 </a>
 
                 <a href="/store/?category=accessories"
-                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(138,43,226,0.15)] hover:shadow-[0_0_50px_rgba(138,43,226,0.4)] transition-all duration-500 border border-[#8a2be2]/30 aspect-[3/4] flex flex-col justify-end p-6">
+                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(138,43,226,0.15)] hover:shadow-[0_0_50px_rgba(138,43,226,0.4)] transition-all duration-500 border border-[#8a2be2]/30 aspect-[3/4] flex flex-col justify-end p-4 sm:p-6">
                     <img src="{% static 'images/neon_accessories.png' %}" alt="Accessories"
                         class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 z-0 rounded-none">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent z-10">
@@ -173,16 +171,16 @@
                     </div>
 
                     <div class="relative z-20">
-                        <h3 class="text-lg font-black text-white mb-1.5 uppercase tracking-wide">Accessories</h3>
-                        <p class="text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">Enhance your setup.</p>
+                        <h3 class="text-base sm:text-lg font-black text-white mb-1.5 uppercase tracking-wide">Accessories</h3>
+                        <p class="text-[10px] sm:text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">Enhance your setup.</p>
                         <div
-                            class="w-8 h-8 rounded-full bg-[#8a2be2]/20 border border-[#8a2be2]/50 flex items-center justify-center text-[#8a2be2] ml-auto group-hover:bg-[#8a2be2] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(138,43,226,0.3)]">
+                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#8a2be2]/20 border border-[#8a2be2]/50 flex items-center justify-center text-[#8a2be2] ml-auto group-hover:bg-[#8a2be2] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(138,43,226,0.3)]">
                             &rarr;</div>
                     </div>
                 </a>
 
                 <a href="/store/?category=part"
-                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,114,0,0.15)] hover:shadow-[0_0_50px_rgba(255,114,0,0.4)] transition-all duration-500 border border-[#ff7200]/30 aspect-[3/4] flex flex-col justify-end p-6">
+                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,114,0,0.15)] hover:shadow-[0_0_50px_rgba(255,114,0,0.4)] transition-all duration-500 border border-[#ff7200]/30 aspect-[3/4] flex flex-col justify-end p-4 sm:p-6">
                     <img src="{% static 'images/neon_parts.png' %}" alt="Parts"
                         class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 z-0 rounded-none">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent z-10">
@@ -192,16 +190,16 @@
                     </div>
 
                     <div class="relative z-20">
-                        <h3 class="text-lg font-black text-white mb-1.5 uppercase tracking-wide">Parts</h3>
-                        <p class="text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">Build or upgrade easily.</p>
+                        <h3 class="text-base sm:text-lg font-black text-white mb-1.5 uppercase tracking-wide">Parts</h3>
+                        <p class="text-[10px] sm:text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">Build or upgrade easily.</p>
                         <div
-                            class="w-8 h-8 rounded-full bg-[#ff7200]/20 border border-[#ff7200]/50 flex items-center justify-center text-[#ff7200] ml-auto group-hover:bg-[#ff7200] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(255,114,0,0.3)]">
+                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#ff7200]/20 border border-[#ff7200]/50 flex items-center justify-center text-[#ff7200] ml-auto group-hover:bg-[#ff7200] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(255,114,0,0.3)]">
                             &rarr;</div>
                     </div>
                 </a>
 
                 <a href="/repair/book/"
-                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,0,128,0.15)] hover:shadow-[0_0_50px_rgba(255,0,128,0.4)] transition-all duration-500 border border-[#ff0080]/30 aspect-[3/4] flex flex-col justify-end p-6">
+                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,0,128,0.15)] hover:shadow-[0_0_50px_rgba(255,0,128,0.4)] transition-all duration-500 border border-[#ff0080]/30 aspect-[3/4] flex flex-col justify-end p-4 sm:p-6">
                     <img src="{% static 'images/neon_repairs.png' %}" alt="Repairs"
                         class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 z-0 rounded-none">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent z-10">
@@ -213,10 +211,10 @@
                     <div class="relative z-20">
                         <span
                             class="bg-[#ff0080] text-white text-[9px] font-black px-2 py-0.5 rounded-sm uppercase mb-3 inline-block tracking-widest">Service</span>
-                        <h3 class="text-lg font-black text-white mb-1.5 uppercase tracking-wide">Repairs</h3>
-                        <p class="text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">Book our trusted experts.</p>
+                        <h3 class="text-base sm:text-lg font-black text-white mb-1.5 uppercase tracking-wide">Repairs</h3>
+                        <p class="text-[10px] sm:text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">Book our trusted experts.</p>
                         <div
-                            class="w-8 h-8 rounded-full bg-[#ff0080]/20 border border-[#ff0080]/50 flex items-center justify-center text-[#ff0080] ml-auto group-hover:bg-[#ff0080] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(255,0,128,0.3)]">
+                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#ff0080]/20 border border-[#ff0080]/50 flex items-center justify-center text-[#ff0080] ml-auto group-hover:bg-[#ff0080] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(255,0,128,0.3)]">
                             &rarr;</div>
                     </div>
                 </a>
