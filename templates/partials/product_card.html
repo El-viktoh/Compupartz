@@ -1,5 +1,5 @@
 <div
-    class="group bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 rounded-xl p-3 shadow-md hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 w-full flex flex-col hover:-translate-y-2 border-transparent hover:border-orange-500/30">
+    class="group bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 rounded-2xl p-2 sm:p-3 shadow-md hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 w-full flex flex-col hover:-translate-y-2 border-transparent hover:border-orange-500/30 overflow-hidden">
 
     <!-- IMAGE CONTAINER (Matches screenshot's soft gray #f8f8f8 background) -->
     <div
@@ -27,12 +27,11 @@
         </button>
     </div>
 
-    <!-- DETAILS: TITLE & PRICE ROW -->
-    <div class="flex justify-between items-start mb-1 gap-2">
-        <h3 class="font-outfit font-bold text-gray-900 dark:text-white text-base leading-tight line-clamp-2 pr-2">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-1">
+        <h3 class="font-outfit font-bold text-gray-900 dark:text-white text-[13px] sm:text-base leading-tight pr-1 sm:pr-2">
             {{ product.name }}
         </h3>
-        <p class="font-outfit font-black text-brandBlue dark:text-orange-500 text-sm whitespace-nowrap pt-0.5">
+        <p class="font-outfit font-black text-brandBlue dark:text-orange-500 text-[13px] sm:text-sm whitespace-nowrap pt-0.5">
             GHS {{ product.price }}
         </p>
     </div>
@@ -57,18 +56,17 @@
         </span>
     </div>
 
-    <!-- ACTION BUTTONS: Add to Cart & Buy -->
-    <div class="flex gap-2 mt-auto">
+    <div class="flex flex-col sm:flex-row gap-1.5 sm:gap-2 mt-auto pt-2">
         <!-- Add to Cart (Hollow style from screenshot) -->
         <button
-            class="add-to-cart-btn flex-1 border border-gray-900 dark:border-gray-400 py-2 rounded-full text-[13px] font-medium text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors active:scale-95"
+            class="add-to-cart-btn flex-1 border border-gray-900 dark:border-gray-400 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-[13px] font-bold text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-95"
             data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
             Add to Cart
         </button>
 
-        <!-- BUY NOW (Solid orange kept to respect previous command) -->
+        <!-- BUY NOW (Solid orange) -->
         <a href="/store/product/{{ product.id }}/"
-            class="flex-none bg-[#ff7200] text-white px-4 py-2 rounded-full text-[13px] font-bold shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-center">
+            class="flex-1 bg-[#ff7200] text-white px-4 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-[13px] font-black shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-center uppercase tracking-wider">
             Buy
         </a>
     </div>
