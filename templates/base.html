@@ -221,9 +221,9 @@
             <!-- RIGHT SIDE -->
             <div class="flex items-center gap-2 md:gap-5 ml-auto text-white/90">
 
-                <button id="theme-toggle" type="button" class="hidden sm:flex text-white/80 hover:text-white hover:bg-white/10 focus:outline-none rounded-lg text-sm p-2 transition-colors duration-200">
-                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 4.22a1 1 0 01-1.415 1.415l-.708-.708a1 1 0 011.415-1.415l.708.708zM17 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4.22-4.22a1 1 0 011.415-1.415l.708.708a1 1 0 01-1.415 1.415l-.708-.708zM3 10a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                <button type="button" class="theme-toggle flex text-white/80 hover:text-white hover:bg-white/10 focus:outline-none rounded-lg text-sm p-2 transition-colors duration-200">
+                    <svg class="theme-toggle-dark-icon hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg class="theme-toggle-light-icon hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 4.22a1 1 0 01-1.415 1.415l-.708-.708a1 1 0 011.415-1.415l.708.708zM17 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4.22-4.22a1 1 0 011.415-1.415l.708.708a1 1 0 01-1.415 1.415l-.708-.708zM3 10a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
                 </button>
 
                 {% if user.is_authenticated %}
@@ -297,6 +297,19 @@
                 <a href="{% url 'blog:post_list' %}" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
                     <span class="text-lg">📰</span> Tech Hub
                 </a>
+
+                <!-- MOBILE THEME TOGGLE -->
+                <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <button type="button" class="theme-toggle w-full flex items-center justify-between py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
+                        <div class="flex items-center gap-4">
+                            <span class="theme-toggle-dark-icon hidden text-lg">🌙</span>
+                            <span class="theme-toggle-light-icon hidden text-lg">☀️</span>
+                            <span>Appearance</span>
+                        </div>
+                        <span class="text-[8px] font-black text-brandBlue px-2 py-0.5 rounded-sm bg-brandBlue/10">Theme</span>
+                    </button>
+                </div>
+
                 {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
                     <span class="text-lg">👤</span> Dashboard
@@ -609,42 +622,27 @@
             loadCartCount();
             document.getElementById("cartOverlay").addEventListener("click", closeCart);
 
-            // ✅ Theme Toggle Init
-            var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-            var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+            // ✅ Theme Toggle Init (MULTI-BUTTON SUPPORT)
+            const darkIcons = document.querySelectorAll('.theme-toggle-dark-icon');
+            const lightIcons = document.querySelectorAll('.theme-toggle-light-icon');
+            const toggleButtons = document.querySelectorAll('.theme-toggle');
 
-            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                themeToggleLightIcon.classList.remove('hidden');
-            } else {
-                themeToggleDarkIcon.classList.remove('hidden');
-            }
+            const updateIcons = () => {
+                const isDark = document.documentElement.classList.contains('dark');
+                darkIcons.forEach(icon => icon.classList.toggle('hidden', isDark));
+                lightIcons.forEach(icon => icon.classList.toggle('hidden', !isDark));
+            };
 
-            var themeToggleBtn = document.getElementById('theme-toggle');
+            // Initial Sync
+            updateIcons();
 
-            if (themeToggleBtn) {
-                themeToggleBtn.addEventListener('click', function() {
-                    themeToggleDarkIcon.classList.toggle('hidden');
-                    themeToggleLightIcon.classList.toggle('hidden');
-
-                    if (localStorage.getItem('color-theme')) {
-                        if (localStorage.getItem('color-theme') === 'light') {
-                            document.documentElement.classList.add('dark');
-                            localStorage.setItem('color-theme', 'dark');
-                        } else {
-                            document.documentElement.classList.remove('dark');
-                            localStorage.setItem('color-theme', 'light');
-                        }
-                    } else {
-                        if (document.documentElement.classList.contains('dark')) {
-                            document.documentElement.classList.remove('dark');
-                            localStorage.setItem('color-theme', 'light');
-                        } else {
-                            document.documentElement.classList.add('dark');
-                            localStorage.setItem('color-theme', 'dark');
-                        }
-                    }
+            toggleButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const isDark = document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+                    updateIcons();
                 });
-            }
+            });
 
             // ✅ Navbar Scroll Logic
             const nav = document.getElementById('main-nav');
