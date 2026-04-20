@@ -12,12 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables
 load_dotenv(os.path.join(BASE_DIR, '.env'))
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
