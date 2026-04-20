@@ -14,21 +14,23 @@ cd $PROJECT_DIR
 echo "📥 Pulling latest code..."
 git pull origin main
 
-# 3. Activate virtual environment
-echo "🐍 Activating virtual environment..."
-source $VENV_DIR/bin/activate
+# 3. Ensure virtual environment exists
+if [ ! -d "$VENV_DIR" ]; then
+    echo "🛠️ Creating virtual environment..."
+    python3 -m venv $VENV_DIR
+fi
 
 # 4. Install/Update dependencies
 echo "📦 Installing dependencies..."
-pip install -r requirements.txt
+$VENV_DIR/bin/pip install -r requirements.txt
 
 # 5. Run migrations
 echo "🗄️ Running migrations..."
-python manage.py migrate --noinput
+$VENV_DIR/bin/python manage.py migrate --noinput
 
 # 6. Collect static files
 echo "🎨 Collecting static files..."
-python manage.py collectstatic --noinput
+$VENV_DIR/bin/python manage.py collectstatic --noinput
 
 # 7. Restart OpenLiteSpeed (by touching wsgi.py)
 # OpenLiteSpeed's Django worker usually detects changes to wsgi.py
