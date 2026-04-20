@@ -10,9 +10,10 @@ echo "🚀 Starting Deployment..."
 # 1. Navigate to project directory
 cd $PROJECT_DIR
 
-# 2. Pull latest code from GitHub
-echo "📥 Pulling latest code..."
-git pull origin main
+# 2. Synchronize with GitHub (Force overwrite local changes)
+echo "📥 Fetching latest code..."
+git fetch origin main
+git reset --hard origin/main
 
 # 3. Ensure virtual environment exists
 if [ ! -d "$VENV_DIR" ]; then
