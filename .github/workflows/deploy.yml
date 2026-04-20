@@ -18,5 +18,5 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            chmod +x /var/www/django-app/scripts/deploy.sh
-            /var/www/django-app/scripts/deploy.sh
+            chmod +x /var/www/django-app/Compupartz/scripts/deploy.sh
+            /var/www/django-app/Compupartz/scripts/deploy.sh
