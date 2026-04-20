@@ -3,3 +3,4 @@ gunicorn
 whitenoise
 requests
 Pillow
+python-dotenv

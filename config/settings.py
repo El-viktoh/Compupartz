@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -22,12 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-r4^7tl0@r2ix7e1%au4z#7^&wnz(b49zaaz0a4va_rjg16s6(r'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-this')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -146,8 +151,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-PAYSTACK_PUBLIC_KEY = "pk_test_xxxxxxxxxxxxx"
-PAYSTACK_SECRET_KEY = "sk_test_xxxxxxxxxxxxx"
+PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY", "pk_test_xxxxxxxxxxxxx")
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY", "sk_test_xxxxxxxxxxxxx")
 
 
 # ==========================
@@ -162,16 +167,19 @@ DEFAULT_FROM_EMAIL = "Compupartz <no-reply@compupartz.com>"
 # EMAIL CONFIGURATION
 # ======================
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# ✅ Using Console Backend for Development (Emails will show in the terminal/console)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "Compupartz <no-reply@compupartz.com>"
 
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# ⚠️ FOR PRODUCTION (Uncomment and configure these with real credentials)
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = "REPLACE_WITH_YOUR_GMAIL@gmail.com"
+# EMAIL_HOST_PASSWORD = "REPLACE_WITH_GMAIL_APP_PASSWORD" # Not your regular password
+# DEFAULT_FROM_EMAIL = "Compupartz <REPLACE_WITH_YOUR_GMAIL@gmail.com>"
 
-EMAIL_HOST_USER = "yourgmail@gmail.com"
-EMAIL_HOST_PASSWORD = "your_app_password"
-
-DEFAULT_FROM_EMAIL = "Compupartz <yourgmail@gmail.com>"
 
 # REDIRECT BACK TO CHECKOPUT AFTER LOGING
 
