@@ -69,29 +69,41 @@
                 <p class="text-xs text-gray-500">Suggested payments with 6 months special financing</p>
             </div>
 
-            <!-- Customizable Specifications (Total Merge) -->
+            <!-- Customizable Specifications (Category-Based Merge) -->
             {% if product.variations.all %}
-            <div class="space-y-6 mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
-                <h3 class="font-outfit font-bold text-gray-900 dark:text-white uppercase tracking-wider text-xs">Choose Specification (Single Selection)</h3>
+            <div class="space-y-8 mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
+                <h3 class="font-outfit font-bold text-gray-900 dark:text-white uppercase tracking-wider text-xs">Customize Product</h3>
                 
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {% for variation in product.variations.all %}
-                    <label class="relative cursor-pointer group">
-                        <input type="radio" 
-                               name="variation_choice" 
-                               value="{{ variation.id }}" 
-                               data-price="{{ variation.price_modifier }}"
-                               class="hidden variation-radio"
-                               {% if forloop.first %}checked{% endif %}>
-                        <div class="h-full flex flex-col items-center justify-center px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium transition-all group-hover:border-[#ff7200] checked-border group-has-[:checked]:border-[#ff7200] group-has-[:checked]:bg-[#ff7200]/5 group-has-[:checked]:text-[#ff7200] text-center">
-                            <span class="block w-full truncate">{{ variation.value }}</span>
-                            {% if variation.price_modifier > 0 %}
-                            <span class="text-[10px] block opacity-60 mt-1">+GHS {{ variation.price_modifier }}</span>
-                            {% elif variation.price_modifier < 0 %}
-                            <span class="text-[10px] block opacity-60 mt-1">-GHS {{ variation.price_modifier|cut:"-" }}</span>
-                            {% endif %}
+                {% regroup product.variations.all by category.name as category_list %}
+                
+                <div class="space-y-8">
+                    {% for item in category_list %}
+                    <div class="variation-group" data-category="{{ item.grouper }}">
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                            Select {{ item.grouper }}
+                        </label>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                            {% for variation in item.list %}
+                            <label class="relative cursor-pointer group">
+                                <input type="radio" 
+                                       name="variation_{{ item.grouper|slugify }}" 
+                                       value="{{ variation.id }}" 
+                                       data-price="{{ variation.price_modifier }}"
+                                       class="hidden variation-radio"
+                                       {% if forloop.first %}checked{% endif %}>
+                                <div class="h-full flex flex-col items-center justify-center px-4 py-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium transition-all group-hover:border-[#ff7200] checked-border group-has-[:checked]:border-[#ff7200] group-has-[:checked]:bg-[#ff7200]/5 group-has-[:checked]:text-[#ff7200] text-center min-h-[70px]">
+                                    <span class="block w-full">{{ variation.value }}</span>
+                                    {% if variation.price_modifier != 0.00 %}
+                                    <span class="text-[10px] block opacity-60 mt-1">
+                                        {% if variation.price_modifier > 0 %}+{% endif %}GHS {{ variation.price_modifier }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </label>
+                            {% endfor %}
                         </div>
-                    </label>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
