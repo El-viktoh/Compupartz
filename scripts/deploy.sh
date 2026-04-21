@@ -7,8 +7,9 @@ VENV_DIR="/var/www/django-app/Compupartz/venv"
 
 echo "🚀 Starting Deployment..."
 
-# 1. Navigate to project directory
+# 1. Navigate to project directory and ensure git is happy with ownership
 cd $PROJECT_DIR
+git config --global --add safe.directory $PROJECT_DIR
 
 # 2. Synchronize with GitHub (Force overwrite local changes)
 echo "📥 Fetching latest code..."
