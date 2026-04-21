@@ -89,12 +89,12 @@
             <!-- Action Buttons -->
             <div class="grid grid-cols-2 gap-4 mb-10">
                 <a href="/store/product/{{ product.id }}/"
-                    class="bg-[#ff7200] text-white py-3.5 rounded-full text-center font-bold hover:bg-[#e66600] transition-colors">
+                    class="bg-[#ff7200] text-white py-4 px-8 rounded-full text-center font-bold text-[15px] hover:bg-[#e66600] hover:shadow-lg transition-all active:scale-95 tracking-normal">
                     Buy Now
                 </a>
 
                 <button
-                    class="add-to-cart-btn border border-gray-900 dark:border-white text-gray-900 dark:text-white py-3.5 rounded-full font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    class="add-to-cart-btn border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white py-4 px-8 rounded-full font-bold text-[15px] hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-all active:scale-95"
                     data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
                     Add to Cart
                 </button>
