@@ -15,6 +15,7 @@ class Product(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     description = models.TextField(blank=True)
     available = models.BooleanField(default=True)
+    stock_count = models.IntegerField(default=10)
 
     image = models.ImageField(upload_to='products/', blank=True, null=True)
 

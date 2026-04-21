@@ -185,8 +185,9 @@ def ajax_add_to_cart(request):
             except:
                 pass
 
+    quantity = int(request.POST.get("quantity", 1))
     cart = Cart(request)
-    cart.add(product, variations=variations)
+    cart.add(product, quantity=quantity, variations=variations)
 
     image = product.image.url if product.image else ""
 

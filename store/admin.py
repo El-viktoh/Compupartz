@@ -17,7 +17,7 @@ class VariationInline(admin.TabularInline):
 # ================= PRODUCT ADMIN =================
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'available')
+    list_display = ('name', 'category', 'price', 'stock_count', 'available')
     list_filter = ('category', 'available')
     search_fields = ('name',)
     inlines = [ProductImageInline, VariationInline]

@@ -105,19 +105,18 @@
             </div>
             {% endif %}
 
-            <!-- Quantity & Stock Row (Visual mockup preserving exact logic) -->
+            <!-- Quantity & Stock Row (Dynamic) -->
             <div class="flex items-center gap-8 mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
                 <div
                     class="flex items-center bg-[#f8f8f8] dark:bg-gray-800 rounded-full px-4 py-2 border border-gray-200 dark:border-gray-700 shadow-inner">
-                    <button
+                    <button id="qty-minus"
                         class="text-gray-500 hover:text-orange-500 font-bold px-3 text-lg transition-colors">−</button>
-                    <span class="font-outfit font-bold text-base px-4 text-gray-900 dark:text-white">1</span>
-                    <button
+                    <span id="qty-display" class="font-outfit font-bold text-base px-4 text-gray-900 dark:text-white">1</span>
+                    <button id="qty-plus"
                         class="text-gray-500 hover:text-orange-500 font-bold px-3 text-lg transition-colors">+</button>
                 </div>
                 <div>
-                    <p class="text-sm font-bold text-gray-900 dark:text-white">Only <span class="text-[#ff7200]">12
-                            Items</span> Left!</p>
+                    <p class="text-sm font-bold text-gray-900 dark:text-white">Only <span class="text-[#ff7200]"><span id="stock-display">{{ product.stock_count }}</span> Items</span> Left!</p>
                     <p class="text-xs text-gray-500">Don't miss it</p>
                 </div>
             </div>
@@ -344,7 +343,8 @@
                     variations[radio.name] = radio.value;
                 });
 
-                let body = "product_id=" + productId;
+                let currentQty = parseInt(document.getElementById("qty-display").innerText);
+                let body = "product_id=" + productId + "&quantity=" + currentQty;
                 for (const key in variations) {
                     body += `&${key}=${variations[key]}`;
                 }
@@ -445,6 +445,32 @@
 
         // Initialize Price
         updatePrice();
+
+        // ✅ QUANTITY BUTTONS
+        const qtyMinus = document.getElementById("qty-minus");
+        const qtyPlus = document.getElementById("qty-plus");
+        const qtyDisplay = document.getElementById("qty-display");
+        const stockCount = parseInt("{{ product.stock_count }}");
+
+        if (qtyMinus && qtyPlus && qtyDisplay) {
+            qtyMinus.addEventListener("click", function() {
+                let current = parseInt(qtyDisplay.innerText);
+                if (current > 1) {
+                    qtyDisplay.innerText = current - 1;
+                }
+            });
+
+            qtyPlus.addEventListener("click", function() {
+                let current = parseInt(qtyDisplay.innerText);
+                if (current < stockCount) {
+                    qtyDisplay.innerText = current + 1;
+                } else if (stockCount > 0) {
+                    if (typeof showToast === "function") {
+                        showToast("Max stock reached! Only " + stockCount + " available.");
+                    }
+                }
+            });
+        }
 
         // ✅ Smooth scroll for images
         document.querySelectorAll('.gallery-img').forEach(img => {
