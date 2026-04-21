@@ -69,39 +69,44 @@
                 <p class="text-xs text-gray-500">Suggested payments with 6 months special financing</p>
             </div>
 
-            <!-- Customizable Specifications -->
+            <!-- Customizable Specifications (AliExpress Style) -->
             {% if product.variations.all %}
-            <div class="space-y-6 mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
-                <h3 class="font-outfit font-bold text-gray-900 dark:text-white uppercase tracking-wider text-xs">Customize your product</h3>
-                
+            <div class="space-y-8 mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
                 {% regroup product.variations.all by category as category_list %}
-                <div class="grid grid-cols-1 gap-4">
-                    {% for category in category_list %}
-                    <div class="variation-group" data-category="{{ category.grouper.name }}">
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                            Select {{ category.grouper.name }}
-                        </label>
-                        <div class="flex flex-wrap gap-2">
-                            {% for variation in category.list %}
-                            <label class="relative cursor-pointer group">
-                                <input type="radio" 
-                                       name="variation_{{ category.grouper.name }}" 
-                                       value="{{ variation.id }}" 
-                                       data-price="{{ variation.price_modifier }}"
-                                       class="hidden variation-radio"
-                                       {% if forloop.first %}checked{% endif %}>
-                                <div class="px-5 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium transition-all group-hover:border-[#ff7200] checked-border group-has-[:checked]:border-[#ff7200] group-has-[:checked]:bg-[#ff7200]/5 group-has-[:checked]:text-[#ff7200]">
-                                    {{ variation.value }}
-                                    {% if variation.price_modifier > 0 %}
-                                    <span class="text-[10px] block opacity-60">+GHS {{ variation.price_modifier }}</span>
-                                    {% endif %}
-                                </div>
-                            </label>
-                            {% endfor %}
-                        </div>
+                {% for category in category_list %}
+                <div class="variation-group" data-category-name="{{ category.grouper.name }}">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-outfit font-bold text-gray-900 dark:text-white uppercase tracking-wider text-[11px]">
+                            {{ category.grouper.name }}: <span class="selected-value text-[#ff7200]"></span>
+                        </h3>
                     </div>
-                    {% endfor %}
+                    
+                    <div class="flex flex-col gap-3">
+                        {% for variation in category.list %}
+                        <label class="relative cursor-pointer group block">
+                            <input type="radio" 
+                                   name="variation_{{ category.grouper.name }}" 
+                                   value="{{ variation.id }}" 
+                                   data-price="{{ variation.price_modifier }}"
+                                   data-value="{{ variation.value }}"
+                                   class="hidden variation-radio"
+                                   {% if forloop.first %}checked{% endif %}>
+                            
+                            <div class="flex items-center justify-between px-5 py-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 transition-all group-hover:border-gray-400 dark:group-hover:border-gray-500 group-has-[:checked]:border-2 group-has-[:checked]:border-black dark:group-has-[:checked]:border-[#ff7200] group-has-[:checked]:bg-gray-50 dark:group-has-[:checked]:bg-gray-800 shadow-sm">
+                                <span class="font-bold text-sm text-gray-900 dark:text-white">{{ variation.value }}</span>
+                                {% if variation.price_modifier > 0 %}
+                                <span class="text-xs font-bold text-[#ff7200]">+GHS {{ variation.price_modifier }}</span>
+                                {% elif variation.price_modifier < 0 %}
+                                <span class="text-xs font-bold text-red-500">-GHS {{ variation.price_modifier|cut:"-" }}</span>
+                                {% else %}
+                                <span class="text-[10px] text-gray-400 font-medium">Included</span>
+                                {% endif %}
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
                 </div>
+                {% endfor %}
             </div>
             {% endif %}
 
@@ -433,9 +438,21 @@
         function updatePrice() {
             if (!displayPrice) return;
             let currentExtra = 0;
-            document.querySelectorAll(".variation-radio:checked").forEach(radio => {
-                currentExtra += parseFloat(radio.dataset.price || 0);
+            
+            // 1. Calculate price and update labels
+            document.querySelectorAll(".variation-group").forEach(group => {
+                const checkedRadio = group.querySelector(".variation-radio:checked");
+                if (checkedRadio) {
+                    currentExtra += parseFloat(checkedRadio.dataset.price || 0);
+                    
+                    // Update the "Category: [Selected]" label
+                    const labelSpan = group.querySelector(".selected-value");
+                    if (labelSpan) {
+                        labelSpan.innerText = checkedRadio.dataset.value;
+                    }
+                }
             });
+            
             displayPrice.innerText = (basePrice + currentExtra).toFixed(2);
         }
 
