@@ -39,4 +39,9 @@ $VENV_DIR/bin/python manage.py collectstatic --noinput
 echo "🔄 Restarting Django worker..."
 touch config/wsgi.py
 
+# 8. Ensure permissions are correct for the web server (MUST BE LAST)
+echo "🔐 Finalizing permissions..."
+chown -R nobody:nogroup $PROJECT_DIR
+chmod -R 775 $PROJECT_DIR
+
 echo "✅ Deployment Successful!"
