@@ -69,43 +69,29 @@
                 <p class="text-xs text-gray-500">Suggested payments with 6 months special financing</p>
             </div>
 
-            <!-- Customizable Specifications (Smart Grouping) -->
+            <!-- Customizable Specifications (Total Merge) -->
             {% if product.variations.all %}
             <div class="space-y-6 mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
-                <h3 class="font-outfit font-bold text-gray-900 dark:text-white uppercase tracking-wider text-xs">Choose Specification</h3>
+                <h3 class="font-outfit font-bold text-gray-900 dark:text-white uppercase tracking-wider text-xs">Choose Specification (Single Selection)</h3>
                 
-                {% regroup product.variations.all by category as category_list %}
-                
-                <div class="space-y-6">
-                    {% for category in category_list %}
-                    <div class="variation-group" data-category="{{ category.grouper.name }}">
-                        {% if category_list|length > 1 %}
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                            Select {{ category.grouper.name }}
-                        </label>
-                        {% endif %}
-                        
-                        <div class="flex flex-wrap gap-2">
-                            {% for variation in category.list %}
-                            <label class="relative cursor-pointer group">
-                                <input type="radio" 
-                                       name="variation_{{ category.grouper.id }}" 
-                                       value="{{ variation.id }}" 
-                                       data-price="{{ variation.price_modifier }}"
-                                       class="hidden variation-radio"
-                                       {% if forloop.first %}checked{% endif %}>
-                                <div class="px-5 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium transition-all group-hover:border-[#ff7200] checked-border group-has-[:checked]:border-[#ff7200] group-has-[:checked]:bg-[#ff7200]/5 group-has-[:checked]:text-[#ff7200]">
-                                    {{ variation.value }}
-                                    {% if variation.price_modifier > 0 %}
-                                    <span class="text-[10px] block opacity-60">+GHS {{ variation.price_modifier }}</span>
-                                    {% elif variation.price_modifier < 0 %}
-                                    <span class="text-[10px] block opacity-60">-GHS {{ variation.price_modifier|cut:"-" }}</span>
-                                    {% endif %}
-                                </div>
-                            </label>
-                            {% endfor %}
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {% for variation in product.variations.all %}
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" 
+                               name="variation_choice" 
+                               value="{{ variation.id }}" 
+                               data-price="{{ variation.price_modifier }}"
+                               class="hidden variation-radio"
+                               {% if forloop.first %}checked{% endif %}>
+                        <div class="h-full flex flex-col items-center justify-center px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium transition-all group-hover:border-[#ff7200] checked-border group-has-[:checked]:border-[#ff7200] group-has-[:checked]:bg-[#ff7200]/5 group-has-[:checked]:text-[#ff7200] text-center">
+                            <span class="block w-full truncate">{{ variation.value }}</span>
+                            {% if variation.price_modifier > 0 %}
+                            <span class="text-[10px] block opacity-60 mt-1">+GHS {{ variation.price_modifier }}</span>
+                            {% elif variation.price_modifier < 0 %}
+                            <span class="text-[10px] block opacity-60 mt-1">-GHS {{ variation.price_modifier|cut:"-" }}</span>
+                            {% endif %}
                         </div>
-                    </div>
+                    </label>
                     {% endfor %}
                 </div>
             </div>
