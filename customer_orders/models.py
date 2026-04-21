@@ -91,6 +91,7 @@ class OrderItem(models.Model):
     )
 
     product_name = models.CharField(max_length=200)
+    variations_display = models.TextField(blank=True, null=True) # e.g. "RAM: 16GB, Storage: 512GB"
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
 

@@ -1,5 +1,5 @@
 from .models import CartItem
-from store.models import Product
+from store.models import Product, Variation
 
 class Cart:
     def __init__(self, request):
@@ -22,82 +22,123 @@ class Cart:
         changes = False
         
         for db_item in db_items:
-            product_id = str(db_item.product.id)
-            if product_id not in self.cart:
-                self.cart[product_id] = {
+            # Create a unique key based on product ID and sorted variation IDs
+            variation_ids = sorted([v.id for v in db_item.variations.all()])
+            item_key = f"{db_item.product.id}_{'-'.join(map(str, variation_ids))}"
+
+            if item_key not in self.cart:
+                # Calculate modified price
+                base_price = float(db_item.product.price)
+                modifiers = sum(float(v.price_modifier) for v in db_item.variations.all())
+                total_unit_price = base_price + modifiers
+
+                self.cart[item_key] = {
+                    "product_id": str(db_item.product.id),
                     "name": db_item.product.name,
-                    "price": float(db_item.product.price),
+                    "price": total_unit_price,
                     "quantity": db_item.quantity,
                     "image": db_item.product.image.url if db_item.product.image else "",
+                    "variation_ids": variation_ids,
+                    "variation_names": [f"{v.category.name}: {v.value}" for v in db_item.variations.all()],
                 }
                 changes = True
-            else:
-                # If quantity in session is different from DB, we might want to sync, 
-                # but usually the session is the "active" state.
-                # However, for the very first load, we trust the DB.
-                pass
         
         if changes:
             self.save()
 
-    def add(self, product, quantity=1, override_quantity=False):
-        product_id = str(product.id)
+    def add(self, product, quantity=1, override_quantity=False, variations=None):
+        """
+        variations: a list of Variation objects
+        """
+        variation_ids = sorted([v.id for v in variations]) if variations else []
+        item_key = f"{product.id}_{'-'.join(map(str, variation_ids))}"
 
-        if product_id not in self.cart:
-            self.cart[product_id] = {
+        if item_key not in self.cart:
+            # Calculate modified price
+            base_price = float(product.price)
+            modifiers = sum(float(v.price_modifier) for v in variations) if variations else 0
+            total_unit_price = base_price + modifiers
+
+            self.cart[item_key] = {
+                "product_id": str(product.id),
                 "name": product.name,
-                "price": float(product.price),
+                "price": total_unit_price,
                 "quantity": 0,
                 "image": product.image.url if product.image else "",
+                "variation_ids": variation_ids,
+                "variation_names": [f"{v.category.name}: {v.value}" for v in variations] if variations else [],
             }
 
         if override_quantity:
-            self.cart[product_id]["quantity"] = quantity
+            self.cart[item_key]["quantity"] = quantity
         else:
-            self.cart[product_id]["quantity"] += quantity
+            self.cart[item_key]["quantity"] += quantity
 
         self.save()
 
         # ✅ SYNC TO DB
         if self.request.user.is_authenticated:
-            item, created = CartItem.objects.get_or_create(
-                user=self.request.user,
-                product=product
-            )
-            if override_quantity:
-                item.quantity = quantity
+            # Find item with EXACT variations
+            # This istricky in Django with ManyToMany, so we filter by product and user, 
+            # then check the variations set.
+            items = CartItem.objects.filter(user=self.request.user, product=product)
+            found_item = None
+            for item in items:
+                item_var_ids = sorted([v.id for v in item.variations.all()])
+                if item_var_ids == variation_ids:
+                    found_item = item
+                    break
+            
+            if found_item:
+                if override_quantity:
+                    found_item.quantity = quantity
+                else:
+                    found_item.quantity += quantity
+                found_item.save()
             else:
-                item.quantity = self.cart[product_id]["quantity"]
-            item.save()
+                new_item = CartItem.objects.create(
+                    user=self.request.user,
+                    product=product,
+                    quantity=quantity
+                )
+                if variations:
+                    new_item.variations.set(variations)
+                    new_item.save()
 
-    def remove(self, product):
-        product_id = str(product.id)
+    def remove(self, product_key):
+        """Removes an item using its unique key (id_vars)"""
+        if product_key in self.cart:
+            if self.request.user.is_authenticated:
+                # Find DB item to delete
+                cart_item_data = self.cart[product_key]
+                p_id = cart_item_data["product_id"]
+                var_ids = cart_item_data["variation_ids"]
+                
+                items = CartItem.objects.filter(user=self.request.user, product_id=p_id)
+                for item in items:
+                    if sorted([v.id for v in item.variations.all()]) == var_ids:
+                        item.delete()
+                        break
 
-        if product_id in self.cart:
-            del self.cart[product_id]
+            del self.cart[product_key]
             self.save()
 
-        # ✅ SYNC TO DB
-        if self.request.user.is_authenticated:
-            CartItem.objects.filter(user=self.request.user, product=product).delete()
+    def decrease(self, product_key):
+        if product_key in self.cart:
+            self.cart[product_key]["quantity"] -= 1
 
-    def decrease(self, product):
-        product_id = str(product.id)
-
-        if product_id in self.cart:
-            self.cart[product_id]["quantity"] -= 1
-
-            if self.cart[product_id]["quantity"] <= 0:
-                del self.cart[product_id]
-                if self.request.user.is_authenticated:
-                    CartItem.objects.filter(user=self.request.user, product=product).delete()
+            if self.cart[product_key]["quantity"] <= 0:
+                self.remove(product_key)
             else:
                 if self.request.user.is_authenticated:
-                    item = CartItem.objects.get(user=self.request.user, product=product)
-                    item.quantity = self.cart[product_id]["quantity"]
-                    item.save()
-
-            self.save()
+                    cart_item_data = self.cart[product_key]
+                    items = CartItem.objects.filter(user=self.request.user, product_id=cart_item_data["product_id"])
+                    for item in items:
+                        if sorted([v.id for v in item.variations.all()]) == cart_item_data["variation_ids"]:
+                            item.quantity = self.cart[product_key]["quantity"]
+                            item.save()
+                            break
+                self.save()
 
     def clear(self):
         """Remove cart from session and DB."""
@@ -111,13 +152,19 @@ class Cart:
         self.session.modified = True
 
     def __iter__(self):
-        for product_id, item in self.cart.items():
+        """
+        Loop through cart items in session and fetch products if needed.
+        We return variation names so templates can display them.
+        """
+        for item_key, item in self.cart.items():
             yield {
-                "id": product_id,
+                "key": item_key,
+                "id": item["product_id"],
                 "name": item["name"],
                 "price": item["price"],
                 "quantity": item["quantity"],
                 "image": item.get("image", ""),
+                "variations": item.get("variation_names", []),
                 "total": item["price"] * item["quantity"],
             }
 

@@ -571,6 +571,11 @@
                     }
 
                     data.items.forEach(item => {
+                        let variationHtml = "";
+                        if(item.variations && item.variations.length > 0) {
+                            variationHtml = `<p class="text-[10px] text-gray-500 mt-0.5 italic">${item.variations.join(', ')}</p>`;
+                        }
+
                         container.innerHTML += `
                 <div class="flex items-center gap-5 border-b border-gray-100 dark:border-gray-700 pb-5 pt-2 group">
 
@@ -579,15 +584,16 @@
                     </div>
 
                     <div class="flex-1 min-w-0 py-1">
-                        <p class="text-sm font-bold text-gray-900 dark:text-white truncate mb-1">${item.name}</p>
+                        <p class="text-sm font-bold text-gray-900 dark:text-white truncate mb-0.5">${item.name}</p>
+                        ${variationHtml}
 
                         <div class="flex flex-wrap items-center gap-3 mt-2">
                             <div class="flex items-center bg-white dark:bg-gray-800 rounded-md p-0.5 border border-gray-200 dark:border-gray-600 shadow-sm">
-                                <button onclick="updateCart('${item.id}', 'decrease')" class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">−</button>
+                                <button onclick="updateCart('${item.key}', 'decrease')" class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">−</button>
                                 <span class="w-8 text-center text-sm font-bold dark:text-white">${item.quantity}</span>
-                                <button onclick="updateCart('${item.id}', 'increase')" class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">+</button>
+                                <button onclick="updateCart('${item.key}', 'increase')" class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">+</button>
                             </div>
-                            <button onclick="updateCart('${item.id}', 'remove')" class="text-xs font-semibold text-red-500 hover:text-red-600 hover:underline transition-all">Remove</button>
+                            <button onclick="updateCart('${item.key}', 'remove')" class="text-xs font-semibold text-red-500 hover:text-red-600 hover:underline transition-all">Remove</button>
                         </div>
                     </div>
 

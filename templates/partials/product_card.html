@@ -59,12 +59,19 @@
     </div>
 
     <div class="grid grid-cols-2 gap-2 sm:gap-3 mt-auto pt-4">
-        <!-- Add to Cart (Hollow style from screenshot) -->
+        <!-- Add to Cart (Redirect to detail if variations exist) -->
+        {% if product.variations.all %}
+        <a href="/store/product/{{ product.id }}/"
+            class="border border-[#ff7200] py-3 px-1 rounded-full text-[11px] sm:text-[12px] lg:text-[13px] font-bold text-[#ff7200] hover:bg-[#ff7200] hover:text-white transition-all active:scale-95 text-center flex items-center justify-center">
+            View Options
+        </a>
+        {% else %}
         <button
             class="add-to-cart-btn border border-gray-900 dark:border-gray-400 py-3 px-1 rounded-full text-[11px] sm:text-[12px] lg:text-[13px] font-bold text-gray-900 dark:text-gray-200 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-all active:scale-95 text-center flex items-center justify-center"
             data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
             Add to Cart
         </button>
+        {% endif %}
 
         <!-- BUY NOW (Solid orange) -->
         <a href="/store/product/{{ product.id }}/"

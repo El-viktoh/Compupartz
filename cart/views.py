@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
-from store.models import Product
+from store.models import Product, Variation
 from customer_orders.models import Order, OrderItem
 from customer_orders.utils import send_order_email
 
@@ -32,34 +32,38 @@ def cart_detail(request):
 # =========================
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-
     cart = Cart(request)
-    cart.add(product)
-
+    
+    variations = []
+    if request.method == 'POST':
+        for key in request.POST:
+            if key.startswith('variation_'):
+                value = request.POST[key]
+                try:
+                    variation = Variation.objects.get(product=product, id=value)
+                    variations.append(variation)
+                except:
+                    pass
+    
+    cart.add(product, variations=variations)
     return redirect("cart_detail")
 
 
 # =========================
 # REMOVE FROM CART
 # =========================
-def remove_from_cart(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-
+def remove_from_cart(request, product_key):
     cart = Cart(request)
-    cart.remove(product)
-
+    cart.remove(product_key)
     return redirect("cart_detail")
 
 
 # =========================
 # DECREASE ITEM
 # =========================
-def decrease_cart_item(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-
+def decrease_cart_item(request, product_key):
     cart = Cart(request)
-    cart.decrease(product)
-
+    cart.decrease(product_key)
     return redirect("cart_detail")
 
 
@@ -82,7 +86,7 @@ def checkout(request):
         address = request.POST.get("address")
         action = request.POST.get("action")
 
-        # ✅ CREATE ORDER (Supports Guest & Authenticated)
+        # ✅ CREATE ORDER
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             name=name,
@@ -97,9 +101,13 @@ def checkout(request):
 
         # ✅ SAVE ORDER ITEMS
         for item in cart_items:
+            # Join variations into a clean string
+            var_str = ", ".join(item.get("variations", []))
+            
             OrderItem.objects.create(
                 order=order,
                 product_name=item["name"],
+                variations_display=var_str,
                 price=item["price"],
                 quantity=item["quantity"],
                 product=Product.objects.get(id=int(item["id"])) if "id" in item else None
@@ -108,7 +116,7 @@ def checkout(request):
         # ✅ SEND EMAIL
         send_order_email(order)
 
-        # ✅ CLEAR CART (Synced DB & Session)
+        # ✅ CLEAR CART
         cart.clear()
 
         # =====================
@@ -124,16 +132,16 @@ def checkout(request):
             )
 
             for item in cart_items:
-                message += f"{item['name']} x {item['quantity']}%0A"
+                var_info = ""
+                if item.get("variations"):
+                    var_info = f" ({', '.join(item['variations'])})"
+                message += f"{item['name']}{var_info} x {item['quantity']}%0A"
 
             message += f"%0ATotal: GHS {total_price}"
 
-            whatsapp_url = f"https://wa.me/233XXXXXXXXX?text={message}"
+            whatsapp_url = f"https://wa.me/233540322533?text={message}"
             return redirect(whatsapp_url)
 
-        # =====================
-        # PAYSTACK FLOW
-        # =====================
         return redirect("paystack_payment", order_id=order.id)
 
     return render(request, "cart/checkout.html", {
@@ -147,9 +155,7 @@ def checkout(request):
 # =========================
 def paystack_payment(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-
     reference = str(uuid.uuid4())
-
     order.payment_reference = reference
     order.payment_method = "paystack"
     order.save()
@@ -169,8 +175,18 @@ def ajax_add_to_cart(request):
     product_id = request.POST.get("product_id")
     product = get_object_or_404(Product, id=product_id)
 
+    variations = []
+    for key in request.POST:
+        if key.startswith('variation_'):
+            value = request.POST[key]
+            try:
+                variation = Variation.objects.get(product=product, id=value)
+                variations.append(variation)
+            except:
+                pass
+
     cart = Cart(request)
-    cart.add(product)
+    cart.add(product, variations=variations)
 
     image = product.image.url if product.image else ""
 
@@ -188,32 +204,40 @@ def ajax_add_to_cart(request):
 # =========================
 @require_POST
 def ajax_update_cart(request):
-    product_id = request.POST.get("product_id")
+    product_key = request.POST.get("product_id") # Note: we still use 'product_id' as the key name in JS for now
     action = request.POST.get("action")
 
-    product = get_object_or_404(Product, id=product_id)
     cart = Cart(request)
 
     if action == "increase":
-        cart.add(product)
+        # For increase, we need to find the product and variations from the key
+        # key format: productid_v1-v2-...
+        try:
+            p_id = int(product_key.split('_')[0])
+            var_ids = []
+            if '_' in product_key and product_key.split('_')[1]:
+                var_ids = [int(v) for v in product_key.split('_')[1].split('-')]
+            
+            product = get_object_or_404(Product, id=p_id)
+            variations = Variation.objects.filter(id__in=var_ids)
+            cart.add(product, variations=variations)
+        except:
+            pass
     elif action == "decrease":
-        cart.decrease(product)
+        cart.decrease(product_key)
     elif action == "remove":
-        cart.remove(product)
+        cart.remove(product_key)
 
-    updated_item = cart.cart.get(str(product_id))
+    updated_item = cart.cart.get(product_key)
 
     return JsonResponse({
         "cart_count": len(cart),
         "item": {
-            "quantity": updated_item["quantity"],
-            "price": updated_item["price"],
-        } if updated_item else {
-            "quantity": 0,
-            "price": 0,
+            "quantity": updated_item["quantity"] if updated_item else 0,
+            "price": updated_item["price"] if updated_item else 0,
         },
         "total": cart.get_total_price(),
-        "product_id": product_id
+        "product_id": product_key
     })
 
 
@@ -222,22 +246,17 @@ def ajax_update_cart(request):
 # =========================
 def cart_ajax_get(request):
     cart = Cart(request)
-
     items = []
 
     for item in cart:
-        try:
-            product = Product.objects.get(id=item["id"])
-            image = product.image.url if product.image else ""
-        except:
-            image = ""
-
         items.append({
+            "key": item["key"],
             "id": item["id"],
             "name": item["name"],
             "quantity": item["quantity"],
             "total": item["total"],
-            "image": image,
+            "image": item["image"],
+            "variations": item["variations"]
         })
 
     return JsonResponse({

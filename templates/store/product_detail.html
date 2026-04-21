@@ -64,10 +64,46 @@
             <!-- Price -->
             <div class="mb-10">
                 <p class="font-outfit text-2xl md:text-3xl font-extrabold text-brandBlue dark:text-orange-500 mb-1">
-                    GHS {{ product.price }}
+                    GHS <span id="displayPrice">{{ product.price }}</span>
                 </p>
                 <p class="text-xs text-gray-500">Suggested payments with 6 months special financing</p>
             </div>
+
+            <!-- Customizable Specifications -->
+            {% if product.variations.all %}
+            <div class="space-y-6 mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
+                <h3 class="font-outfit font-bold text-gray-900 dark:text-white uppercase tracking-wider text-xs">Customize your product</h3>
+                
+                {% regroup product.variations.all by category as category_list %}
+                <div class="grid grid-cols-1 gap-4">
+                    {% for category in category_list %}
+                    <div class="variation-group" data-category="{{ category.grouper.name }}">
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                            Select {{ category.grouper.name }}
+                        </label>
+                        <div class="flex flex-wrap gap-2">
+                            {% for variation in category.list %}
+                            <label class="relative cursor-pointer group">
+                                <input type="radio" 
+                                       name="variation_{{ category.grouper.name }}" 
+                                       value="{{ variation.id }}" 
+                                       data-price="{{ variation.price_modifier }}"
+                                       class="hidden variation-radio"
+                                       {% if forloop.first %}checked{% endif %}>
+                                <div class="px-5 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium transition-all group-hover:border-[#ff7200] checked-border group-has-[:checked]:border-[#ff7200] group-has-[:checked]:bg-[#ff7200]/5 group-has-[:checked]:text-[#ff7200]">
+                                    {{ variation.value }}
+                                    {% if variation.price_modifier > 0 %}
+                                    <span class="text-[10px] block opacity-60">+GHS {{ variation.price_modifier }}</span>
+                                    {% endif %}
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Quantity & Stock Row (Visual mockup preserving exact logic) -->
             <div class="flex items-center gap-8 mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
@@ -302,6 +338,17 @@
                 const productId = this.dataset.productId;
                 const productName = this.dataset.productName;
 
+                // Collect Variations
+                const variations = {};
+                document.querySelectorAll(".variation-radio:checked").forEach(radio => {
+                    variations[radio.name] = radio.value;
+                });
+
+                let body = "product_id=" + productId;
+                for (const key in variations) {
+                    body += `&${key}=${variations[key]}`;
+                }
+
                 this.disabled = true;
                 this.innerText = "Adding...";
 
@@ -311,7 +358,7 @@
                         "X-CSRFToken": "{{ csrf_token }}",
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
-                    body: "product_id=" + productId
+                    body: body
                 })
                     .then(res => res.json())
                     .then(() => {
@@ -377,6 +424,27 @@
                 setTimeout(() => updateIndicator(tab), 100); // Slight delay to ensure layout is ready
             }
         });
+
+        // ✅ PRICE UPDATER
+        const basePrice = parseFloat("{{ product.price }}");
+        const displayPrice = document.getElementById("displayPrice");
+        const radioBtns = document.querySelectorAll(".variation-radio");
+
+        function updatePrice() {
+            if (!displayPrice) return;
+            let currentExtra = 0;
+            document.querySelectorAll(".variation-radio:checked").forEach(radio => {
+                currentExtra += parseFloat(radio.dataset.price || 0);
+            });
+            displayPrice.innerText = (basePrice + currentExtra).toFixed(2);
+        }
+
+        radioBtns.forEach(radio => {
+            radio.addEventListener("change", updatePrice);
+        });
+
+        // Initialize Price
+        updatePrice();
 
         // ✅ Smooth scroll for images
         document.querySelectorAll('.gallery-img').forEach(img => {

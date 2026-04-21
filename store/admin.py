@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, ProductImage, Review
+from .models import Product, ProductImage, Review, Variation, VariationCategory
 
 
 # ================= IMAGE INLINE =================
@@ -8,13 +8,25 @@ class ProductImageInline(admin.TabularInline):
     extra = 3
 
 
+# ================= VARIATION INLINE =================
+class VariationInline(admin.TabularInline):
+    model = Variation
+    extra = 1
+
+
 # ================= PRODUCT ADMIN =================
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'price', 'available')
     list_filter = ('category', 'available')
     search_fields = ('name',)
-    inlines = [ProductImageInline]
+    inlines = [ProductImageInline, VariationInline]
+
+
+# ================= VARIATION CATEGORY =================
+@admin.register(VariationCategory)
+class VariationCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name",)
 
 
 # ================= REVIEW ADMIN =================

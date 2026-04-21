@@ -4,42 +4,50 @@
 
 {% block content %}
 
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl mx-auto px-6 py-12">
 
-    <h1 class="text-3xl font-bold mb-8">Your Cart</h1>
+    <h1 class="text-3xl font-outfit font-black mb-12 uppercase tracking-widest text-gray-900 dark:text-white">Your <span class="text-[#ff7200]">Cart</span></h1>
 
     {% if cart %}
 
         <div class="space-y-6">
 
             {% for item in cart %}
-                <div id="cart-item-{{ item.id }}" class="bg-white p-5 rounded-xl shadow flex items-center justify-between transition">
+                <div id="cart-item-{{ item.key }}" class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row items-center justify-between gap-6 transition-all hover:shadow-md">
 
                     <!-- LEFT -->
-                    <div class="flex items-center gap-5">
+                    <div class="flex items-center gap-6 w-full md:w-auto">
 
                         <!-- IMAGE -->
-                        {% if item.image %}
-                            <img src="{{ item.image }}" class="w-20 h-20 object-cover rounded-lg">
-                        {% else %}
-                            <div class="w-20 h-20 bg-gray-200 flex items-center justify-center text-xs rounded-lg">
-                                No Image
-                            </div>
-                        {% endif %}
+                        <div class="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-xl flex-shrink-0 flex items-center justify-center p-3 border border-gray-100 dark:border-gray-700 overflow-hidden">
+                            {% if item.image %}
+                                <img src="{{ item.image }}" class="w-full h-full object-contain drop-shadow-sm">
+                            {% else %}
+                                <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">No Image</div>
+                            {% endif %}
+                        </div>
 
                         <!-- DETAILS -->
-                        <div>
-                            <p class="font-semibold text-lg">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-outfit font-bold text-lg text-gray-900 dark:text-white mb-0.5 truncate">
                                 {{ item.name }}
                             </p>
+                            
+                            {% if item.variations %}
+                            <div class="flex flex-wrap gap-1.5 mb-2">
+                                {% for var in item.variations %}
+                                <span class="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[10px] font-bold rounded-full uppercase tracking-tighter">{{ var }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
 
-                            <p class="text-sm text-gray-500">
-                                GHS {{ item.price|floatformat:2 }}
+                            <p class="text-sm font-bold text-[#ff7200]">
+                                Unit: GHS {{ item.price|floatformat:2 }}
                             </p>
 
-                            <p class="text-sm text-gray-700 mt-1">
+                            <p class="text-xs font-medium text-gray-500 mt-2">
                                 Subtotal:
-                                <span class="font-semibold" id="subtotal-{{ item.id }}">
+                                <span class="text-brandBlue font-black" id="subtotal-{{ item.key }}">
                                     GHS {{ item.total|floatformat:2 }}
                                 </span>
                             </p>
@@ -48,35 +56,37 @@
                     </div>
 
                     <!-- RIGHT -->
-                    <div class="text-right">
+                    <div class="flex items-center justify-between md:justify-end gap-10 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-gray-50 dark:border-gray-700">
 
-                        <p class="mb-2 font-medium">
-                            Qty: <span id="qty-{{ item.id }}">{{ item.quantity }}</span>
-                        </p>
+                        <div class="text-center md:text-right">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Quantity</span>
+                            <span class="font-outfit font-black text-xl text-gray-900 dark:text-white" id="qty-{{ item.key }}">{{ item.quantity }}</span>
+                        </div>
 
-                        <div class="flex gap-2 justify-end">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center bg-gray-50 dark:bg-gray-900 rounded-xl p-1 border border-gray-200 dark:border-gray-700 shadow-inner">
+                                <button
+                                    class="update-cart w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white dark:hover:bg-gray-800 text-gray-500 transition-all font-bold text-xl active:scale-90"
+                                    data-id="{{ item.key }}"
+                                    data-action="decrease">
+                                    −
+                                </button>
+
+                                <button
+                                    class="update-cart w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white dark:hover:bg-gray-800 text-gray-500 transition-all font-bold text-xl active:scale-90"
+                                    data-id="{{ item.key }}"
+                                    data-action="increase">
+                                    +
+                                </button>
+                            </div>
 
                             <button
-                                class="update-cart px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                                data-id="{{ item.id }}"
-                                data-action="decrease">
-                                -
+                                class="update-cart w-10 h-10 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all active:scale-90"
+                                data-id="{{ item.key }}"
+                                data-action="remove"
+                                title="Remove Item">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
-
-                            <button
-                                class="update-cart px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                                data-id="{{ item.id }}"
-                                data-action="increase">
-                                +
-                            </button>
-
-                            <button
-                                class="update-cart px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                data-id="{{ item.id }}"
-                                data-action="remove">
-                                Remove
-                            </button>
-
                         </div>
 
                     </div>
@@ -85,32 +95,42 @@
             {% endfor %}
 
             <!-- TOTAL -->
-            <div class="text-right mt-8">
+            <div class="bg-gray-900 dark:bg-black rounded-3xl p-8 mt-12 flex flex-col md:flex-row items-center justify-between gap-8">
 
-                <p class="text-2xl font-bold text-brandBlue">
-                    Total: GHS 
-                    <span id="cart-total">
-                        {{ cart_total|floatformat:2 }}
-                    </span>
-                </p>
+                <div class="text-center md:text-left">
+                    <p class="text-gray-400 text-xs font-black uppercase tracking-[0.2em] mb-2">Grand Total</p>
+                    <p class="text-4xl md:text-5xl font-outfit font-black text-white">
+                        GHS <span id="cart-total">{{ cart_total|floatformat:2 }}</span>
+                    </p>
+                </div>
 
-                <a href="/cart/checkout/"
-                   class="mt-4 inline-block bg-brandOrange text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">
-                    Proceed to Checkout
-                </a>
+                <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                    <a href="/store/" class="bg-white/10 hover:bg-white/20 text-white px-8 py-5 rounded-2xl font-bold transition-all text-center">
+                        Continue Shopping
+                    </a>
+                    <a href="/cart/checkout/"
+                       class="bg-[#ff7200] hover:bg-[#e66600] text-white px-10 py-5 rounded-2xl font-black shadow-xl shadow-orange-600/20 transition-all text-center hover:-translate-y-1 active:scale-95">
+                        Checkout Now &rarr;
+                    </a>
+                </div>
 
             </div>
 
         </div>
 
     {% else %}
-        <p class="text-gray-500">Your cart is empty.</p>
+        <div class="text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-700">
+            <div class="text-6xl mb-6 grayscale opacity-50">🛒</div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Your cart is empty</h2>
+            <p class="text-gray-500 mb-8 max-w-sm mx-auto">Looks like you haven't added anything to your cart yet. Browse our store to find the best deals!</p>
+            <a href="/store/" class="inline-block bg-[#ff7200] text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-orange-500/20 active:scale-95 transition-all">Start Shopping</a>
+        </div>
     {% endif %}
 
 </div>
 
 <!-- ========================= -->
-<!-- ✅ FULLY DYNAMIC SCRIPT -->
+<!-- ✅ DYNAMIC CART SCRIPT -->
 <!-- ========================= -->
 <script>
 function getCSRFToken() {
@@ -133,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".update-cart").forEach(button => {
         button.addEventListener("click", function () {
 
-            const productId = this.dataset.id;
+            const itemKey = this.dataset.id;
             const action = this.dataset.action;
 
             fetch("/cart/ajax/update/", {
@@ -142,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     "X-CSRFToken": getCSRFToken(),
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
-                body: `product_id=${productId}&action=${action}`
+                body: `product_id=${itemKey}&action=${action}`
             })
             .then(res => res.json())
             .then(data => {
@@ -150,22 +170,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 updateCartBadge(data.cart_count);
 
                 // REMOVE ITEM
-                if (action === "remove" || !data.item) {
-                    const item = document.getElementById(`cart-item-${productId}`);
-                    if (item) item.remove();
+                if (action === "remove" || !data.item || data.item.quantity <= 0) {
+                    const item = document.getElementById(`cart-item-${itemKey}`);
+                    if (item) {
+                        item.classList.add('opacity-0', 'scale-95');
+                        setTimeout(() => item.remove(), 300);
+                    }
+                    
+                    // If cart now empty, reload for state
+                    if(data.cart_count === 0) {
+                        location.reload();
+                    }
                 } else {
                     // UPDATE QTY
-                    document.getElementById(`qty-${productId}`).innerText =
-                        data.item.quantity;
+                    const qtyEl = document.getElementById(`qty-${itemKey}`);
+                    if(qtyEl) qtyEl.innerText = data.item.quantity;
 
                     // UPDATE SUBTOTAL
-                    document.getElementById(`subtotal-${productId}`).innerText =
-                        "GHS " + (data.item.price * data.item.quantity).toFixed(2);
+                    const subtotalEl = document.getElementById(`subtotal-${itemKey}`);
+                    if(subtotalEl) {
+                        subtotalEl.innerText = "GHS " + (data.item.price * data.item.quantity).toFixed(2);
+                    }
                 }
 
                 // UPDATE TOTAL
-                document.getElementById("cart-total").innerText =
-                    parseFloat(data.total).toFixed(2);
+                const totalEl = document.getElementById("cart-total");
+                if(totalEl) totalEl.innerText = parseFloat(data.total).toFixed(2);
+                
+                // Sync Slide Cart
+                if (typeof loadCart === "function") loadCart();
 
             });
 
@@ -176,3 +209,4 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 {% endblock %}
+%}
