@@ -125,12 +125,12 @@
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="grid grid-cols-2 gap-4 mb-10">
-                <a href="/store/product/{{ product.id }}/"
-                    class="bg-[#ff7200] text-white py-4 px-8 rounded-full text-center font-bold text-[15px] hover:bg-[#e66600] hover:shadow-lg transition-all active:scale-95 tracking-normal">
+            <div class="hidden md:grid grid-cols-2 gap-4 mb-10">
+                <button type="button"
+                    class="buy-now-btn bg-[#ff7200] text-white py-4 px-8 rounded-full text-center font-bold text-[15px] hover:bg-[#e66600] hover:shadow-lg transition-all active:scale-95 tracking-normal"
+                    data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
                     Buy Now
-                </a>
+                </button>
 
                 <button
                     class="add-to-cart-btn border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white py-4 px-8 rounded-full font-bold text-[15px] hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-all active:scale-95"
@@ -309,8 +309,7 @@
         class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 p-4 z-40 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.1)] mb-[-1px] reveal-element active">
         <div class="flex flex-col">
             <span class="text-[10px] text-gray-500 uppercase font-black tracking-widest">Total</span>
-            <span class="font-outfit font-black text-brandBlue dark:text-orange-500 text-lg line-clamp-1">GHS {{
-                product.price }}</span>
+            <span class="font-outfit font-black text-brandBlue dark:text-orange-500 text-lg line-clamp-1">GHS <span id="stickyDisplayPrice">{{ product.price }}</span></span>
         </div>
         <div class="flex gap-2">
             <button
@@ -318,10 +317,11 @@
                 data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
                 Cart
             </button>
-            <a href="/store/product/{{ product.id }}/"
-                class="bg-[#ff7200] text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg shadow-orange-500/20 active:scale-95 transition-all">
+            <button type="button"
+                class="buy-now-btn bg-[#ff7200] text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg shadow-orange-500/20 active:scale-95 transition-all"
+                data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
                 Buy Now
-            </a>
+            </button>
         </div>
     </div>
 </div>
@@ -335,47 +335,65 @@
 
     document.addEventListener("DOMContentLoaded", function () {
 
-        // ✅ ADD TO CART (Legacy functionality protected)
+        // ✅ ADD TO CART & BUY NOW (Legacy functionality protected)
+        function handleAddToCart(btn, redirectAfter = false) {
+            const productId = btn.dataset.productId;
+            const productName = btn.dataset.productName;
+
+            // Collect Variations
+            const variations = {};
+            document.querySelectorAll(".variation-radio:checked").forEach(radio => {
+                variations[radio.name] = radio.value;
+            });
+
+            let currentQty = parseInt(document.getElementById("qty-display").innerText);
+            let body = "product_id=" + productId + "&quantity=" + currentQty;
+            for (const key in variations) {
+                body += `&${key}=${variations[key]}`;
+            }
+
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = redirectAfter ? "Processing..." : "Adding...";
+
+            fetch("/cart/ajax/add/", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: body
+            })
+                .then(res => res.json())
+                .then(() => {
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+
+                    if (typeof loadCart === "function") loadCart();
+                    if (typeof loadCartCount === "function") loadCartCount();
+
+                    if (redirectAfter) {
+                        window.location.href = "/cart/checkout/";
+                    } else if (typeof showToast === "function") {
+                        showToast(productName + " added to cart 🛒");
+                    }
+                })
+                .catch(err => {
+                    console.error("Cart Error:", err);
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                });
+        }
+
         document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
             btn.addEventListener("click", function () {
-                const productId = this.dataset.productId;
-                const productName = this.dataset.productName;
+                handleAddToCart(this, false);
+            });
+        });
 
-                // Collect Variations
-                const variations = {};
-                document.querySelectorAll(".variation-radio:checked").forEach(radio => {
-                    variations[radio.name] = radio.value;
-                });
-
-                let currentQty = parseInt(document.getElementById("qty-display").innerText);
-                let body = "product_id=" + productId + "&quantity=" + currentQty;
-                for (const key in variations) {
-                    body += `&${key}=${variations[key]}`;
-                }
-
-                this.disabled = true;
-                this.innerText = "Adding...";
-
-                fetch("/cart/ajax/add/", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRFToken": "{{ csrf_token }}",
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: body
-                })
-                    .then(res => res.json())
-                    .then(() => {
-                        this.disabled = false;
-                        this.innerText = "Add to Cart";
-
-                        if (typeof loadCart === "function") loadCart();
-                        if (typeof loadCartCount === "function") loadCartCount();
-
-                        if (typeof showToast === "function") {
-                            showToast(productName + " added to cart 🛒");
-                        }
-                    });
+        document.querySelectorAll(".buy-now-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                handleAddToCart(this, true);
             });
         });
 
@@ -432,15 +450,18 @@
         // ✅ PRICE UPDATER
         const basePrice = parseFloat("{{ product.price }}");
         const displayPrice = document.getElementById("displayPrice");
+        const stickyDisplayPrice = document.getElementById("stickyDisplayPrice");
         const radioBtns = document.querySelectorAll(".variation-radio");
 
         function updatePrice() {
-            if (!displayPrice) return;
             let currentExtra = 0;
             document.querySelectorAll(".variation-radio:checked").forEach(radio => {
                 currentExtra += parseFloat(radio.dataset.price || 0);
             });
-            displayPrice.innerText = (basePrice + currentExtra).toFixed(2);
+            const finalPrice = (basePrice + currentExtra).toFixed(2);
+            
+            if (displayPrice) displayPrice.innerText = finalPrice;
+            if (stickyDisplayPrice) stickyDisplayPrice.innerText = finalPrice;
         }
 
         radioBtns.forEach(radio => {
