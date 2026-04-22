@@ -157,30 +157,27 @@ PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY", "pk_test_xxxxxxxxxxxxx")
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY", "sk_test_xxxxxxxxxxxxx")
 
 
-# ==========================
-# EMAIL CONFIG (DEV MODE)
-# ==========================
-
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "Compupartz <no-reply@compupartz.com>"
-
-
 # ======================
 # EMAIL CONFIGURATION
 # ======================
 
-# ✅ Using Console Backend for Development (Emails will show in the terminal/console)
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "Compupartz <no-reply@compupartz.com>"
+# Toggle between Console (Dev) and SMTP (Production) via DEBUG or ENV
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-# ⚠️ FOR PRODUCTION (Uncomment and configure these with real credentials)
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_HOST = "smtp.gmail.com"
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = "REPLACE_WITH_YOUR_GMAIL@gmail.com"
-# EMAIL_HOST_PASSWORD = "REPLACE_WITH_GMAIL_APP_PASSWORD" # Not your regular password
-# DEFAULT_FROM_EMAIL = "Compupartz <REPLACE_WITH_YOUR_GMAIL@gmail.com>"
+# SMTP Settings (Populate these in your .env file)
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+
+# Default Emails
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Compupartz <support@compupartz.com>')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'support@compupartz.com')
+EMAIL_SUBJECT_PREFIX = '[Compupartz] '
 
 
 # REDIRECT BACK TO CHECKOPUT AFTER LOGING

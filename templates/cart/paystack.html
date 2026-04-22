@@ -65,7 +65,7 @@
 function payWithPaystack() {
     var handler = PaystackPop.setup({
         key: "{{ paystack_public_key }}",
-        email: "customer@compupartz.com",
+        email: "{{ order.email }}",
         amount: {{ order.total_amount|floatformat:2 }} * 100,
         currency: "GHS",
         ref: "{{ reference }}",
