@@ -39,6 +39,11 @@ def home(request):
 
 from .forms import RegistrationForm
 
+from django.db import transaction
+import logging
+
+logger = logging.getLogger(__name__)
+
 # =========================
 # SIGNUP
 # =========================
@@ -47,27 +52,39 @@ def signup(request):
         form = RegistrationForm(request.POST)
 
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False  # ✅ Deactivate account until email confirmation
-            user.save()
+            try:
+                with transaction.atomic():
+                    user = form.save(commit=False)
+                    user.is_active = False  # ✅ Deactivate account until email confirmation
+                    user.save()
 
-            # ✅ SEND ACTIVATION EMAIL
-            current_site = get_current_site(request)
-            mail_subject = 'Activate your Compupartz account'
-            message = render_to_string('registration/account_activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': default_token_generator.make_token(user),
-            })
-            to_email = form.cleaned_data.get('email')
-            email = EmailMessage(
-                mail_subject, message, to=[to_email]
-            )
-            email.content_subtype = "html"  # ✅ SET HTML MODE
-            email.send()
+                    # ✅ SEND ACTIVATION EMAIL
+                    current_site = get_current_site(request)
+                    mail_subject = 'Verify Your Compupartz Account'
+                    message = render_to_string('registration/account_activation_email.html', {
+                        'user': user,
+                        'domain': current_site.domain,
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'token': default_token_generator.make_token(user),
+                    })
+                    to_email = form.cleaned_data.get('email')
+                    
+                    email = EmailMessage(
+                        mail_subject, message, to=[to_email]
+                    )
+                    email.content_subtype = "html"
+                    email.send(fail_silently=False)
 
-            return render(request, "registration/account_activation_sent.html")
+                # If we reach here, email was sent successfully
+                return render(request, "registration/account_activation_sent.html")
+
+            except Exception as e:
+                # ❌ LOG THE ERROR ON SERVER
+                logger.error(f"Signup Email Error: {str(e)}")
+                
+                # ❌ Inform user and allow them to fix email/try again
+                messages.error(request, "We couldn't send the activation email. Please check your email address or try again later.")
+                # The transaction.atomic() handles the rollback of the user creation automatically
 
     else:
         form = RegistrationForm()
