@@ -130,3 +130,153 @@ Traceback (most recent call last):
   File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/http/request.py", line 151, in get_host
     raise DisallowedHost(msg)
 django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '127.0.0.1:8000'. You may need to add '127.0.0.1' to ALLOWED_HOSTS.
+ERROR 2026-04-23 15:23:44,411 log Internal Server Error: /accounts/login/
+Traceback (most recent call last):
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 175, in render
+    return self._render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/library.py", line 237, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/allauth/socialaccount/templatetags/socialaccount.py", line 21, in provider_login_url
+    provider = adapter.get_provider(request, provider)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/allauth/socialaccount/adapter.py", line 212, in get_provider
+    app = self.get_app(request, provider=provider, client_id=client_id)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/allauth/socialaccount/adapter.py", line 302, in get_app
+    raise SocialApp.DoesNotExist()
+allauth.socialaccount.models.SocialApp.DoesNotExist
+ERROR 2026-04-23 15:23:44,444 basehttp "GET /accounts/login/ HTTP/1.1" 500 165932
+ERROR 2026-04-23 15:23:54,989 log Internal Server Error: /accounts/login/
+Traceback (most recent call last):
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 175, in render
+    return self._render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/library.py", line 237, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/allauth/socialaccount/templatetags/socialaccount.py", line 21, in provider_login_url
+    provider = adapter.get_provider(request, provider)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/allauth/socialaccount/adapter.py", line 212, in get_provider
+    app = self.get_app(request, provider=provider, client_id=client_id)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/allauth/socialaccount/adapter.py", line 302, in get_app
+    raise SocialApp.DoesNotExist()
+allauth.socialaccount.models.SocialApp.DoesNotExist
+ERROR 2026-04-23 15:23:54,990 basehttp "GET /accounts/login/ HTTP/1.1" 500 165932
+ERROR 2026-04-23 15:24:03,840 log Internal Server Error: /accounts/login/
+Traceback (most recent call last):
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 175, in render
+    return self._render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/template/library.py", line 237, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/allauth/socialaccount/templatetags/socialaccount.py", line 21, in provider_login_url
+    provider = adapter.get_provider(request, provider)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/allauth/socialaccount/adapter.py", line 212, in get_provider
+    app = self.get_app(request, provider=provider, client_id=client_id)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/allauth/socialaccount/adapter.py", line 302, in get_app
+    raise SocialApp.DoesNotExist()
+allauth.socialaccount.models.SocialApp.DoesNotExist
+ERROR 2026-04-23 15:24:03,841 basehttp "GET /accounts/login/ HTTP/1.1" 500 165932
