@@ -8,10 +8,9 @@ def send_order_email(order, request=None):
     # Determine domain for the tracking link
     domain = ""
     if request:
-        current_site = get_current_site(request)
-        domain = current_site.domain
+        domain = request.get_host()
     else:
-        # Fallback if no request (e.g. background task or verification view)
+        # Fallback if no request (e.g. background task)
         domain = "compupartz.com"
 
     subject = f"Compupartz Order #{order.id}"

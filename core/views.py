@@ -59,11 +59,11 @@ def signup(request):
                     user.save()
 
                     # ✅ SEND ACTIVATION EMAIL
-                    current_site = get_current_site(request)
+                    domain = request.get_host()
                     mail_subject = 'Verify Your Compupartz Account'
                     message = render_to_string('registration/account_activation_email.html', {
                         'user': user,
-                        'domain': current_site.domain,
+                        'domain': domain,
                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                         'token': default_token_generator.make_token(user),
                     })
