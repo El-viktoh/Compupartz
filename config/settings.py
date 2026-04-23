@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     'core',
     'repair',
@@ -230,4 +231,4 @@ LOGGING = {
             'propagate': True,
         },
     },
-}
+}SITE_ID = 1
