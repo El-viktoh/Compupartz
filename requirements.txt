@@ -4,3 +4,6 @@ whitenoise
 requests
 Pillow
 python-dotenv
+django-allauth
+cryptography
+PyJWT
