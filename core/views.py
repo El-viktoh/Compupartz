@@ -40,6 +40,7 @@ def home(request):
 from .forms import RegistrationForm
 
 from django.db import transaction
+from .utils import send_activation_email
 import logging
 
 logger = logging.getLogger(__name__)
@@ -60,20 +61,8 @@ def signup(request):
 
                     # ✅ SEND ACTIVATION EMAIL
                     domain = request.get_host()
-                    mail_subject = 'Verify Your Compupartz Account'
-                    message = render_to_string('registration/account_activation_email.html', {
-                        'user': user,
-                        'domain': domain,
-                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                        'token': default_token_generator.make_token(user),
-                    })
-                    to_email = form.cleaned_data.get('email')
-                    
-                    email = EmailMessage(
-                        mail_subject, message, to=[to_email]
-                    )
-                    email.content_subtype = "html"
-                    email.send(fail_silently=False)
+                    if not send_activation_email(user, domain):
+                        raise Exception("Failed to send email")
 
                 # If we reach here, email was sent successfully
                 return render(request, "registration/account_activation_sent.html")
