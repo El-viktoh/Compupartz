@@ -32,7 +32,7 @@ def verify_payment(request, reference):
         order.save()
 
         # ✅ Send confirmation email
-        send_order_email(order)
+        send_order_email(order, request)
 
         # ✅ Clear cart
         cart = Cart(request)

@@ -114,7 +114,7 @@ def checkout(request):
             )
 
         # ✅ SEND EMAIL
-        send_order_email(order)
+        send_order_email(order, request)
 
         # ✅ CLEAR CART
         cart.clear()

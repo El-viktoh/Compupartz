@@ -1,36 +1,41 @@
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
 
 
-def send_order_email(order):
+def send_order_email(order, request=None):
+    # Determine domain for the tracking link
+    domain = ""
+    if request:
+        current_site = get_current_site(request)
+        domain = current_site.domain
+    else:
+        # Fallback if no request (e.g. background task or verification view)
+        domain = "compupartz.com"
+
     subject = f"Compupartz Order #{order.id}"
+    
+    # Render HTML content
+    html_content = render_to_string("customer_orders/order_email.html", {
+        "order": order,
+        "domain": domain,
+    })
 
+    # Render fallback text content
     items_str = ""
     for item in order.items.all():
         var_info = f" ({item.variations_display})" if item.variations_display else ""
         items_str += f"- {item.product_name}{var_info} x {item.quantity} (GHS {item.price})\n"
 
-    message = f"""
-Hello {order.name},
+    text_content = f"Thank you for your order, {order.name}!\n\nTracking ID: #{order.id}\nTotal: GHS {order.total_amount}\n\nItems:\n{items_str}\n\nTrack here: http://{domain}/order/track/{order.id}/"
 
-Thank you for your order at Compupartz.
-
-Order ID: {order.id}
-Total: GHS {order.total_amount}
-Status: {order.status}
-
-Items:
-{items_str}
-
-We will notify you as your order progresses.
-
-Thank you for choosing Compupartz.
-"""
-
-    send_mail(
+    email = EmailMessage(
         subject,
-        message,
+        text_content,
         settings.DEFAULT_FROM_EMAIL,
         [order.email],
-        fail_silently=False,
     )
+    email.content_subtype = "html"
+    email.body = html_content
+    email.send(fail_silently=False)
