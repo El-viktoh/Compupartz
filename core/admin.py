@@ -14,9 +14,11 @@ class FAQAdmin(admin.ModelAdmin):
     list_editable = ('is_published',)
 
 # 2. BETTER USER MANAGEMENT
-admin.site.unregister(User)
+try:
+    admin.site.unregister(User)
+except admin.sites.NotRegistered:
+    pass
 
-@admin.register(User)
 class CustomUserAdmin(BaseUserAdmin):
     # Differentiate users clearly in the list
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'is_staff')
@@ -48,3 +50,5 @@ class CustomUserAdmin(BaseUserAdmin):
             f"Successfully activated {count} user(s).",
             messages.SUCCESS
         )
+
+admin.site.register(User, CustomUserAdmin)
