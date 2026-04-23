@@ -253,8 +253,8 @@
                     </button>
                 </form>
                 {% else %}
-                <a href="/accounts/login/" class="hidden sm:block text-sm font-bold hover:text-white transition-colors">Login</a>
-                <a href="/signup/" class="text-[10px] md:text-xs font-bold text-white bg-brandOrange hover:bg-orange-600 px-3 py-1.5 md:px-4 md:py-2 rounded-full transition-all ml-1 md:ml-2 shadow-lg shadow-brandOrange/20">Join</a>
+                <a href="{% url 'login' %}" class="hidden sm:block text-sm font-bold hover:text-white transition-colors">Login</a>
+                <a href="{% url 'signup' %}" class="text-[10px] md:text-xs font-bold text-white bg-brandOrange hover:bg-orange-600 px-3 py-1.5 md:px-4 md:py-2 rounded-full transition-all ml-1 md:ml-2 shadow-lg shadow-brandOrange/20">Join</a>
                 {% endif %}
 
 

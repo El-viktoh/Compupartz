@@ -223,16 +223,22 @@ SOCIALACCOUNT_PROVIDERS = {
             'client_id': os.getenv('APPLE_CLIENT_ID', ''),
             'secret': os.getenv('APPLE_SECRET', ''),
             'key_id': os.getenv('APPLE_KEY_ID', ''),
+        },
+        'settings': {
             'certificate_key': os.getenv('APPLE_CERTIFICATE_KEY', ''),
         }
     }
 }
 
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'optional' # We handle our own verification in core
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_URL = "/signup/"
+ACCOUNT_ADAPTER = 'allauth.account.adapter.DefaultAccountAdapter'
+ACCOUNT_EMAIL_REQUIRED = True # Kept for backward compatibility but using new format below
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password*']
+ACCOUNT_EMAIL_VERIFICATION = 'optional' 
 SOCIALACCOUNT_QUERY_EMAIL = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 # ======================
 # SESSION CONFIGURATION
