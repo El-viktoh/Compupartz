@@ -759,6 +759,83 @@
             }
         }
     </script>
+
+    <!-- ================= WHATSAPP WIDGET ================= -->
+    <div id="whatsapp-widget" class="fixed bottom-6 right-6 z-[999] font-outfit">
+        <!-- Chat Window -->
+        <div id="whatsapp-window" class="absolute bottom-20 right-0 w-[320px] bg-white/80 dark:bg-[#111218]/80 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 dark:border-white/10 overflow-hidden opacity-0 translate-y-10 pointer-events-none transition-all duration-500">
+            <div class="bg-gradient-to-br from-[#008BC6] via-[#005a8d] to-[#0a0a0c] p-6 text-white pb-12 relative overflow-hidden">
+                <!-- Abstract Glow -->
+                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-400/20 blur-2xl rounded-full -mr-10 -mt-10"></div>
+                
+                <div class="flex justify-between items-center mb-2 relative z-10">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                        <h5 class="font-black text-[10px] uppercase tracking-widest opacity-80">Support Online</h5>
+                    </div>
+                    <button onclick="toggleWhatsapp()" class="opacity-50 hover:opacity-100 transition-opacity p-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <h3 class="text-xl font-black tracking-tight relative z-10">Compupartz Assistant</h3>
+                <p class="text-[11px] opacity-70 mt-1 font-medium relative z-10">Typical reply time: 5 minutes</p>
+            </div>
+            
+            <div class="p-6 -mt-8 relative z-20">
+                <div class="bg-white/40 dark:bg-white/5 backdrop-blur-md p-5 rounded-3xl border border-white/20 dark:border-white/10 shadow-xl">
+                    <div class="flex gap-3 items-start">
+                        <div class="w-10 h-10 rounded-2xl bg-[#008BC6] shadow-[0_0_15px_rgba(0,139,198,0.4)] flex items-center justify-center text-xl animate-bounce shrink-0">🔬</div>
+                        <div class="flex-1">
+                            <p class="text-[13px] text-gray-800 dark:text-gray-200 font-bold leading-relaxed">
+                                Hi there! 👋 Need help with a laptop repair or finding a specific part? We're here to power your needs!
+                            </p>
+                        </div>
+                    </div>
+                    <a href="https://wa.me/233540322533?text=Hi%20Compupartz%2C%20I'm%20visiting%20your%20website%20and%20I%20have%20a%20question%20about..." 
+                       target="_blank"
+                       onclick="toggleWhatsapp()"
+                       class="mt-6 w-full bg-[#25D366] text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] hover:shadow-[0_10px_20px_rgba(37,211,102,0.3)] transition-all active:scale-95 shadow-lg shadow-green-500/20">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.438 9.889-9.886.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.89 4.44-9.892 9.886-.001 2.125.593 3.458 1.634 5.202l-.994 3.628 3.239-.854zM10.574 17.658c-1.179-.026-2.153-.339-3.037-1.224-2.174-2.174-2.174-5.715 0-7.889.31-.31.62-.62 1.054-.62.336 0 .542.103.621.31.258.646.623 1.564.675 1.67.051.106.077.212.026.318-.077.159-.155.319-.246.425-.232.261-.413.435-.413.435-.104.104-.155.209-.077.425.2.545.44 1.144.75 1.67.439.734.908 1.411 1.761 1.761.209.077.31-.026.413-.103.111-.115.342-.43.518-.633.206-.239.362-.186.517-.077.776.435 1.838.905 2.019 1.054.181.149.207.265.103.425-.104.21-.518 1.035-.724 1.293-.362.453-.724.827-1.42 1.137-.414.181-.828.181-1.242.15z"/></svg>
+                        Start Chat
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Button -->
+        <button onclick="toggleWhatsapp()" class="w-20 h-20 bg-gradient-to-tr from-[#0a0a0c] to-[#008BC6] rounded-[2.5rem] shadow-[0_10px_40px_rgba(0,139,198,0.5)] flex items-center justify-center text-3xl hover:scale-110 active:scale-95 transition-all animate-pulseGlow text-white relative z-50 border border-white/10 group overflow-hidden">
+            <div class="absolute inset-0 bg-blue-500/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            <svg class="w-8 h-8 fill-current relative z-10" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.438 9.889-9.886.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.89 4.44-9.892 9.886-.001 2.125.593 3.458 1.634 5.202l-.994 3.628 3.239-.854zM10.574 17.658c-1.179-.026-2.153-.339-3.037-1.224-2.174-2.174-2.174-5.715 0-7.889.31-.31.62-.62 1.054-.62.336 0 .542.103.621.31.258.646.623 1.564.675 1.67.051.106.077.212.026.318-.077.159-.155.319-.246.425-.232.261-.413.435-.413.435-.104.104-.155.209-.077.425.2.545.44 1.144.75 1.67.439.734.908 1.411 1.761 1.761.209.077.31-.026.413-.103.111-.115.342-.43.518-.633.206-.239.362-.186.517-.077.776.435 1.838.905 2.019 1.054.181.149.207.265.103.425-.104.21-.518 1.035-.724 1.293-.362.453-.724.827-1.42 1.137-.414.181-.828.181-1.242.15z"/></svg>
+            <span class="absolute top-2 right-2 w-5 h-5 bg-green-500 rounded-full border-4 border-[#0a0a0c] group-hover:scale-125 transition-transform duration-300"></span>
+        </button>
+    </div>
+
+    <script shadow>
+        function toggleWhatsapp() {
+            const win = document.getElementById('whatsapp-window');
+            if (win.classList.contains('opacity-0')) {
+                win.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                win.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                win.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                win.classList.remove('opacity-100', 'translate-y-0');
+            }
+        }
+    </script>
+    </div>
+
+    <script shadow>
+        function toggleWhatsapp() {
+            const win = document.getElementById('whatsapp-window');
+            if (win.classList.contains('opacity-0')) {
+                win.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                win.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                win.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                win.classList.remove('opacity-100', 'translate-y-0');
+            }
+        }
+    </script>
 </body>
 
 </html>
