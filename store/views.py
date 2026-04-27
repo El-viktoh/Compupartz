@@ -5,6 +5,9 @@ from .models import Product, Review, Wishlist
 
 # ⭐ Wishlist logic initialized
 
+# =========================
+# ⭐ STORE CORE VIEWS
+# =========================
 def store_home(request):
     query = request.GET.get("q")
     category = request.GET.get("category")
@@ -78,6 +81,7 @@ def add_review(request, pk):
 
     return redirect("product_detail", pk=pk)
 
+# ✅ Wishlist API: Handles heart-icon toggling via Ajax
 @login_required
 def toggle_wishlist(request, pk):
     product = get_object_or_404(Product, id=pk)

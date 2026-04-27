@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.db.models import Avg
 
 
+# =========================
+# ⭐ STORE MODELS
+# =========================
 class Product(models.Model):
     CATEGORY_CHOICES = (
         ('laptop', 'Laptop'),
@@ -87,6 +90,7 @@ class Review(models.Model):
         return f"{self.product.name} - {self.rating}⭐"
 
 
+# ✅ Wishlist System: Stores user-saved products for later viewing
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="wishlist")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="wishlisted_by")
