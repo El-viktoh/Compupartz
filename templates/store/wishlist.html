@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Wishlist | Compupartz{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+    
+    <div class="mb-12 border-b border-gray-200 dark:border-gray-700 pb-6 flex justify-between items-end">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                MY WISHLIST
+            </h1>
+            <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-2 font-black uppercase tracking-widest flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-brandOrange rounded-full"></span>
+                Saved for later
+            </p>
+        </div>
+        <a href="{% url 'store_home' %}" class="text-[10px] font-black uppercase tracking-widest text-brandBlue hover:underline">
+            Back to Store
+        </a>
+    </div>
+
+    {% if wishlist_items %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {% for item in wishlist_items %}
+                {% include "partials/product_card.html" with product=item.product wishlist_ids=wishlist_ids %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-gray-50 dark:bg-white/5 rounded-3xl p-24 text-center border border-dashed border-gray-200 dark:border-white/10">
+            <div class="text-6xl mb-6 grayscale opacity-40">❤️</div>
+            <h2 class="text-xl font-bold dark:text-white mb-2 uppercase tracking-wide">Your Wishlist is Empty</h2>
+            <p class="text-[11px] font-medium text-gray-500 uppercase tracking-widest mb-8">Start adding your favorite tech to save them here</p>
+            <a href="{% url 'store_home' %}" 
+               class="bg-brandBlue text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brandBlue/20 hover:shadow-brandBlue/40 hover:-translate-y-1 transition-all duration-300">
+                Explore Products
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

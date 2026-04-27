@@ -118,6 +118,10 @@ def dashboard(request):
         user=request.user
     ).order_by('-created_at')[:5]
 
+    # ✅ WISHLIST DATA
+    wishlist_items = Wishlist.objects.filter(user=request.user).order_by('-added_at')[:4]
+    wishlist_ids = wishlist_items.values_list('product_id', flat=True)
+
     # ✅ attach product image from first order item
     for order in orders:
         first_item = order.items.first()
@@ -137,6 +141,8 @@ def dashboard(request):
     return render(request, "account/dashboard.html", {
         "orders": orders,
         "repairs": repairs,
+        "wishlist_items": wishlist_items,
+        "wishlist_ids": wishlist_ids,
         "u_form": u_form,
         "p_form": p_form,
     })
@@ -160,6 +166,8 @@ def update_profile(request):
             return redirect('dashboard')
 
     return redirect('dashboard')
+
+# =========================
 # TERMS & PRIVACY
 # =========================
 def terms(request):
@@ -167,5 +175,3 @@ def terms(request):
 
 def privacy_policy(request):
     return render(request, "core/privacy.html")
-    
-    return redirect('dashboard')

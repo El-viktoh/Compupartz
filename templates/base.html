@@ -520,27 +520,40 @@
             modal.classList.add("hidden");
         }
 
-        // ✅ QUICK ADD (DOES NOT INTERFERE)
-        function quickAddToCart(productId, productName) {
-            fetch("/cart/ajax/add/", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCSRFToken(),
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: "product_id=" + productId
-            })
-                .then(res => res.json())
-                .then(() => {
-                    loadCart();
-                    loadCartCount();
-                    setTimeout(openCart, 150);
-                    closeQuickView();
-
                     if (typeof showToast === "function") {
                         showToast(productName + " added to cart 🛒");
                     }
                 });
+        }
+
+        // ✅ WISHLIST TOGGLE
+        function toggleWishlist(btn, productId) {
+            fetch(`/store/wishlist/toggle/${productId}/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRFToken(),
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const svg = btn.querySelector('svg');
+                if (data.status === 'added') {
+                    svg.setAttribute('fill', '#ff7200');
+                    svg.setAttribute('stroke', '#ff7200');
+                    svg.classList.add('scale-110');
+                    if (typeof showToast === "function") showToast("Added to wishlist ❤️");
+                } else {
+                    svg.setAttribute('fill', 'none');
+                    svg.setAttribute('stroke', 'currentColor');
+                    svg.classList.remove('scale-110');
+                    if (typeof showToast === "function") showToast("Removed from wishlist");
+                }
+            })
+            .catch(err => {
+                console.error("Wishlist Error:", err);
+                window.location.href = "/accounts/login/";
+            });
         }
 
         // ✅ UPDATE CART
