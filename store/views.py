@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Product, Review, Wishlist
 
+# ⭐ Wishlist logic initialized
+
 def store_home(request):
     query = request.GET.get("q")
     category = request.GET.get("category")
