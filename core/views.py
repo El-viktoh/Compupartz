@@ -112,7 +112,7 @@ from repair.models import RepairTicket
 from .forms import UserUpdateForm, ProfileUpdateForm
 
 # =========================
-# DASHBOARD
+# ⭐ USER DASHBOARD & PROFILE
 # =========================
 @login_required
 def dashboard(request):
