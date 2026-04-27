@@ -125,7 +125,7 @@ def dashboard(request):
     ).order_by('-created_at')[:5]
 
     # ✅ WISHLIST DATA
-    wishlist_items = Wishlist.objects.filter(user=request.user).order_by('-created_at')[:4]
+    wishlist_items = Wishlist.objects.filter(user=request.user).order_by('-added_at')[:4]
     wishlist_ids = wishlist_items.values_list('product_id', flat=True)
 
     # ✅ attach product image from first order item
