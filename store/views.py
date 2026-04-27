@@ -98,4 +98,8 @@ def toggle_wishlist(request, pk):
 @login_required
 def wishlist_view(request):
     items = Wishlist.objects.filter(user=request.user)
-    return render(request, "store/wishlist.html", {"wishlist_items": items})
+    wishlist_ids = items.values_list('product_id', flat=True)
+    return render(request, "store/wishlist.html", {
+        "wishlist_items": items,
+        "wishlist_ids": wishlist_ids
+    })

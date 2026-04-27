@@ -725,7 +725,7 @@
         });
 
         document.addEventListener("click", function (e) {
-            const addBtn = e.target.closest(".add-to-cart-btn");
+            const addBtn = e.target.closest(".card-add-to-cart-btn");
             if (addBtn) {
 
                 const btn = addBtn;
@@ -747,7 +747,7 @@
                     .then(() => {
 
                         btn.disabled = false;
-                        btn.innerText = "Add";
+                        btn.innerText = "Add to Cart";
 
                         loadCart();
                         loadCartCount();
@@ -837,7 +837,7 @@
         </button>
     </div>
 
-    <script shadow>
+    <script>
         function toggleWhatsapp() {
             const win = document.getElementById('whatsapp-window');
             if (win.classList.contains('opacity-0')) {

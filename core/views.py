@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 
-from store.models import Product
+from store.models import Product, Wishlist
 from .models import FAQ, Profile
 from blog.models import Post
 from media_hub.models import Video
@@ -29,11 +29,17 @@ def home(request):
         product.avg_rating = product.get_average_rating()
         product.review_count = product.get_review_count()
 
+    # ✅ get wishlist for hearts
+    wishlist_ids = []
+    if request.user.is_authenticated:
+        wishlist_ids = Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+
     return render(request, "home.html", {
         "featured_products": featured_products,
         "faqs": faqs,
         "latest_posts": latest_posts,
-        "featured_videos": featured_videos
+        "featured_videos": featured_videos,
+        "wishlist_ids": wishlist_ids
     })
 
 
@@ -119,7 +125,7 @@ def dashboard(request):
     ).order_by('-created_at')[:5]
 
     # ✅ WISHLIST DATA
-    wishlist_items = Wishlist.objects.filter(user=request.user).order_by('-added_at')[:4]
+    wishlist_items = Wishlist.objects.filter(user=request.user).order_by('-created_at')[:4]
     wishlist_ids = wishlist_items.values_list('product_id', flat=True)
 
     # ✅ attach product image from first order item
