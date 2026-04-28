@@ -42,10 +42,22 @@
 
             <!-- Condition Badge -->
             <div class="mb-3">
-                <span class="inline-flex items-center gap-1.5 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
-                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                    {{ product.condition }} Condition
-                </span>
+                {% if product.condition == 'Brand New' %}
+                    <span class="inline-flex items-center gap-1.5 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                        Brand New Condition
+                    </span>
+                {% elif product.condition == 'Open Box' %}
+                    <span class="inline-flex items-center gap-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
+                        Open Box Condition
+                    </span>
+                {% else %}
+                    <span class="inline-flex items-center gap-1.5 bg-brandOrange/10 text-brandOrange border border-brandOrange/20 text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+                        <span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-pulse"></span>
+                        Used Condition
+                    </span>
+                {% endif %}
             </div>
 
             <!-- Title & Blurb -->
