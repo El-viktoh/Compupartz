@@ -13,9 +13,16 @@ class Product(models.Model):
         ('accessories', 'Accessories'),
     )
 
+    CONDITION_CHOICES = (
+        ('Brand New', 'Brand New'),
+        ('Open Box', 'Open Box'),
+        ('Used', 'Used'),
+    )
+
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default='Brand New')
     description = models.TextField(blank=True)
     available = models.BooleanField(default=True)
     stock_count = models.IntegerField(default=10)

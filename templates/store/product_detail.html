@@ -40,6 +40,14 @@
         <!-- RIGHT: PRODUCT INFO -->
         <div class="reveal-element flex flex-col h-full pt-4">
 
+            <!-- Condition Badge -->
+            <div class="mb-3">
+                <span class="inline-flex items-center gap-1.5 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                    {{ product.condition }} Condition
+                </span>
+            </div>
+
             <!-- Title & Blurb -->
             <h1 class="text-3xl md:text-[40px] font-outfit font-bold text-gray-900 dark:text-white leading-tight mb-3">
                 {{ product.name }}
