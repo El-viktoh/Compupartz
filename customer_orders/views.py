@@ -79,3 +79,20 @@ def track_order(request, order_id):
     return render(request, "customer_orders/track_order.html", {
         "order": order
     })
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user).order_by("-created_at")
+    
+    # ✅ attach product images for the UI
+    for order in orders:
+        first_item = order.items.first()
+        if first_item and hasattr(first_item, "product") and first_item.product and first_item.product.image:
+            order.image = first_item.product.image.url
+        else:
+            order.image = None
+
+    return render(request, "customer_orders/my_orders.html", {
+        "orders": orders
+    })

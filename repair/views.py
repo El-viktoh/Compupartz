@@ -76,3 +76,12 @@ def track_repair(request, ticket_id):
     return render(request, "repair/track_repair.html", {
         "ticket": ticket
     })
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def my_repairs(request):
+    repairs = RepairTicket.objects.filter(user=request.user).order_by("-created_at")
+    return render(request, "repair/my_repairs.html", {
+        "repairs": repairs
+    })

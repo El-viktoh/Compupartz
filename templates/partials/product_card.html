@@ -29,19 +29,7 @@
             </svg>
         </button>
 
-        <!-- QUICK VIEW (Legacy feature, isolated from card click) -->
-        <button
-            class="quick-view-btn absolute top-4 right-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 z-20 hover:scale-105"
-            onclick="event.stopPropagation()"
-            data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}"
-            data-image="{% if product.image %}{{ product.image.url }}{% endif %}" title="Quick View">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-5 h-5 text-gray-700 dark:text-gray-200">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-        </button>
+
     </div>
 
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-1">

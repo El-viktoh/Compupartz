@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Repair History | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= PREMIUM REPAIR HISTORY ================= -->
+<div class="max-w-5xl mx-auto px-4 py-12 animate-fadeIn">
+
+    <!-- HEADER -->
+    <div class="mb-12 border-b border-gray-100 dark:border-white/5 pb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                REPAIR <span class="text-brandOrange">HISTORY</span>
+            </h1>
+            <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-2 font-black uppercase tracking-[0.2em]">
+                Hardware diagnostics & support records
+            </p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="text-[10px] font-black uppercase tracking-widest text-brandBlue hover:underline flex items-center gap-2">
+            &larr; Back to Dashboard
+        </a>
+    </div>
+
+    <!-- REPAIRS LIST -->
+    {% if repairs %}
+    <div class="space-y-6">
+        {% for repair in repairs %}
+        <div class="bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 p-6 sm:p-8 rounded-[2rem] shadow-sm hover:shadow-xl hover:scale-[1.01] transition-all group overflow-hidden relative">
+            
+            <!-- Dynamic Status Glow -->
+            <div class="absolute top-0 right-0 w-32 h-32 {% if repair.status == 'completed' %}bg-green-500/5{% elif repair.status == 'in_progress' %}bg-brandOrange/5{% else %}bg-gray-500/5{% endif %} rounded-full blur-[40px] pointer-events-none"></div>
+
+            <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                
+                <!-- STATUS ICON -->
+                <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-brandOrange/5 flex items-center justify-center shrink-0 border border-brandOrange/10 shadow-inner">
+                    <span class="text-3xl sm:text-4xl">🛠️</span>
+                </div>
+
+                <!-- REPAIR DETAILS -->
+                <div class="flex-1 text-center md:text-left">
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
+                        <span class="text-[10px] font-black bg-gray-900 dark:bg-white text-white dark:text-black px-3 py-1 rounded-full uppercase tracking-widest">{{ repair.ticket_id }}</span>
+                        <span class="text-[10px] font-black bg-brandOrange/10 text-brandOrange px-3 py-1 rounded-full uppercase tracking-widest">{{ repair.get_status_display }}</span>
+                        {% if repair.in_person %}
+                        <span class="text-[10px] font-black bg-brandBlue/10 text-brandBlue px-3 py-1 rounded-full uppercase tracking-widest tracking-tighter">In-Person Service</span>
+                        {% endif %}
+                    </div>
+                    
+                    <h3 class="text-xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-tight mb-1">
+                        {{ repair.device }}
+                    </h3>
+                    <p class="text-xs text-brandOrange font-black uppercase tracking-widest mb-1">
+                        Issue: <span class="font-medium text-gray-500 dark:text-gray-400">{{ repair.issue_description|truncatewords:6 }}</span>
+                    </p>
+                    <p class="text-[10px] text-gray-400 font-medium uppercase tracking-[0.2em]">
+                        Ticket generated on {{ repair.created_at|date:"M d, Y" }}
+                    </p>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <a href="{% url 'track_repair' repair.ticket_id %}" class="flex-1 text-center bg-brandOrange/10 dark:bg-brandOrange/5 border border-brandOrange/30 text-brandOrange px-8 py-4 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] transition-all hover:bg-brandOrange hover:text-white active:scale-95 whitespace-nowrap">
+                        View Progress
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-12 text-center">
+        <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Diagnostics History End</p>
+    </div>
+
+    {% else %}
+    <!-- EMPTY STATE -->
+    <div class="bg-gray-50 dark:bg-white/5 rounded-[3rem] p-24 text-center border-2 border-dashed border-gray-200 dark:border-white/10">
+        <div class="text-6xl mb-8 opacity-40">🛠️</div>
+        <h2 class="text-2xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest mb-4">No Active Requests</h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-10 max-w-sm mx-auto leading-relaxed">
+            Need a hardware fix? All your booked laptop repairs and diagnostics will appear here once you start a request.
+        </p>
+        <a href="{% url 'book_repair' %}" class="inline-block bg-brandBlue text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brandBlue/20 hover:shadow-brandBlue/40 hover:-translate-y-1 transition-all active:scale-95">
+            Book a Repair
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Order History | Compupartz{% endblock %}
+
+{% block content %}
+
+<!-- ================= PREMIUM HISTORY SECTION ================= -->
+<div class="max-w-5xl mx-auto px-4 py-12 animate-fadeIn">
+
+    <!-- HEADER -->
+    <div class="mb-12 border-b border-gray-100 dark:border-white/5 pb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                ORDER <span class="text-brandBlue">HISTORY</span>
+            </h1>
+            <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-2 font-black uppercase tracking-[0.2em]">
+                Your journey with Compupartz
+            </p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="text-[10px] font-black uppercase tracking-widest text-brandBlue hover:underline flex items-center gap-2">
+            &larr; Back to Dashboard
+        </a>
+    </div>
+
+    <!-- ORDERS LIST -->
+    {% if orders %}
+    <div class="space-y-6">
+        {% for order in orders %}
+        <div class="bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 p-6 sm:p-8 rounded-[2rem] shadow-sm hover:shadow-xl hover:scale-[1.01] transition-all group overflow-hidden relative">
+            
+            <!-- Dynamic Status Gradient (Subtle) -->
+            <div class="absolute top-0 right-0 w-32 h-32 {% if order.status == 'completed' %}bg-green-500/5{% elif order.status == 'cancelled' %}bg-red-500/5{% else %}bg-brandBlue/5{% endif %} rounded-full blur-[40px] pointer-events-none"></div>
+
+            <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                
+                <!-- PRODUCT THUMBNAIL (From first item) -->
+                <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center p-4 overflow-hidden shrink-0 shadow-inner border border-gray-100 dark:border-white/5">
+                    {% if order.image %}
+                        <img src="{{ order.image }}" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-500">
+                    {% else %}
+                        <div class="text-[9px] font-black text-gray-400 text-center uppercase tracking-widest leading-tight">Order<br>Media</div>
+                    {% endif %}
+                </div>
+
+                <!-- ORDER DETAILS -->
+                <div class="flex-1 text-center md:text-left">
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
+                        <span class="text-[10px] font-black bg-gray-900 dark:bg-white text-white dark:text-black px-3 py-1 rounded-full uppercase tracking-widest">#{{ order.id }}</span>
+                        <span class="text-[10px] font-black bg-brandBlue/10 text-brandBlue px-3 py-1 rounded-full uppercase tracking-widest">{{ order.get_status_display }}</span>
+                        {% if order.payment_status == 'paid' %}
+                        <span class="text-[10px] font-black bg-green-500/10 text-green-500 px-3 py-1 rounded-full uppercase tracking-widest">● Paid</span>
+                        {% endif %}
+                    </div>
+                    
+                    <h3 class="text-xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-tight mb-1">
+                        GHS {{ order.total_amount }}
+                    </h3>
+                    <p class="text-xs text-gray-400 font-medium uppercase tracking-widest">
+                        Purchase finalized on {{ order.created_at|date:"M d, Y" }}
+                    </p>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <a href="{% url 'track_order' order.id %}" class="flex-1 text-center bg-brandBlue/10 dark:bg-brandBlue/5 border border-brandBlue/30 text-brandBlue px-8 py-4 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] transition-all hover:bg-brandBlue hover:text-white active:scale-95 whitespace-nowrap">
+                        Track Details
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- PAGINATION (Optional if needed later) -->
+    <div class="mt-12 text-center">
+        <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest">End of Record History</p>
+    </div>
+
+    {% else %}
+    <!-- EMPTY STATE -->
+    <div class="bg-gray-50 dark:bg-white/5 rounded-[3rem] p-24 text-center border-2 border-dashed border-gray-200 dark:border-white/10">
+        <div class="text-6xl mb-8 opacity-40">🛍️</div>
+        <h2 class="text-2xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest mb-4">No Orders Found</h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-10 max-w-sm mx-auto leading-relaxed">
+            Your shopping journey hasn't started yet. Browse our premium selection to make your first purchase.
+        </p>
+        <a href="{% url 'store_home' %}" class="inline-block bg-brandOrange text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brandOrange/20 hover:shadow-brandOrange/40 hover:-translate-y-1 transition-all active:scale-95">
+            Start Shopping
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

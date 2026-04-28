@@ -81,11 +81,12 @@
                         </a>
                     {% endfor %}
                 </div>
-            {% else %}
-                <div class="text-center py-12">
-                    <p class="text-gray-400 text-xs font-light tracking-widest uppercase">No order data found.</p>
-                </div>
             {% endif %}
+            <div class="mt-8 border-t border-gray-100 dark:border-white/5 pt-6 text-center">
+                <a href="{% url 'my_orders' %}" class="text-[10px] font-black uppercase tracking-widest text-brandBlue hover:underline">
+                    View All History
+                </a>
+            </div>
         </div>
 
         <!-- REPAIR TICKETS -->
@@ -98,7 +99,7 @@
             {% if repairs %}
                 <div class="space-y-6">
                     {% for repair in repairs %}
-                        <a href="/repair/track/{{ repair.ticket_id }}/" class="block group p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-200 dark:hover:border-white/10">
+                        <a href="{% url 'track_repair' repair.ticket_id %}" class="block group p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-200 dark:hover:border-white/10">
                             <div class="flex items-center gap-6">
                                 <div class="w-16 h-16 rounded-xl bg-brandOrange/5 flex items-center justify-center shrink-0">
                                     <span class="text-brandOrange text-xl">🛠️</span>
@@ -119,6 +120,11 @@
                     <p class="text-gray-400 text-xs font-light tracking-widest uppercase">No repair tickets active.</p>
                 </div>
             {% endif %}
+            <div class="mt-8 border-t border-gray-100 dark:border-white/5 pt-6 text-center">
+                <a href="{% url 'my_repairs' %}" class="text-[10px] font-black uppercase tracking-widest text-brandOrange hover:underline">
+                    View All History
+                </a>
+            </div>
         </div>
 
         <!-- MY WISHLIST -->
