@@ -30,9 +30,10 @@ def home(request):
         product.review_count = product.get_review_count()
 
     # ✅ get wishlist for hearts
-    wishlist_ids = []
     if request.user.is_authenticated:
-        wishlist_ids = Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
+    else:
+        wishlist_ids = request.session.get('wishlist', [])
 
     return render(request, "home.html", {
         "featured_products": featured_products,

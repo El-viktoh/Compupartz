@@ -36,10 +36,11 @@ def store_home(request):
     if in_stock == "1":
         products = products.filter(available=True)
 
-    # If user is logged in, get their wishlist IDs for UI
-    wishlist_ids = []
+    # Get wishlist IDs for UI (authenticated or guest)
     if request.user.is_authenticated:
-        wishlist_ids = Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
+    else:
+        wishlist_ids = request.session.get('wishlist', [])
 
     return render(request, "store/store_home.html", {
         "laptops": products,
@@ -53,9 +54,10 @@ def product_detail(request, pk):
 
     avg_rating = product.get_average_rating()
     
-    in_wishlist = False
     if request.user.is_authenticated:
         in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
+    else:
+        in_wishlist = product.id in request.session.get('wishlist', [])
 
     return render(request, "store/product_detail.html", {
         "product": product,
@@ -81,25 +83,39 @@ def add_review(request, pk):
 
     return redirect("product_detail", pk=pk)
 
-# ✅ Wishlist API: Handles heart-icon toggling via Ajax
-@login_required
+# ✅ Wishlist API: Handles heart-icon toggling via Ajax (Guest + Auth)
 def toggle_wishlist(request, pk):
     product = get_object_or_404(Product, id=pk)
-    wishlist_item, created = Wishlist.objects.get_or_create(user=request.user, product=product)
 
-    if not created:
-        wishlist_item.delete()
-        status = "removed"
+    if request.user.is_authenticated:
+        wishlist_item, created = Wishlist.objects.get_or_create(user=request.user, product=product)
+        if not created:
+            wishlist_item.delete()
+            status = "removed"
+        else:
+            status = "added"
     else:
-        status = "added"
+        wishlist = request.session.get('wishlist', [])
+        if product.id in wishlist:
+            wishlist.remove(product.id)
+            status = "removed"
+        else:
+            wishlist.append(product.id)
+            status = "added"
+        request.session['wishlist'] = wishlist
+        request.session.modified = True
 
     return JsonResponse({"status": status})
 
-@login_required
 def wishlist_view(request):
-    items = Wishlist.objects.filter(user=request.user)
-    wishlist_ids = items.values_list('product_id', flat=True)
+    if request.user.is_authenticated:
+        products = Product.objects.filter(wishlisted_by__user=request.user).order_by('-wishlisted_by__added_at')
+        wishlist_ids = list(products.values_list('id', flat=True))
+    else:
+        wishlist_ids = request.session.get('wishlist', [])
+        products = Product.objects.filter(id__in=wishlist_ids)
+        
     return render(request, "store/wishlist.html", {
-        "wishlist_items": items,
+        "wishlist_products": products,
         "wishlist_ids": wishlist_ids
     })
