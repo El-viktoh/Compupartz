@@ -53,7 +53,7 @@
 
         <!-- RECENT ORDERS -->
         <div class="bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 p-6 md:p-8 rounded-[2rem] shadow-xl">
-            <div class="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/5 pb-6">
+            <div class="flex flex-col md:flex-row items-center justify-center md:justify-between gap-3 md:gap-0 mb-8 border-b border-gray-100 dark:border-white/5 pb-6 text-center">
                 <h2 class="text-lg font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest">Recent Orders</h2>
                 <span class="text-[9px] font-black bg-brandBlue/10 text-brandBlue px-2 py-1 rounded-full uppercase tracking-tighter">Orders</span>
             </div>
@@ -62,7 +62,7 @@
                 <div class="space-y-6">
                     {% for order in orders %}
                         <a href="/order/track/{{ order.id }}/" class="block group p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-200 dark:hover:border-white/10">
-                            <div class="flex items-center gap-6">
+                            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6 text-center md:text-left">
                                 <div class="w-16 h-16 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center p-2 overflow-hidden shrink-0">
                                     {% if order.image %}
                                         <img src="{{ order.image }}" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
@@ -74,7 +74,7 @@
                                     <p class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-0.5">Order #ID:{{ order.id }}</p>
                                     <p class="text-xs text-brandBlue font-black">GHS {{ order.total_amount }}</p>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-center md:text-right mt-2 md:mt-0 w-full md:w-auto">
                                     <span class="text-[10px] font-black text-gray-400 group-hover:text-brandOrange transition-colors uppercase">Track &rarr;</span>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@
 
         <!-- REPAIR TICKETS -->
         <div class="bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 p-6 md:p-8 rounded-[2rem] shadow-xl">
-            <div class="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/5 pb-6">
+            <div class="flex flex-col md:flex-row items-center justify-center md:justify-between gap-3 md:gap-0 mb-8 border-b border-gray-100 dark:border-white/5 pb-6 text-center">
                 <h2 class="text-lg font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest">Hardware Support</h2>
                 <span class="text-[9px] font-black bg-brandOrange/10 text-brandOrange px-2 py-1 rounded-full uppercase tracking-tighter">Repairs</span>
             </div>
@@ -100,7 +100,7 @@
                 <div class="space-y-6">
                     {% for repair in repairs %}
                         <a href="{% url 'track_repair' repair.ticket_id %}" class="block group p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-200 dark:hover:border-white/10">
-                            <div class="flex items-center gap-6">
+                            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6 text-center md:text-left">
                                 <div class="w-16 h-16 rounded-xl bg-brandOrange/5 flex items-center justify-center shrink-0">
                                     <span class="text-brandOrange text-xl">🛠️</span>
                                 </div>
@@ -108,7 +108,7 @@
                                     <p class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-0.5">Ticket: {{ repair.ticket_id }}</p>
                                     <p class="text-xs text-gray-500 font-light truncate max-w-[150px] uppercase">{{ repair.device }}</p>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-center md:text-right mt-2 md:mt-0 w-full md:w-auto">
                                     <span class="text-[10px] font-black text-gray-400 group-hover:text-brandBlue transition-colors uppercase">Monitor &rarr;</span>
                                 </div>
                             </div>
@@ -129,7 +129,7 @@
 
         <!-- MY WISHLIST -->
         <div class="bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 p-6 md:p-8 rounded-[2rem] shadow-xl">
-            <div class="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/5 pb-6">
+            <div class="flex flex-col md:flex-row items-center justify-center md:justify-between gap-3 md:gap-0 mb-8 border-b border-gray-100 dark:border-white/5 pb-6 text-center">
                 <h2 class="text-lg font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest">Saved Wishes</h2>
                 <span class="text-[9px] font-black bg-red-500/10 text-red-500 px-2 py-1 rounded-full uppercase tracking-tighter">Wishlist</span>
             </div>
@@ -138,7 +138,7 @@
                 <div class="space-y-6">
                     {% for item in wishlist_items %}
                         <a href="/store/product/{{ item.product.id }}/" class="block group p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-200 dark:hover:border-white/10">
-                            <div class="flex items-center gap-6">
+                            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6 text-center md:text-left">
                                 <div class="w-16 h-16 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center p-2 overflow-hidden shrink-0">
                                     {% if item.product.image %}
                                         <img src="{{ item.product.image.url }}" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
@@ -150,7 +150,7 @@
                                     <p class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-0.5 truncate max-w-[120px]">{{ item.product.name }}</p>
                                     <p class="text-xs text-gray-500 font-light uppercase">GHS {{ item.product.price }}</p>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-center md:text-right mt-2 md:mt-0 w-full md:w-auto">
                                     <span class="text-[10px] font-black text-gray-400 group-hover:text-red-500 transition-colors uppercase">View &rarr;</span>
                                 </div>
                             </div>
