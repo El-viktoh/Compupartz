@@ -310,12 +310,20 @@
                 </div>
 
                 {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
-                    <span class="text-lg">👤</span> Dashboard
-                </a>
+                <button onclick="toggleDashboardSubmenu()" type="button" class="w-full flex items-center justify-between py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
+                    <div class="flex items-center gap-4">
+                        <span class="text-lg">👤</span> Dashboard
+                    </div>
+                    <svg id="dashboardSubArrow" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
                 
                 <!-- DASHBOARD SUBLINKS -->
-                <div class="flex flex-col gap-1 pl-12 pr-4 pb-4">
+                <div id="dashboardSubmenu" class="hidden flex-col gap-1 pl-12 pr-4 pb-2 transition-all duration-300">
+                    <a href="{% url 'dashboard' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px]">
+                        <span class="text-gray-300 dark:text-gray-600">•</span> Dashboard Home
+                    </a>
                     <a href="{% url 'wishlist_view' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px]">
                         <span class="text-gray-300 dark:text-gray-600">•</span> Wishlist
                     </a>
@@ -764,6 +772,20 @@
             } else {
                 win.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
                 win.classList.remove('opacity-100', 'translate-y-0');
+            }
+        }
+
+        function toggleDashboardSubmenu() {
+            const submenu = document.getElementById('dashboardSubmenu');
+            const arrow = document.getElementById('dashboardSubArrow');
+            if (submenu.classList.contains('hidden')) {
+                submenu.classList.remove('hidden');
+                submenu.classList.add('flex');
+                arrow.classList.add('rotate-180');
+            } else {
+                submenu.classList.add('hidden');
+                submenu.classList.remove('flex');
+                arrow.classList.remove('rotate-180');
             }
         }
     </script>
