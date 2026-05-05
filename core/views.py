@@ -19,7 +19,9 @@ from django.contrib import messages
 # HOME
 # =========================
 def home(request):
-    featured_products = Product.objects.filter(available=True)[:6]
+    featured_products = Product.objects.filter(available=True, is_featured=True)[:6]
+    if not featured_products:
+        featured_products = Product.objects.filter(available=True)[:6]
     faqs = FAQ.objects.filter(is_published=True)
     latest_posts = Post.objects.filter(status='published').order_by('-created_at')[:3]
     featured_videos = Video.objects.filter(is_featured=True)

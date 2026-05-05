@@ -17,8 +17,9 @@ class VariationInline(admin.TabularInline):
 # ================= PRODUCT ADMIN =================
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'condition', 'price', 'stock_count', 'available')
-    list_filter = ('category', 'condition', 'available')
+    list_display = ('name', 'category', 'condition', 'price', 'stock_count', 'available', 'is_featured')
+    list_filter = ('category', 'condition', 'available', 'is_featured')
+    list_editable = ('available', 'is_featured')
     search_fields = ('name',)
     radio_fields = {'condition': admin.HORIZONTAL}
     inlines = [ProductImageInline, VariationInline]

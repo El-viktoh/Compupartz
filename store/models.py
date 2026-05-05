@@ -25,6 +25,7 @@ class Product(models.Model):
     condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default='Brand New')
     description = models.TextField(blank=True)
     available = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False, help_text="Check this to display product on the home page.")
     stock_count = models.IntegerField(default=10)
 
     image = models.ImageField(upload_to='products/', blank=True, null=True)
