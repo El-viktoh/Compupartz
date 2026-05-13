@@ -193,7 +193,7 @@
                     </div>
                 </a>
                 {% else %}
-                <a href="{% url 'login' %}" class="bg-white/10 border border-white/20 px-4 py-1.5 rounded-full text-[13px] font-bold hover:text-white hover:bg-white/20 transition-all whitespace-nowrap">Login</a>
+                <a href="{% url 'login' %}" class="bg-white/10 border border-white/20 px-4 py-1.5 rounded-full text-[13px] font-bold text-white hover:bg-white/20 active:scale-95 active:bg-white/30 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(255,255,255,0.05)]">Login</a>
                 {% endif %}
             </div>
 
@@ -263,7 +263,7 @@
                     </button>
                 </form>
                 {% else %}
-                <a href="{% url 'login' %}" class="hidden md:block text-sm font-bold hover:text-white transition-colors">Login</a>
+                <a href="{% url 'login' %}" class="hidden md:block text-sm font-bold text-white hover:text-orange-200 transition-colors active:scale-95">Login</a>
                 <a href="{% url 'signup' %}" class="hidden md:inline-block text-[9px] md:text-xs font-bold text-white bg-brandOrange hover:bg-orange-600 px-2.5 py-1.5 md:px-4 md:py-2 rounded-full transition-all ml-1 md:ml-2 shadow-lg shadow-brandOrange/20">Join</a>
                 {% endif %}
 
