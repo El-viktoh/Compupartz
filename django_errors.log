@@ -524,3 +524,85 @@ Traceback (most recent call last):
     return super().execute(query, params)
 django.db.utils.OperationalError: no such column: store_product.is_featured
 ERROR 2026-05-13 09:07:59,851 basehttp "GET / HTTP/1.1" 500 130543
+ERROR 2026-05-13 09:18:26,900 log Internal Server Error: /
+Traceback (most recent call last):
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such column: store_product.is_featured
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/core/views.py", line 23, in home
+    if not featured_products:
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/models/query.py", line 414, in __bool__
+    self._fetch_all()
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/models/query.py", line 1886, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such column: store_product.is_featured
+ERROR 2026-05-13 09:18:26,917 basehttp "GET / HTTP/1.1" 500 130543
+ERROR 2026-05-13 09:19:32,543 log Internal Server Error: /
+Traceback (most recent call last):
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such column: store_product.is_featured
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/core/views.py", line 23, in home
+    if not featured_products:
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/models/query.py", line 414, in __bool__
+    self._fetch_all()
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/models/query.py", line 1886, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such column: store_product.is_featured
+ERROR 2026-05-13 09:19:32,543 basehttp "GET / HTTP/1.1" 500 130543
