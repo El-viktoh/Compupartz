@@ -220,7 +220,7 @@
                 </button>
 
                 {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="relative group mr-12 md:mr-0">
+                <a href="{% url 'dashboard' %}" class="relative group mr-6 md:mr-0">
                     <div class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-brandOrange/30 group-hover:border-brandOrange overflow-hidden transition-all duration-300 shadow-[0_0_15px_rgba(255,114,0,0.1)] group-hover:shadow-[0_0_15px_rgba(255,114,0,0.3)]">
                         {% if user.profile.avatar %}
                             <img src="{{ user.profile.avatar.url }}" class="w-full h-full object-cover">
@@ -239,7 +239,7 @@
                     </button>
                 </form>
                 {% else %}
-                <a href="{% url 'login' %}" class="bg-white/10 border border-white/20 px-4 py-1.5 rounded-full text-[13px] md:text-sm font-bold hover:text-white hover:bg-white/20 transition-all md:bg-transparent md:border-none md:px-0 md:py-0 mr-12 md:mr-0">Login</a>
+                <a href="{% url 'login' %}" class="bg-white/10 border border-white/20 px-4 py-1.5 rounded-full text-[13px] md:text-sm font-bold hover:text-white hover:bg-white/20 transition-all md:bg-transparent md:border-none md:px-0 md:py-0 mr-6 md:mr-0">Login</a>
                 <a href="{% url 'signup' %}" class="hidden md:inline-block text-[9px] md:text-xs font-bold text-white bg-brandOrange hover:bg-orange-600 px-2.5 py-1.5 md:px-4 md:py-2 rounded-full transition-all ml-1 md:ml-2 shadow-lg shadow-brandOrange/20">Join</a>
                 {% endif %}
 
