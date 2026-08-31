@@ -11,7 +11,7 @@
     <!-- HEADER -->
     <div class="mb-12 border-b border-gray-100 dark:border-white/5 pb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div>
-            <h1 class="text-3xl md:text-4xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-tight">
+            <h1 class="text-3xl md:text-4xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight">
                 REPAIR <span class="text-brandOrange">HISTORY</span>
             </h1>
             <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-2 font-black uppercase tracking-[0.2em]">
@@ -44,8 +44,8 @@
                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
                         <span class="text-[10px] font-black bg-gray-900 dark:bg-white text-white dark:text-black px-3 py-1 rounded-full uppercase tracking-widest">{{ repair.ticket_id }}</span>
                         <span class="text-[10px] font-black bg-brandOrange/10 text-brandOrange px-3 py-1 rounded-full uppercase tracking-widest">{{ repair.get_status_display }}</span>
-                        {% if repair.in_person %}
-                        <span class="text-[10px] font-black bg-brandBlue/10 text-brandBlue px-3 py-1 rounded-full uppercase tracking-widest tracking-tighter">In-Person Service</span>
+                        {% if repair.logistics_preference %}
+                        <span class="text-[10px] font-black bg-brandBlue/10 text-brandBlue px-3 py-1 rounded-full uppercase tracking-widest tracking-tighter">{{ repair.get_logistics_preference_display }}</span>
                         {% endif %}
                     </div>
                     
@@ -80,7 +80,7 @@
     <!-- EMPTY STATE -->
     <div class="bg-gray-50 dark:bg-white/5 rounded-[3rem] p-24 text-center border-2 border-dashed border-gray-200 dark:border-white/10">
         <div class="text-6xl mb-8 opacity-40">🛠️</div>
-        <h2 class="text-2xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest mb-4">No Active Requests</h2>
+        <h2 class="text-2xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-4">No Active Requests</h2>
         <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-10 max-w-sm mx-auto leading-relaxed">
             Need a hardware fix? All your booked laptop repairs and diagnostics will appear here once you start a request.
         </p>

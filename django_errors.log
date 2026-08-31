@@ -811,3 +811,21 @@ Traceback (most recent call last):
     return super().execute(query, params)
 django.db.utils.OperationalError: no such column: store_product.is_featured
 ERROR 2026-05-13 09:41:41,348 basehttp "GET / HTTP/1.1" 500 130709
+ERROR 2026-08-24 17:56:52,469 log Internal Server Error: /repair/book/
+Traceback (most recent call last):
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/repair/views.py", line 29, in book_repair
+    return redirect("repair_success", ticket_id=ticket.id)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/shortcuts.py", line 48, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/shortcuts.py", line 145, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/victoryeboah/Desktop/Compupartz_new/venv/lib/python3.9/site-packages/django/urls/resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'repair_success' with keyword arguments '{'ticket_id': 8}' not found. 1 pattern(s) tried: ['repair/success/(?P<ticket_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/\\Z']
+ERROR 2026-08-24 17:56:52,476 basehttp "POST /repair/book/ HTTP/1.1" 500 94927

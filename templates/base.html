@@ -10,48 +10,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brandBlue: "#008BC6",
-                        brandOrange: "#FF7200",
-                    },
-                    animation: {
-                        scaleIn: 'scaleIn 0.3s ease-out forwards',
-                        fadeIn: 'fadeIn 0.4s ease-out forwards',
-                        slideUp: 'slideUp 0.4s ease-out forwards',
-                        pulseGlow: 'pulseGlow 2s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        scaleIn: {
-                            '0%': { opacity: '0', transform: 'scale(0.95)' },
-                            '100%': { opacity: '1', transform: 'scale(1)' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        pulseGlow: {
-                            '0%, 100%': { boxShadow: '0 0 0px rgba(0, 139, 198, 0.5)' },
-                            '50%': { boxShadow: '0 0 15px rgba(0, 139, 198, 0.8)' },
-                        },
-                        revealUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    }
-                }
-            }
-        }    
-    </script>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 
     <script>
         // Check local storage or system preference to prevent flashing before page load
@@ -63,100 +22,17 @@
     </script>
 
     {% include "partials/toast.html" %}
-
-
-    <style>
-        :root {
-            --scroll-size: 8px;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: var(--scroll-size);
-            height: var(--scroll-size);
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(153, 61, 0, 0.3);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 114, 0, 0.5);
-        }
-
-        .font-outfit { font-family: 'Outfit', sans-serif; }
-        
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .reveal-element {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        .reveal-element.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Navbar dynamic styles */
-        #main-nav {
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        #main-nav.scrolled {
-            background: rgba(15, 16, 20, 0.85); /* Dark matching the hero */
-            backdrop-filter: blur(16px);
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
-            border-bottom-color: rgba(255, 114, 0, 0.2);
-        }
-    </style>
 </head>
 
 <body
-    class="font-outfit bg-white dark:bg-[#0a0a0c] text-gray-900 dark:text-gray-100 overflow-x-hidden w-full relative min-h-screen flex flex-col transition-colors duration-300">
+    class="font-outfit bg-slate-50 dark:bg-[#0a0a0c] text-slate-800 dark:text-gray-100 overflow-x-hidden w-full relative min-h-screen flex flex-col transition-colors duration-300">
 
 
-    <!-- ================= CART ================= -->
-    <div id="cartOverlay"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-[80] transition-opacity duration-300"></div>
-
-    <div id="cartDrawer"
-        class="fixed top-0 right-0 h-full w-96 max-w-full bg-white dark:bg-gray-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-[90] flex flex-col border-l border-gray-100 dark:border-gray-700">
-
-        <div class="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-700">
-            <h2 class="text-xl font-bold dark:text-gray-100">Your Cart</h2>
-            <button onclick="closeCart()"
-                class="text-3xl text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition">&times;</button>
-        </div>
-
-        <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
-
-        <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-            <p class="flex justify-between text-lg font-bold mb-5 dark:text-gray-100">
-                <span>Total</span>
-                <span id="cartTotal" class="text-brandBlue">GHS 0.00</span>
-            </p>
-
-            <a href="/cart/checkout/"
-                class="flex items-center justify-center w-full bg-gradient-to-r from-brandOrange to-orange-500 text-white text-center py-4 rounded-xl font-bold shadow-lg hover:shadow-orange-500/30 hover:-translate-y-0.5 transition-all duration-300 active:scale-95">
-                Proceed to Checkout
-            </a>
-        </div>
-    </div>
+    <!-- ================= CART REMOVED ================= -->
 
     <!-- ================= NAVBAR ================= -->
     <nav id="main-nav"
-        class="bg-gradient-to-r from-[#993d00] to-orange-950 sticky top-0 z-[70] shadow-xl border-b border-orange-900/50">
+        class="font-inter bg-gradient-to-r from-[#993d00]/70 to-orange-950/70 backdrop-blur-md sticky top-0 z-[70] shadow-xl border-b border-orange-900/50">
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-start md:justify-between md:gap-6">
 
@@ -203,29 +79,14 @@
             <!-- NAV LINKS -->
             <div
                 class="hidden md:flex items-center gap-8 font-medium text-sm text-white/90 tracking-wide">
-                <a href="/store/" class="hover:text-white transition-colors">Store</a>
                 <a href="/repair/" class="hover:text-white transition-colors">Repair</a>
-                <a href="/order/track/"
-                    class="hover:text-white transition-colors">Track</a>
+                <a href="/repair/track/" class="hover:text-white transition-colors">Track Repair</a>
                 <a href="{% url 'blog:post_list' %}" class="hover:text-white transition-colors">Tech Hub</a>
+                <a href="{% url 'contact' %}" class="hover:text-white transition-colors">Contact</a>
             </div>
 
 
-            <!-- 🔍 SEARCH -->
-            <form action="/store/" method="GET" class="hidden md:flex flex-1 max-w-xl group relative mx-auto">
-
-                <div
-                    class="flex w-full rounded-md overflow-hidden shadow-inner border border-white/20 bg-white/5 focus-within:ring-2 focus-within:ring-white/50 transition-all backdrop-blur-md">
-                    <input type="text" name="q" placeholder="Search laptops, parts..." value="{{ request.GET.q }}"
-                        class="w-full px-5 py-2.5 text-sm outline-none bg-white text-gray-900 placeholder-gray-500">
-
-                    <button type="submit"
-                        class="bg-white/10 text-white px-6 text-sm font-bold hover:bg-white/20 transition border-l border-white/10">
-                        Search
-                    </button>
-                </div>
-
-            </form>
+            <!-- SEARCH REMOVED -->
 
 
             <!-- RIGHT SIDE -->
@@ -268,14 +129,7 @@
                 {% endif %}
 
 
-                <!-- CART -->
-                <div class="relative cursor-pointer hover:opacity-80 transition group p-1 z-10" onclick="openCart()">
-                    <span class="text-[22px] md:text-2xl transform group-hover:scale-110 transition inline-block drop-shadow-md pointer-events-none">🛒</span>
-                    <span id="cartCount"
-                        class="absolute -top-1 -right-1 bg-white text-orange-600 text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-lg hidden border-2 border-orange-600 pointer-events-none">
-                        0
-                    </span>
-                </div>
+                <!-- CART ICON REMOVED -->
 
             </div>
 
@@ -284,7 +138,7 @@
     </nav>
 
     <!-- ================= MOBILE SIDEBAR ================= -->
-    <div id="mobileSidebar" class="fixed inset-0 z-[100] invisible transition-all duration-300">
+    <div id="mobileSidebar" class="font-inter fixed inset-0 z-[100] invisible transition-all duration-300">
         <!-- Overlay -->
         <div id="sidebarOverlay" onclick="toggleSidebar()" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
         
@@ -302,17 +156,17 @@
             </div>
             
             <div class="flex-1 overflow-y-auto p-6 space-y-2">
-                <a href="/store/" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
-                    <span class="text-lg">🛒</span> Store
-                </a>
                 <a href="/repair/" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
                     <span class="text-lg">🛠️</span> Repair
                 </a>
-                <a href="/order/track/" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
-                    <span class="text-lg">📦</span> Track
+                <a href="/repair/track/" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
+                    <span class="text-lg">📦</span> Track Repair
                 </a>
                 <a href="{% url 'blog:post_list' %}" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
                     <span class="text-lg">📰</span> Tech Hub
+                </a>
+                <a href="{% url 'contact' %}" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
+                    <span class="text-lg">📞</span> Contact
                 </a>
 
                 <!-- MOBILE THEME TOGGLE -->
@@ -348,14 +202,11 @@
                 
                 <!-- DASHBOARD SUBLINKS -->
                 <div id="dashboardSubmenu" class="hidden flex-col gap-1 pl-12 pr-4 pb-2 transition-all duration-300">
-                    <a href="{% url 'wishlist_view' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px]">
-                        <span class="text-gray-300 dark:text-gray-600">•</span> Wishlist
+                    <a href="{% url 'my_repairs' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px]">
+                        <span class="text-gray-300 dark:text-gray-600">•</span> My Repairs
                     </a>
-                    <a href="{% url 'my_orders' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px]">
-                        <span class="text-gray-300 dark:text-gray-600">•</span> Recent Orders
-                    </a>
-                    <a href="/order/track/" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px]">
-                        <span class="text-gray-300 dark:text-gray-600">•</span> Track Order
+                    <a href="/repair/track/" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px]">
+                        <span class="text-gray-300 dark:text-gray-600">•</span> Track Repair
                     </a>
                 </div>
                 <form action="/accounts/logout/" method="post" class="w-full relative z-10">
@@ -425,13 +276,15 @@
                 <ul class="space-y-3 text-sm">
                     <li><a href="/" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
                                 class="text-gray-600">→</span> Home</a></li>
-                    <li><a href="/store/" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
-                                class="text-gray-600">→</span> Store</a></li>
                     <li><a href="/repair/" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
                                 class="text-gray-600">→</span> Repairs</a></li>
-                    <li><a href="/order/track/"
+                    <li><a href="/repair/track/"
                             class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
-                                class="text-gray-600">→</span> Track Order</a></li>
+                                class="text-gray-600">→</span> Track Repair</a></li>
+                    <li><a href="{% url 'blog:post_list' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
+                                class="text-gray-600">→</span> Tech Hub</a></li>
+                    <li><a href="{% url 'contact' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
+                                class="text-gray-600">→</span> Contact</a></li>
                     <li><a href="{% url 'terms' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
                                 class="text-gray-600">→</span> Terms of Service</a></li>
                     <li><a href="{% url 'privacy_policy' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
@@ -482,275 +335,12 @@
     </footer>
 
     <!-- ================= JS ================= -->
-    <script>
-
-        function getCSRFToken() {
-            return document.cookie.split("; ").find(row => row.startsWith("csrftoken="))?.split("=")[1];
-        }
-
-        function openCart() {
-            document.getElementById("cartDrawer").classList.remove("translate-x-full");
-            document.getElementById("cartOverlay").classList.remove("hidden");
-        }
-
-        function closeCart() {
-            document.getElementById("cartDrawer").classList.add("translate-x-full");
-            document.getElementById("cartOverlay").classList.add("hidden");
-        }
-
-
-        // ✅ WISHLIST TOGGLE
-        function toggleWishlist(btn, productId) {
-            fetch(`/store/wishlist/toggle/${productId}/`, {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCSRFToken(),
-                    "Content-Type": "application/x-www-form-urlencoded"
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                const svg = btn.querySelector('svg');
-                if (data.status === 'added') {
-                    svg.setAttribute('fill', '#ff7200');
-                    svg.setAttribute('stroke', '#ff7200');
-                    svg.classList.add('scale-110');
-                    if (typeof showToast === "function") showToast("Added to wishlist ❤️");
-                } else {
-                    svg.setAttribute('fill', 'none');
-                    svg.setAttribute('stroke', 'currentColor');
-                    svg.classList.remove('scale-110');
-                    if (typeof showToast === "function") showToast("Removed from wishlist");
-                }
-            })
-            .catch(err => {
-                console.error("Wishlist Error:", err);
-                window.location.href = "/accounts/login/";
-            });
-        }
-
-        // ✅ UPDATE CART
-        function updateCart(productId, action) {
-            fetch("/cart/ajax/update/", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCSRFToken(),
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: `product_id=${productId}&action=${action}`
-            })
-                .then(res => res.json())
-                .then(() => {
-                    loadCart();
-                    loadCartCount();
-                });
-        }
-
-        // ✅ LOAD CART (UPGRADED UI)
-        function loadCart() {
-            fetch("/cart/ajax/")
-                .then(res => res.json())
-                .then(data => {
-
-                    const container = document.getElementById("cartItems");
-                    const total = document.getElementById("cartTotal");
-
-                    container.innerHTML = "";
-
-                    if (!data.items || data.items.length === 0) {
-                        container.innerHTML = `
-                <div class="text-center py-24 px-4">
-                    <div class="text-6xl mb-6 opacity-50 grayscale mx-auto">🛍️</div>
-                    <p class="text-gray-500 dark:text-gray-400 mb-6 text-lg">Your cart is empty.</p>
-                    <a href="/store/" class="inline-block bg-gradient-to-r from-brandBlue to-blue-500 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300">
-                        Start Shopping
-                    </a>
-                </div>
-            `;
-                        total.innerText = "GHS 0.00";
-                        return;
-                    }
-
-                    data.items.forEach(item => {
-                        let variationHtml = "";
-                        if(item.variations && item.variations.length > 0) {
-                            variationHtml = `<p class="text-[10px] text-gray-500 mt-0.5 italic">${item.variations.join(', ')}</p>`;
-                        }
-
-                        container.innerHTML += `
-                <div class="flex items-center gap-5 border-b border-gray-100 dark:border-gray-700 pb-5 pt-2 group">
-
-                    <div class="w-20 h-20 rounded-md flex-shrink-0 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 flex items-center justify-center p-2 overflow-hidden shadow-inner">
-                        <img src="${item.image || ''}" class="w-full h-full object-contain drop-shadow-sm group-hover:scale-110 transition-transform duration-300">
-                    </div>
-
-                    <div class="flex-1 min-w-0 py-1">
-                        <p class="text-sm font-bold text-gray-900 dark:text-white truncate mb-0.5">${item.name}</p>
-                        ${variationHtml}
-
-                        <div class="flex flex-wrap items-center gap-3 mt-2">
-                            <div class="flex items-center bg-white dark:bg-gray-800 rounded-md p-0.5 border border-gray-200 dark:border-gray-600 shadow-sm">
-                                <button onclick="updateCart('${item.key}', 'decrease')" class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">−</button>
-                                <span class="w-8 text-center text-sm font-bold dark:text-white">${item.quantity}</span>
-                                <button onclick="updateCart('${item.key}', 'increase')" class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">+</button>
-                            </div>
-                            <button onclick="updateCart('${item.key}', 'remove')" class="text-xs font-semibold text-red-500 hover:text-red-600 hover:underline transition-all">Remove</button>
-                        </div>
-                    </div>
-
-                    <div class="text-right flex-shrink-0 py-1">
-                        <p class="text-sm font-extrabold text-brandBlue">
-                            GHS ${Number(item.total).toFixed(2)}
-                        </p>
-                    </div>
-
-                </div>
-            `;
-                    });
-
-                    total.innerText = "GHS " + Number(data.total).toFixed(2);
-                });
-        }
-
-        // ✅ COUNT
-        function loadCartCount() {
-            fetch("/cart/ajax/count/")
-                .then(res => res.json())
-                .then(data => {
-                    const badge = document.getElementById("cartCount");
-                    badge.innerText = data.count;
-                    badge.style.display = data.count > 0 ? "inline-block" : "none";
-                });
-        }
-
-        // INIT
-        document.addEventListener("DOMContentLoaded", function () {
-            loadCart();
-            loadCartCount();
-            document.getElementById("cartOverlay").addEventListener("click", closeCart);
-
-            // ✅ Theme Toggle Init (MULTI-BUTTON SUPPORT)
-            const darkIcons = document.querySelectorAll('.theme-toggle-dark-icon');
-            const lightIcons = document.querySelectorAll('.theme-toggle-light-icon');
-            const toggleButtons = document.querySelectorAll('.theme-toggle');
-
-            const updateIcons = () => {
-                const isDark = document.documentElement.classList.contains('dark');
-                darkIcons.forEach(icon => icon.classList.toggle('hidden', isDark));
-                lightIcons.forEach(icon => icon.classList.toggle('hidden', !isDark));
-            };
-
-            // Initial Sync
-            updateIcons();
-
-            toggleButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const isDark = document.documentElement.classList.toggle('dark');
-                    localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
-                    updateIcons();
-                });
-            });
-
-            // ✅ Navbar Scroll Logic
-            const nav = document.getElementById('main-nav');
-            const handleScroll = () => {
-                if (window.scrollY > 50) {
-                    nav.classList.add('scrolled');
-                } else {
-                    nav.classList.remove('scrolled');
-                }
-            };
-            window.addEventListener('scroll', handleScroll);
-            handleScroll();
-
-            // ✅ Intersection Observer for Reveal
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, observerOptions);
-
-            document.querySelectorAll('.reveal-element').forEach(el => observer.observe(el));
-        });
-
-        document.addEventListener("click", function (e) {
-            const addBtn = e.target.closest(".card-add-to-cart-btn");
-            if (addBtn) {
-
-                const btn = addBtn;
-                const productId = btn.dataset.productId;
-                const productName = btn.dataset.productName || "Item";
-
-                btn.disabled = true;
-                btn.innerText = "Adding...";
-
-                fetch("/cart/ajax/add/", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRFToken": getCSRFToken(),
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: "product_id=" + productId
-                })
-                    .then(res => res.json())
-                    .then(() => {
-
-                        btn.disabled = false;
-                        btn.innerText = "Add to Cart";
-
-                        loadCart();
-                        loadCartCount();
-
-                        setTimeout(openCart, 150);
-
-                        if (typeof showToast === "function") {
-                            showToast(productName + " added to cart 🛒");
-                        }
-
-                    });
-            }
-
-        });
-
-    </script>
-
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('mobileSidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const panel = document.getElementById('sidebarPanel');
-            if (!sidebar || !overlay || !panel) return;
-            
-            const isVisible = !sidebar.classList.contains('invisible');
-            
-            if (isVisible) {
-                overlay.classList.replace('opacity-100', 'opacity-0');
-                panel.classList.replace('translate-x-0', '-translate-x-full');
-                setTimeout(() => sidebar.classList.add('invisible'), 300);
-                document.body.style.overflow = '';
-            } else {
-                sidebar.classList.remove('invisible');
-                document.body.style.overflow = 'hidden';
-                setTimeout(() => {
-                    overlay.classList.add('opacity-100');
-                    overlay.classList.remove('opacity-0');
-                    panel.classList.replace('-translate-x-full', 'translate-x-0');
-                }, 10);
-            }
-        }
-    </script>
+    <script src="{% static 'js/main.js' %}" defer></script>
 
     <!-- ================= WHATSAPP WIDGET ================= -->
     <div id="whatsapp-widget" class="fixed {% block whatsapp_bottom %}bottom-4{% endblock %} right-4 md:bottom-6 md:right-6 z-[999] font-outfit transform-gpu transition-all">
         <!-- Chat Window -->
-        <div id="whatsapp-window" class="absolute bottom-16 right-0 md:bottom-20 w-[280px] md:w-[320px] bg-white dark:bg-[#111218] rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-white/10 overflow-hidden opacity-0 translate-y-10 pointer-events-none transition-all duration-300 transform-gpu">
+        <div id="whatsapp-window" class="absolute bottom-16 right-0 md:bottom-20 w-[280px] md:w-[320px] bg-white dark:bg-[#12141a] rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-white/10 overflow-hidden opacity-0 translate-y-10 pointer-events-none transition-all duration-300 transform-gpu">
             <div class="bg-gradient-to-br from-[#0a0a0c] via-[#005a8d] to-[#008BC6] p-5 md:p-6 text-white pb-10 md:pb-12 border-b border-white/5">
                 <div class="flex justify-between items-center mb-2 relative z-10">
                     <div class="flex items-center gap-2">
@@ -766,7 +356,7 @@
             </div>
             
             <div class="p-5 md:p-6 -mt-8 relative z-20">
-                <div class="bg-white dark:bg-[#1a1b23] p-4 md:p-5 rounded-2xl shadow-xl border border-gray-50 dark:border-white/5">
+                <div class="bg-white dark:bg-[#12141a] p-4 md:p-5 rounded-2xl shadow-xl border border-gray-50 dark:border-white/5">
                     <div class="flex gap-3 items-start">
                         <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#008BC6] flex items-center justify-center text-lg shrink-0 shadow-lg shadow-blue-500/20 text-white">👋</div>
                         <div class="flex-1">
@@ -793,32 +383,6 @@
         </button>
     </div>
 
-    <script>
-        function toggleWhatsapp() {
-            const win = document.getElementById('whatsapp-window');
-            if (win.classList.contains('opacity-0')) {
-                win.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
-                win.classList.add('opacity-100', 'translate-y-0');
-            } else {
-                win.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
-                win.classList.remove('opacity-100', 'translate-y-0');
-            }
-        }
-
-        function toggleDashboardSubmenu() {
-            const submenu = document.getElementById('dashboardSubmenu');
-            const arrow = document.getElementById('dashboardSubArrow');
-            if (submenu.classList.contains('hidden')) {
-                submenu.classList.remove('hidden');
-                submenu.classList.add('flex');
-                arrow.classList.add('rotate-180');
-            } else {
-                submenu.classList.add('hidden');
-                submenu.classList.remove('flex');
-                arrow.classList.remove('rotate-180');
-            }
-        }
-    </script>
 </body>
 
 </html>

@@ -1,8 +1,8 @@
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 
-from store.models import Product, Wishlist
 from .models import FAQ, Profile
 from blog.models import Post
 from media_hub.models import Video
@@ -19,32 +19,15 @@ from django.contrib import messages
 # HOME
 # =========================
 def home(request):
-    featured_products = Product.objects.filter(available=True, is_featured=True)[:6]
-    if not featured_products:
-        featured_products = Product.objects.filter(available=True)[:6]
     faqs = FAQ.objects.filter(is_published=True)
     latest_posts = Post.objects.filter(status='published').order_by('-created_at')[:3]
     featured_videos = Video.objects.filter(is_featured=True)
 
-    # ✅ attach rating data
-    for product in featured_products:
-        product.avg_rating = product.get_average_rating()
-        product.review_count = product.get_review_count()
-
-    # ✅ get wishlist for hearts
-    if request.user.is_authenticated:
-        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
-    else:
-        wishlist_ids = request.session.get('wishlist', [])
-
     return render(request, "home.html", {
-        "featured_products": featured_products,
         "faqs": faqs,
         "latest_posts": latest_posts,
         "featured_videos": featured_videos,
-        "wishlist_ids": wishlist_ids
     })
-
 
 from .forms import RegistrationForm
 
@@ -110,7 +93,6 @@ def activate(request, uidb64, token):
         return render(request, "registration/account_activation_invalid.html")
 
 
-from customer_orders.models import Order
 from repair.models import RepairTicket
 from .forms import UserUpdateForm, ProfileUpdateForm
 
@@ -119,26 +101,15 @@ from .forms import UserUpdateForm, ProfileUpdateForm
 # =========================
 @login_required
 def dashboard(request):
-    orders = Order.objects.filter(
-        user=request.user
-    ).order_by('-created_at')[:5]
-
-    repairs = RepairTicket.objects.filter(
-        user=request.user
-    ).order_by('-created_at')[:5]
-
-    # ✅ WISHLIST DATA
-    wishlist_items = Wishlist.objects.filter(user=request.user).order_by('-added_at')[:4]
-    wishlist_ids = wishlist_items.values_list('product_id', flat=True)
-
-    # ✅ attach product image from first order item
-    for order in orders:
-        first_item = order.items.first()
-
-        if first_item and hasattr(first_item, "product") and first_item.product and first_item.product.image:
-            order.image = first_item.product.image.url
-        else:
-            order.image = None
+    active_repairs = RepairTicket.objects.filter(
+        user=request.user,
+        status__in=['pending', 'in_progress']
+    ).order_by('-created_at')
+    
+    past_repairs = RepairTicket.objects.filter(
+        user=request.user,
+        status='completed'
+    ).order_by('-created_at')
 
     # ✅ ENSURE PROFILE EXISTS (Fixes crash for existing users)
     profile, created = Profile.objects.get_or_create(user=request.user)
@@ -148,10 +119,8 @@ def dashboard(request):
     p_form = ProfileUpdateForm(instance=profile)
 
     return render(request, "account/dashboard.html", {
-        "orders": orders,
-        "repairs": repairs,
-        "wishlist_items": wishlist_items,
-        "wishlist_ids": wishlist_ids,
+        "active_repairs": active_repairs,
+        "past_repairs": past_repairs,
         "u_form": u_form,
         "p_form": p_form,
     })
@@ -184,3 +153,29 @@ def terms(request):
 
 def privacy_policy(request):
     return render(request, "core/privacy.html")
+
+def contact(request):
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        email = request.POST.get("email", "").strip()
+        subject = request.POST.get("subject", "").strip()
+        message_body = request.POST.get("message", "").strip()
+
+        if name and email and subject and message_body:
+            try:
+                EmailMessage(
+                    subject=f"[Contact Form] {subject}",
+                    body=f"From: {name} <{email}>\n\n{message_body}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[settings.SERVER_EMAIL],
+                    reply_to=[email],
+                ).send(fail_silently=False)
+                messages.success(request, "Your message has been sent. We'll get back to you shortly.")
+            except Exception as e:
+                logger.error(f"Contact form email error: {str(e)}")
+                messages.error(request, "We couldn't send your message right now. Please try again later.")
+            return redirect("contact")
+
+        messages.error(request, "Please fill in all fields.")
+
+    return render(request, "core/contact.html")

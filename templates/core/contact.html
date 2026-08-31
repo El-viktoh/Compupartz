@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact Us | Compupartz{% endblock %}
+
+{% block content %}
+<div class="relative max-w-7xl mx-auto px-6 pt-20 pb-24 text-slate-800 dark:text-gray-100">
+    <!-- Glow effects -->
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-brandBlue/10 rounded-full blur-[100px] -z-10 animate-pulseGlow"></div>
+    
+    <div class="text-center mb-16 animate-slideUp">
+        <h1 class="text-3xl md:text-5xl font-display font-bold tracking-widest uppercase mb-4">
+            Get In <span class="bg-clip-text text-transparent bg-gradient-to-r from-brandBlue to-blue-500">Touch</span>
+        </h1>
+        <p class="text-slate-500 dark:text-gray-400 font-light max-w-2xl mx-auto">
+            Need help with a repair or have a question? Reach out to our expert team. We are here to get your devices back in peak condition.
+        </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12 lg:gap-20">
+        
+        <!-- Contact Information -->
+        <div class="space-y-10 animate-slideUp" style="animation-delay: 0.1s;">
+            <div class="bg-white dark:bg-gray-800/50 p-8 rounded-3xl border border-slate-200/60 dark:border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] backdrop-blur-md">
+                <h3 class="text-xl font-bold mb-8 uppercase tracking-wider font-outfit border-b border-slate-200/60 dark:border-gray-700 pb-4">Our Information</h3>
+                
+                <div class="space-y-8">
+                    <div class="flex items-start gap-5 group">
+                        <div class="w-12 h-12 bg-slate-50 dark:bg-gray-900 rounded-full flex items-center justify-center text-xl shadow-inner group-hover:scale-110 group-hover:bg-brandBlue/10 group-hover:text-brandBlue transition-all">
+                            📍
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase tracking-widest text-slate-400 mb-1">Location</h4>
+                            <p class="text-slate-800 dark:text-gray-200 font-medium">KNUST, Kumasi, Ghana</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-5 group">
+                        <div class="w-12 h-12 bg-slate-50 dark:bg-gray-900 rounded-full flex items-center justify-center text-xl shadow-inner group-hover:scale-110 group-hover:bg-brandOrange/10 group-hover:text-brandOrange transition-all">
+                            📞
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase tracking-widest text-slate-400 mb-1">Phone</h4>
+                            <a href="tel:0540322533" class="text-slate-800 dark:text-gray-200 font-medium hover:text-brandOrange transition-colors">0540 322 533</a>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-5 group">
+                        <div class="w-12 h-12 bg-slate-50 dark:bg-gray-900 rounded-full flex items-center justify-center text-xl shadow-inner group-hover:scale-110 group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-all">
+                            📧
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase tracking-widest text-slate-400 mb-1">Email</h4>
+                            <a href="mailto:support@compupartz.com" class="text-slate-800 dark:text-gray-200 font-medium hover:text-blue-500 transition-colors">support@compupartz.com</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 pt-8 border-t border-slate-200/60 dark:border-gray-700">
+                    <h4 class="font-bold text-sm uppercase tracking-widest text-slate-400 mb-4">Business Hours</h4>
+                    <ul class="space-y-2 text-sm text-slate-600 dark:text-gray-300">
+                        <li class="flex justify-between"><span>Monday - Friday</span> <span class="font-bold text-slate-800 dark:text-white">9:00 AM - 6:00 PM</span></li>
+                        <li class="flex justify-between"><span>Saturday</span> <span class="font-bold text-slate-800 dark:text-white">10:00 AM - 4:00 PM</span></li>
+                        <li class="flex justify-between"><span>Sunday</span> <span class="font-bold text-brandOrange">Closed</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="bg-white dark:bg-[#12141a] p-8 md:p-10 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-200/60 dark:border-white/10 animate-slideUp" style="animation-delay: 0.2s;">
+            <h3 class="text-xl font-bold mb-8 uppercase tracking-wider font-outfit text-slate-800 dark:text-white">Send a Message</h3>
+            
+            <form action="{% url 'contact' %}" method="POST" class="space-y-6">
+                {% csrf_token %}
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Name</label>
+                        <input type="text" name="name" required class="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-white/5 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brandBlue/50 outline-none transition-all dark:text-white">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Email</label>
+                        <input type="email" name="email" required class="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-white/5 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brandBlue/50 outline-none transition-all dark:text-white">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Subject</label>
+                    <input type="text" name="subject" required class="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-white/5 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brandBlue/50 outline-none transition-all dark:text-white">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Message</label>
+                    <textarea name="message" rows="5" required class="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-white/5 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brandBlue/50 outline-none transition-all resize-none dark:text-white"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-brandBlue to-blue-600 text-white font-bold uppercase tracking-widest text-sm py-4 rounded-xl hover:shadow-lg hover:shadow-brandBlue/30 hover:-translate-y-0.5 transition-all active:scale-95">
+                    Send Message
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Map Section -->
+    <div class="mt-20 animate-slideUp" style="animation-delay: 0.3s;">
+        <div class="w-full h-96 bg-slate-200 dark:bg-gray-800 rounded-3xl overflow-hidden relative shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-200/60 dark:border-white/5">
+            <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
+                src="https://maps.google.com/maps?q=KNUST,%20Kumasi,%20Ghana&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                class="w-full h-full dark:invert-[.9] dark:hue-rotate-180 dark:opacity-80 transition-all duration-300">
+            </iframe>
+            
+            <div class="absolute bottom-6 left-6 md:bottom-10 md:left-10 bg-white/90 dark:bg-[#12141a]/90 border border-slate-200/60 dark:border-white/10 p-6 rounded-2xl shadow-xl max-w-sm backdrop-blur-md">
+                <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-2 uppercase tracking-widest font-outfit">Compupartz HQ</h4>
+                <p class="text-xs text-slate-500 dark:text-gray-400 font-light leading-relaxed mb-4">
+                    Located in the heart of KNUST campus. Drop by for in-person diagnostics or to drop off your hardware.
+                </p>
+                <a href="https://maps.google.com/?q=KNUST,+Kumasi" target="_blank" class="inline-block text-[10px] font-black uppercase tracking-widest text-[#008BC6] hover:text-[#ff7200] transition-colors">
+                    Get Directions &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -36,6 +36,10 @@ ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',') if
 if not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['*'] if DEBUG else []
 
+# The site currently runs repair-only. Flip this to True (or set the env var)
+# to bring back the store/cart/checkout/order-tracking/parts routes.
+ENABLE_STORE = os.getenv('ENABLE_STORE', 'False').lower() == 'true'
+
 
 # Application definition
 
@@ -197,7 +201,7 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
 #FIX LOGIN REDIRECT
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = "/accounts/login/"
 

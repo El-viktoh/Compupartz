@@ -5,491 +5,311 @@
 
 {% block content %}
 
-<div
-    class="relative -mx-6 px-6 sm:-mx-0 sm:px-0 bg-[#0a0a0c] text-gray-100 -mt-24 pt-20 sm:pt-32 pb-16 overflow-hidden border-b border-white/5 sm:w-screen sm:left-1/2 sm:-translate-x-1/2">
-    <!-- Glow effects -->
-    <div
-        class="absolute top-0 right-0 w-[600px] h-[600px] bg-[#008BC6]/20 rounded-full blur-[120px] -z-10 animate-pulseGlow">
+<!-- ================= HERO SECTION ================= -->
+<div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] min-h-[90vh] flex flex-col justify-center -mt-24 pt-24 sm:pt-32 pb-20 border-b border-slate-200/60 dark:border-white/5 bg-slate-50 dark:bg-[#0a0a0c] overflow-hidden transition-colors duration-300">
+    <!-- Full Background Image -->
+    <div class="absolute inset-0 z-0">
+        <img src="{% static 'images/hero_african.png' %}" alt="Hardware Repair" class="w-full h-full object-cover opacity-90 dark:opacity-70 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-slate-50/90 to-transparent dark:from-[#0a0a0c] dark:via-[#0a0a0c]/90 dark:to-transparent transition-colors duration-300"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-transparent dark:from-[#0a0a0c] dark:via-transparent dark:to-transparent transition-colors duration-300"></div>
     </div>
-    <div class="absolute bottom-10 left-0 w-[500px] h-[500px] bg-[#ff7200]/10 rounded-full blur-[100px] -z-10 animate-pulseGlow"
-        style="animation-delay: 1s;"></div>
 
-    <div class="max-w-7xl mx-auto px-6 relative z-10 w-full mb-8">
-
-        <!-- HERO SECTION -->
-        <section class="flex flex-col md:grid md:grid-cols-2 gap-12 md:gap-16 items-center py-6 md:py-16">
-            <div class="animate-fadeIn flex flex-col items-center md:items-start text-center md:text-left w-full">
-                <div
-                    class="inline-block bg-[#ff7200]/20 border border-[#ff7200]/30 text-[#ff7200] text-[10px] font-black px-3 py-1 rounded-full mb-6 uppercase tracking-widest">
-                    Premium Quality
-                </div>
-                <!-- Swedish title translating "VAPE GJORT RÄTT" style -->
-                <h1
-                    class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-outfit font-black leading-[1.1] mb-6 text-white tracking-widest uppercase animate-slideUp w-full">
-                    Power Your<br>Tech Needs
-                </h1>
-                <p class="text-gray-400 text-base md:text-lg mb-10 max-w-md font-light leading-relaxed w-full">
-                    The ultimate destination for premium laptop components. From absolute performance to essential
-                    parts, Compupartz delivers trusted solutions.
-                </p>
-
-                <div class="flex flex-wrap justify-center md:justify-start gap-4 w-full">
-                    <a href="/store/"
-                        class="bg-gradient-to-r from-[#ff7200] to-orange-500 hover:from-orange-500 hover:to-orange-600 shadow-[0_0_20px_rgba(255,114,0,0.3)] text-white px-8 py-3.5 rounded-full font-bold transition-all w-full sm:w-auto text-center text-sm shadow-orange-500/30">
-                        Shop Now
-                    </a>
-                    <a href="/repair/book/"
-                        class="border border-white/20 text-white px-8 py-3.5 rounded-full font-bold hover:bg-white/5 hover:border-white/40 transition-all w-full sm:w-auto text-center text-sm">
-                        Book Repair
-                    </a>
-                </div>
-                <div
-                    class="mt-8 flex items-center justify-center md:justify-start gap-6 text-xs text-gray-500 font-bold pb-2 border-b border-white/10 w-fit mx-auto md:mx-0 uppercase tracking-wider">
-                    <span class="flex items-center gap-2"><span class="text-[#ff7200]">&#10003;</span> Original
-                        Parts</span>
-                    <span class="flex items-center gap-2"><span class="text-[#ff7200]">&#10003;</span> Expert
-                        Service</span>
-                </div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
+        <div class="max-w-2xl">
+            <div class="inline-flex items-center gap-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 px-3 py-1 rounded-full mb-6 shadow-sm dark:shadow-none">
+                <span class="w-2 h-2 rounded-full bg-[#ff7200] animate-pulse"></span>
+                <span class="text-gray-800 dark:text-white text-[10px] font-black uppercase tracking-widest transition-colors duration-300">Premium Repair</span>
             </div>
+            
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-display font-bold leading-[1.1] mb-6 text-slate-800 dark:text-white tracking-wide transition-colors duration-300">
+                Expert Laptop Repairs You Can Trust.
+            </h1>
+            
+            <p class="text-slate-600 dark:text-gray-400 text-base md:text-lg mb-10 font-light leading-relaxed transition-colors duration-300">
+                Ghana's premier destination for high-end technical repairs. Genuine parts, skilled technicians, and surgical precision for all your computer hardware needs.
+            </p>
 
-            <!-- VISUAL HERO -->
-            <div class="relative flex justify-center animate-slideUp z-10 w-full max-w-md mx-auto">
-                <!-- Techy dark floating cards mimicking the image -->
-                <div
-                    class="relative w-full bg-[#111218]/90 backdrop-blur-md rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,139,198,0.2)] p-12 transform hover:scale-105 hover:-rotate-1 transition-all duration-500 aspect-square flex flex-col justify-center items-center">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-br from-[#008BC6]/20 to-transparent rounded-3xl pointer-events-none">
-                    </div>
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/20 blur-2xl rounded-full"></div>
-
-                    <h2
-                        class="text-3xl font-black tracking-widest text-[#008BC6] drop-shadow-[0_0_15px_rgba(0,139,198,0.8)] z-10 text-center mb-6">
-                        COMPUPARTZ</h2>
-                    <div class="w-16 h-1 bg-[#ff7200] mx-auto mb-8 rounded-full shadow-[0_0_10px_rgba(255,114,0,0.8)]">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 w-full relative z-10">
-                        <div
-                            class="bg-black/50 border border-white/5 rounded-xl h-20 flex items-center justify-center shadow-inner hover:border-[#008BC6]/50 transition-colors cursor-pointer">
-                            <span
-                                class="text-[#008BC6] text-[10px] font-black uppercase tracking-widest">Hardware</span>
-                        </div>
-                        <div
-                            class="bg-black/50 border border-white/5 rounded-xl h-20 flex items-center justify-center shadow-inner hover:border-[#ff7200]/50 transition-colors cursor-pointer">
-                            <span class="text-[#ff7200] text-[10px] font-black uppercase tracking-widest">Repair</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- KORTHET (SERVICES BAR) -->
-        <section
-            class="reveal-element mt-8 md:mt-16 bg-[#16171d]/80 backdrop-blur-sm border border-white/5 rounded-2xl p-6 md:p-8">
-            <h3 class="text-white font-bold mb-6 flex items-center gap-3 text-sm font-outfit">
-                <span
-                    class="bg-[#ff7200] text-black text-[10px] px-2 py-0.5 rounded-sm font-black uppercase tracking-widest">Info</span>
-                Compupartz At a Glance
-            </h3>
-            <div class="grid md:grid-cols-3 gap-6 divide-y md:divide-y-0 md:divide-x divide-white/5">
-                <div class="pt-4 md:pt-0 md:px-6 first:pt-0 first:px-0 flex gap-4 items-start group">
-                    <span
-                        class="text-xl opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">🛠️</span>
-                    <div>
-                        <h4 class="font-bold text-[13px] text-white mb-1.5 uppercase tracking-wide">Expert Repairs</h4>
-                        <p class="text-[11px] text-gray-500 leading-relaxed font-light">Laptop motherboard repairs , screen backlight issues, premium macbook repairs...</p>
-                    </div>
-                </div>
-                <div class="pt-4 md:pt-0 md:px-6 flex gap-4 items-start group">
-                    <span
-                        class="text-xl opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">💻</span>
-                    <div>
-                        <h4 class="font-bold text-[13px] text-white mb-1.5 uppercase tracking-wide">Genuine Parts</h4>
-                        <p class="text-[11px] text-gray-500 leading-relaxed font-light">Genuine macbook screens,batteries, chargers, lcd screens, OLED panels and others...</p>
-                    </div>
-                </div>
-                <div class="pt-4 md:pt-0 md:px-6 flex gap-4 items-start group">
-                    <span
-                        class="text-xl opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">🚚</span>
-                    <div>
-                        <h4 class="font-bold text-[13px] text-white mb-1.5 uppercase tracking-wide">Fast Delivery</h4>
-                        <p class="text-[11px] text-gray-500 leading-relaxed font-light">Express nationwide shipping with
-                            complete real-time tracking support.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- GLOWING CATEGORY SLIDER -->
-        <section class="reveal-element mt-20">
-            <div class="text-center mb-10">
-                <h2 class="text-2xl md:text-3xl font-outfit font-black text-white tracking-widest uppercase mb-3">
-                    Discover Products</h2>
-                <p class="text-gray-500 text-xs font-light tracking-wide">Find the right replacement parts for your
-                    model online</p>
-            </div>
-
-            <div class="flex justify-start gap-2 mb-6 opacity-50">
-                <button
-                    class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition text-sm">&larr;</button>
-                <button
-                    class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition text-sm">&rarr;</button>
-            </div>
-
-            <!-- Glowing Cards Grid -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-
-                <a href="/store/?category=laptop"
-                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(0,139,198,0.15)] hover:shadow-[0_0_50px_rgba(0,139,198,0.4)] transition-all duration-500 border border-[#008BC6]/30 aspect-[3/4] flex flex-col justify-end p-4 sm:p-6">
-                    <img src="{% static 'images/neon_laptop.png' %}" alt="Laptops"
-                        class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 z-0 rounded-none">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent z-10">
-                    </div>
-                    <div
-                        class="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#008BC6] opacity-15 group-hover:opacity-40 blur-[40px] rounded-full transition-opacity duration-700 z-0">
-                    </div>
-
-                    <div class="relative z-20">
-                        <span
-                            class="bg-[#008BC6] text-white text-[9px] font-black px-2 py-0.5 rounded-sm uppercase mb-3 inline-block tracking-widest">Premium</span>
-                        <h3 class="text-[13px] sm:text-lg font-black text-white mb-1.5 uppercase tracking-wide">Laptops</h3>
-                        <p class="text-[10px] sm:text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">High performance machines.</p>
-                        <div
-                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#008BC6]/20 border border-[#008BC6]/50 flex items-center justify-center text-[#008BC6] ml-auto group-hover:bg-[#008BC6] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(0,139,198,0.3)]">
-                            &rarr;</div>
-                    </div>
-                </a>
-
-                <a href="/store/?category=accessories"
-                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(138,43,226,0.15)] hover:shadow-[0_0_50px_rgba(138,43,226,0.4)] transition-all duration-500 border border-[#8a2be2]/30 aspect-[3/4] flex flex-col justify-end p-4 sm:p-6">
-                    <img src="{% static 'images/neon_accessories.png' %}" alt="Accessories"
-                        class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 z-0 rounded-none">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent z-10">
-                    </div>
-                    <div
-                        class="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#8a2be2] opacity-15 group-hover:opacity-40 blur-[40px] rounded-full transition-opacity duration-700 z-0">
-                    </div>
-
-                    <div class="relative z-20">
-                        <h3 class="text-[13px] sm:text-lg font-black text-white mb-1.5 uppercase tracking-wide">Accessories</h3>
-                        <p class="text-[10px] sm:text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">Enhance your setup.</p>
-                        <div
-                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#8a2be2]/20 border border-[#8a2be2]/50 flex items-center justify-center text-[#8a2be2] ml-auto group-hover:bg-[#8a2be2] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(138,43,226,0.3)]">
-                            &rarr;</div>
-                    </div>
-                </a>
-
-                <a href="/store/?category=part"
-                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,114,0,0.15)] hover:shadow-[0_0_50px_rgba(255,114,0,0.4)] transition-all duration-500 border border-[#ff7200]/30 aspect-[3/4] flex flex-col justify-end p-4 sm:p-6">
-                    <img src="{% static 'images/neon_parts.png' %}" alt="Parts"
-                        class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 z-0 rounded-none">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent z-10">
-                    </div>
-                    <div
-                        class="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#ff7200] opacity-10 group-hover:opacity-25 blur-[40px] rounded-full transition-opacity duration-700 z-0">
-                    </div>
-
-                    <div class="relative z-20">
-                        <h3 class="text-[13px] sm:text-lg font-black text-white mb-1.5 uppercase tracking-wide">Parts</h3>
-                        <p class="text-[10px] sm:text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">Build or upgrade easily.</p>
-                        <div
-                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#ff7200]/20 border border-[#ff7200]/50 flex items-center justify-center text-[#ff7200] ml-auto group-hover:bg-[#ff7200] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(255,114,0,0.3)]">
-                            &rarr;</div>
-                    </div>
-                </a>
-
+            <div class="flex flex-wrap items-center gap-4">
                 <a href="/repair/book/"
-                    class="category-card block relative group cursor-pointer bg-[#0e0f14] rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,0,128,0.15)] hover:shadow-[0_0_50px_rgba(255,0,128,0.4)] transition-all duration-500 border border-[#ff0080]/30 aspect-[3/4] flex flex-col justify-end p-4 sm:p-6">
-                    <img src="{% static 'images/neon_repairs.png' %}" alt="Repairs"
-                        class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 z-0 rounded-none">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent z-10">
-                    </div>
-                    <div
-                        class="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#ff0080] opacity-15 group-hover:opacity-40 blur-[40px] rounded-full transition-opacity duration-700 z-0">
-                    </div>
-
-                    <div class="relative z-20">
-                        <span
-                            class="bg-[#ff0080] text-white text-[9px] font-black px-2 py-0.5 rounded-sm uppercase mb-3 inline-block tracking-widest">Service</span>
-                        <h3 class="text-[13px] sm:text-lg font-black text-white mb-1.5 uppercase tracking-wide">Repairs</h3>
-                        <p class="text-[10px] sm:text-[11px] text-gray-400 mb-4 line-clamp-2 font-light">Book our trusted experts.</p>
-                        <div
-                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#ff0080]/20 border border-[#ff0080]/50 flex items-center justify-center text-[#ff0080] ml-auto group-hover:bg-[#ff0080] group-hover:text-white transition-colors text-xs shadow-[0_0_10px_rgba(255,0,128,0.3)]">
-                            &rarr;</div>
-                    </div>
+                    class="bg-[#008BC6] hover:bg-blue-600 text-white px-8 py-3.5 rounded-lg font-bold transition-all text-sm shadow-[0_0_20px_rgba(0,139,198,0.3)] hover:shadow-[0_0_30px_rgba(0,139,198,0.5)]">
+                    Book a Repair
                 </a>
-
+                <a href="{% url 'request_part' %}"
+                    class="bg-[#FF7200] hover:bg-orange-600 text-white px-8 py-3.5 rounded-lg font-bold transition-all text-sm shadow-[0_0_20px_rgba(255,114,0,0.25)] hover:shadow-[0_0_30px_rgba(255,114,0,0.4)]">
+                    Request a Part
+                </a>
+                <a href="/repair/track/"
+                    class="bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-white px-8 py-3.5 rounded-lg font-bold hover:bg-slate-50 hover:shadow-md dark:hover:bg-white/10 transition-all text-sm flex items-center gap-2 shadow-sm dark:shadow-none">
+                    Track Status <span class="text-gray-400">&rarr;</span>
+                </a>
             </div>
+        </div>
+    </div>
 
-            <!-- Slider Dots -->
-            <div class="flex justify-center gap-2 mt-8">
-                <div class="w-1.5 h-1.5 rounded-full bg-[#ff7200] shadow-[0_0_5px_rgba(255,114,0,0.8)]"></div>
-                <div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
-                <div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
-                <div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+    <!-- Features Bar -->
+    <div class="absolute bottom-0 left-0 right-0 border-t border-gray-200 dark:border-white/10 bg-white/80 dark:bg-[#0a0a0c]/80 backdrop-blur-md z-10 hidden md:block transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-3 divide-x divide-gray-200 dark:divide-white/10 py-6 transition-colors duration-300">
+                <div class="flex items-center gap-4 px-6">
+                    <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-[#008BC6] transition-colors duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-900 dark:text-white text-xs font-bold uppercase tracking-wider mb-0.5 transition-colors duration-300">Original Parts</h4>
+                        <p class="text-gray-500 text-[10px] uppercase tracking-widest">Sourced directly from manufacturers</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 px-6">
+                    <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-[#008BC6] transition-colors duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-900 dark:text-white text-xs font-bold uppercase tracking-wider mb-0.5 transition-colors duration-300">Expert Service</h4>
+                        <p class="text-gray-500 text-[10px] uppercase tracking-widest">Certified micro-soldering technicians</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 px-6">
+                    <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-[#008BC6] transition-colors duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-900 dark:text-white text-xs font-bold uppercase tracking-wider mb-0.5 transition-colors duration-300">Nationwide Service</h4>
+                        <p class="text-gray-500 text-[10px] uppercase tracking-widest">Secure mobile repairs across Ghana</p>
+                    </div>
+                </div>
             </div>
-
-        </section>
-
+        </div>
     </div>
 </div>
-<!-- ================= END DARK UPPER HALF ================= -->
 
-<!-- ================= PROMO BANNER ================= -->
-<section
-    class="max-w-7xl mx-auto mt-16 mb-24 -mx-6 sm:mx-0 rounded-none overflow-hidden relative shadow-2xl h-64 md:h-80 flex items-center bg-gray-900 border-y border-gray-100 dark:border-gray-800">
-    <div class="absolute inset-0 bg-cover bg-center"
-        style="background-image: url('https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=2000&q=80'); filter: grayscale(100%); mix-blend-mode: overlay; opacity: 0.2">
-    </div>
-    <div class="absolute inset-0 bg-gradient-to-r from-[#111218] via-[#111218]/90 to-transparent"></div>
+<!-- ================= PRECISION IN EVERY PROCESS ================= -->
+<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] py-24 bg-slate-50 dark:bg-[#0a0a0c] transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-end mb-10">
+            <div>
+                <div class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">Our Commitment</div>
+                <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-widest transition-colors duration-300">Precision in Every Process</h2>
+            </div>
+        </div>
 
-    <div class="relative z-10 px-8 md:px-16 text-white max-w-2xl">
-        <h2 class="text-3xl md:text-5xl font-black mb-4 tracking-widest uppercase drop-shadow-lg"
-            style="font-family: 'Inter', sans-serif;">What are you<br>upgrading</h2>
-        <p class="text-gray-400 mb-8 text-sm md:text-base font-light tracking-wide">Find exactly what your setup needs
-            for maximum performance.</p>
-        <a href="/store/"
-            class="bg-white text-black px-8 py-3.5 rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-gray-100 transition shadow-[0_0_20px_rgba(255,255,255,0.2)] inline-flex items-center gap-3">
-            View All <span class="text-[#008BC6] font-black text-sm">&rarr;</span>
-        </a>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white dark:bg-[#12141a] border border-slate-200/50 dark:border-white/5 p-8 rounded-xl hover:shadow-lg hover:-translate-y-1 hover:border-slate-300/60 dark:hover:border-[#ff7200]/30 transition-all duration-300 group shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none">
+                <div class="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-lg flex items-center justify-center text-slate-500 dark:text-gray-400 group-hover:text-[#ff7200] dark:group-hover:text-[#ff7200] transition-colors mb-6">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg transition-colors duration-300">Expert Repairs</h3>
+                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed transition-colors duration-300">From simple screen replacements to complex motherboard diagnostics and micro-soldering, our lab is equipped for everything.</p>
+            </div>
+            <div class="bg-white dark:bg-[#12141a] border border-slate-200/50 dark:border-white/5 p-8 rounded-xl hover:shadow-lg hover:-translate-y-1 hover:border-slate-300/60 dark:hover:border-[#ff7200]/30 transition-all duration-300 group shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none">
+                <div class="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-lg flex items-center justify-center text-slate-500 dark:text-gray-400 group-hover:text-[#ff7200] dark:group-hover:text-[#ff7200] transition-colors mb-6">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                </div>
+                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg transition-colors duration-300">Genuine Parts</h3>
+                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed transition-colors duration-300">We maintain a vast inventory of OEM and high-quality aftermarket parts to ensure longevity and peak performance.</p>
+            </div>
+            <div class="bg-white dark:bg-[#12141a] border border-slate-200/50 dark:border-white/5 p-8 rounded-xl hover:shadow-lg hover:-translate-y-1 hover:border-slate-300/60 dark:hover:border-[#ff7200]/30 transition-all duration-300 group shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none">
+                <div class="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-lg flex items-center justify-center text-slate-500 dark:text-gray-400 group-hover:text-[#ff7200] dark:group-hover:text-[#ff7200] transition-colors mb-6">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg transition-colors duration-300">Fast Turnaround</h3>
+                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed transition-colors duration-300">Time is critical. Our optimized workflows and in-house stock mean most repairs are completed within 24 to 48 hours.</p>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- ================= FEATURED PRODUCTS (UNCHANGED SECTION) ================= -->
-<section class="reveal-element max-w-7xl mx-auto px-6 mb-24">
-    <!-- Screen-matched Title Style -->
-    <div class="text-center mb-12">
-        <h2 class="text-2xl md:text-3xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest">
-            Featured Products</h2>
-        <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm font-light">We highly recommend these top sellers</p>
-    </div>
+<!-- ================= DIAGNOSTIC & REPAIR SERVICES ================= -->
+<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] pb-24 bg-slate-50 dark:bg-[#0a0a0c] transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-end mb-10 border-t border-slate-200/60 dark:border-white/5 pt-16 transition-colors duration-300">
+            <div>
+                <div class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">Our Capabilities</div>
+                <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-widest transition-colors duration-300">Diagnostic & Repair Services</h2>
+            </div>
+            <a href="/repair/book/" class="text-[11px] font-bold text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white transition-colors flex items-center gap-2">
+                View All Services &rarr;
+            </a>
+        </div>
 
-    {% if featured_products %}
-    <!-- Centered grid to match the original style closely -->
-    <div class="max-w-6xl mx-auto">
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for product in featured_products %}
-            {% include "partials/product_card.html" with product=product %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Large Card (Motherboard) -->
+            <div class="md:col-span-2 relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group h-64 md:h-auto shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
+                <div class="absolute inset-0 z-0">
+                    <img src="{% static 'images/motherboard_repair.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
+                </div>
+                <div class="relative z-10 p-8 flex flex-col justify-end h-full">
+                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white mb-auto backdrop-blur-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-xl mb-2 transition-colors duration-300">Motherboard Repair</h3>
+                        <p class="text-gray-300 dark:text-gray-400 text-sm font-light max-w-sm transition-colors duration-300">Component-level diagnostics, liquid damage recovery, and micro-soldering solutions for seemingly dead logic boards.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Small Card (Screen) -->
+            <div class="relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group flex flex-col justify-end shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
+                <div class="absolute inset-0 z-0">
+                    <img src="{% static 'images/repair_screen.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
+                </div>
+                <div class="relative z-10 p-6 flex flex-col h-full justify-between">
+                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white backdrop-blur-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold mb-2 transition-colors duration-300">Screen Replacement</h3>
+                        <p class="text-gray-300 dark:text-gray-400 text-xs font-light leading-relaxed transition-colors duration-300">Original and OEM-grade display panels with color calibration services.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Small Card (Battery) -->
+            <div class="relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group flex flex-col justify-end shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
+                <div class="absolute inset-0 z-0">
+                    <img src="{% static 'images/repair_battery.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
+                </div>
+                <div class="relative z-10 p-6 flex flex-col h-full justify-between">
+                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white backdrop-blur-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold mb-2 transition-colors duration-300">Battery Service</h3>
+                        <p class="text-gray-300 dark:text-gray-400 text-xs font-light leading-relaxed transition-colors duration-300">High-capacity genuine battery replacements with diagnostic health checks.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Small Card (Keyboard) -->
+            <div class="relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group flex flex-col justify-end shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
+                <div class="absolute inset-0 z-0">
+                    <img src="{% static 'images/repair_keyboard.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
+                </div>
+                <div class="relative z-10 p-6 flex flex-col h-full justify-between">
+                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white backdrop-blur-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold mb-2 transition-colors duration-300">Keyboard Repair</h3>
+                        <p class="text-gray-300 dark:text-gray-400 text-xs font-light leading-relaxed transition-colors duration-300">Individual key repair or full top-case replacements for all major brands.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Small Card (Port) -->
+            <div class="relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group flex flex-col justify-end shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
+                <div class="absolute inset-0 z-0">
+                    <img src="{% static 'images/repair_port.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
+                </div>
+                <div class="relative z-10 p-6 flex flex-col h-full justify-between">
+                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white backdrop-blur-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold mb-2 transition-colors duration-300">Port Replacement</h3>
+                        <p class="text-gray-300 dark:text-gray-400 text-xs font-light leading-relaxed transition-colors duration-300">USB-C, DC-IN, and HDMI port replacements using precision soldering.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= REQUEST A PART (PROMO BAND) ================= -->
+<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] pb-24 bg-slate-50 dark:bg-[#0a0a0c] transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200/50 dark:border-white/5 bg-white dark:bg-[#12141a] shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none transition-colors duration-300">
+            <div class="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-[#FF7200]/10 dark:bg-[#FF7200]/10 blur-[80px] pointer-events-none"></div>
+
+            <div class="relative flex flex-col md:flex-row items-center gap-10 p-8 md:p-12">
+                <div class="flex-1">
+                    <div class="text-[10px] font-black uppercase tracking-widest text-[#FF7200] mb-3">Genuine Parts, On Request</div>
+                    <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-wide mb-4">
+                        Can&rsquo;t find it? <span class="text-[#FF7200]">We&rsquo;ll source it.</span>
+                    </h2>
+                    <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed mb-8 max-w-md">
+                        Tell us the part you need &mdash; model, component, condition &mdash; and our team will source and quote it for you directly. No store, no cart, just a straight answer.
+                    </p>
+                    <a href="{% url 'request_part' %}"
+                        class="inline-flex items-center gap-2 bg-[#FF7200] hover:bg-orange-600 text-white px-8 py-3.5 rounded-lg font-bold transition-all text-sm shadow-[0_0_20px_rgba(255,114,0,0.25)] hover:shadow-[0_0_30px_rgba(255,114,0,0.4)]">
+                        Request a Part &rarr;
+                    </a>
+                </div>
+
+                <div class="w-full md:w-80 h-56 shrink-0 rounded-xl overflow-hidden shadow-lg">
+                    <img src="{% static 'images/neon_parts.png' %}" alt="Genuine components" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= TECH HUB (BLOG) ================= -->
+{% if latest_posts %}
+<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] pb-24 bg-slate-50 dark:bg-[#0a0a0c] transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-end mb-10 border-t border-slate-200/60 dark:border-white/5 pt-16 transition-colors duration-300">
+            <div>
+                <div class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">Hardware Deep Dive</div>
+                <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-widest transition-colors duration-300">Tech Hub</h2>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            {% for post in latest_posts %}
+            <a href="{% url 'blog:post_detail' post.slug %}" class="bg-white dark:bg-[#12141a] border border-slate-200/50 dark:border-white/5 rounded-xl overflow-hidden group hover:border-slate-300/60 dark:hover:border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 dark:shadow-none">
+                <div class="aspect-video relative overflow-hidden bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+                    {% if post.featured_image %}
+                    <img src="{{ post.featured_image.url }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    {% elif forloop.counter == 1 %}
+                    <img src="{% static 'images/blog/tech_hub_1.png' %}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    {% elif forloop.counter == 2 %}
+                    <img src="{% static 'images/blog/tech_hub_2.png' %}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    {% else %}
+                    <img src="{% static 'images/blog/tech_hub_3.png' %}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    {% endif %}
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="bg-orange-50 dark:bg-[#ff7200]/10 text-[#ff7200] text-[9px] font-bold uppercase px-2 py-1 rounded transition-colors duration-300">{{ post.category.name|default:"Hardware" }}</span>
+                        <span class="text-[9px] text-gray-500 uppercase tracking-widest">{{ post.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <h3 class="text-slate-800 dark:text-white font-bold text-lg mb-2 line-clamp-2 leading-tight group-hover:text-[#ff7200] dark:group-hover:text-[#ff7200] transition-colors duration-300">{{ post.title }}</h3>
+                    <p class="text-slate-600 dark:text-gray-400 text-xs font-light line-clamp-2 leading-relaxed transition-colors duration-300">{{ post.excerpt }}</p>
+                </div>
+            </a>
             {% endfor %}
         </div>
     </div>
-    {% else %}
-    <p class="text-gray-500 text-center font-medium">No products available at the moment.</p>
-    {% endif %}
-</section>
-
-<!-- ================= TRUST (KEPT EXACTLY AS BEFORE) ================= -->
-<section class="reveal-element mb-24 max-w-7xl mx-auto px-6 border-t border-gray-100 dark:border-gray-800 pt-20">
-    <h2
-        class="text-2xl md:text-3xl font-outfit font-black text-center mb-12 text-gray-900 dark:text-white tracking-widest uppercase">
-        Why Our Clients <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#008BC6] to-blue-500">Choose
-            Us</span>
-    </h2>
-
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-        <div
-            class="bg-white dark:bg-gray-800 p-8 rounded-md shadow-sm border border-gray-100 dark:border-gray-700 text-center transition-all hover:shadow-xl hover:-translate-y-1">
-            <div
-                class="w-16 h-16 mx-auto bg-gray-50 dark:bg-gray-700 flex items-center justify-center rounded text-2xl mb-5 shadow-inner">
-                🛠️</div>
-            <h3 class="font-bold text-gray-900 dark:text-white uppercase text-[10px] md:text-xs tracking-wider">Expert Repairs</h3>
-        </div>
-        <div
-            class="bg-white dark:bg-gray-800 p-8 rounded-md shadow-sm border border-gray-100 dark:border-gray-700 text-center transition-all hover:shadow-xl hover:-translate-y-1">
-            <div
-                class="w-16 h-16 mx-auto bg-gray-50 dark:bg-gray-700 flex items-center justify-center rounded text-2xl mb-5 shadow-inner">
-                💻</div>
-            <h3 class="font-bold text-gray-900 dark:text-white uppercase text-[10px] md:text-xs tracking-wider">Genuine Parts</h3>
-        </div>
-        <div
-            class="bg-white dark:bg-gray-800 p-8 rounded-md shadow-sm border border-gray-100 dark:border-gray-700 text-center transition-all hover:shadow-xl hover:-translate-y-1">
-            <div
-                class="w-16 h-16 mx-auto bg-gray-50 dark:bg-gray-700 flex items-center justify-center rounded text-2xl mb-5 shadow-inner">
-                🚚</div>
-            <h3 class="font-bold text-gray-900 dark:text-white uppercase text-[10px] md:text-xs tracking-wider">Nationwide</h3>
-        </div>
-        <div
-            class="bg-white dark:bg-gray-800 p-8 rounded-md shadow-sm border border-gray-100 dark:border-gray-700 text-center transition-all hover:shadow-xl hover:-translate-y-1">
-            <div
-                class="w-16 h-16 mx-auto bg-gray-50 dark:bg-gray-700 flex items-center justify-center rounded text-2xl mb-5 shadow-inner">
-                🔒</div>
-            <h3 class="font-bold text-gray-900 dark:text-white uppercase text-[10px] md:text-xs tracking-wider">Trusted Service</h3>
-        </div>
-    </div>
-</section>
-
-<!-- ================= LATEST INTELLIGENCE (SUBTLE) ================= -->
-{% if latest_posts %}
-<section class="reveal-element max-w-7xl mx-auto px-6 mb-24">
-    <div class="mb-12 flex justify-between items-end">
-        <div>
-            <h2
-                class="text-2xl md:text-3xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest leading-none">
-                Latest <span class="text-brandBlue">Insights</span></h2>
-            <p class="text-gray-500 dark:text-gray-400 mt-3 text-[10px] font-black uppercase tracking-widest">Hardware
-                briefings & tech bulletins</p>
-        </div>
-        <a href="{% url 'blog:post_list' %}"
-            class="text-[10px] font-black uppercase tracking-widest text-[#ff7200] hover:translate-x-1 transition-transform">
-            View Archive &rarr;
-        </a>
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-8">
-        {% for post in latest_posts %}
-        <a href="{% url 'blog:post_detail' post.slug %}"
-            class="group block bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-3xl p-6 transition-all hover:shadow-2xl hover:shadow-brandBlue/5 hover:-translate-y-1">
-            <div class="aspect-[16/10] rounded-2xl overflow-hidden mb-6">
-                {% if post.featured_image %}
-                <img src="{{ post.featured_image.url }}"
-                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                {% else %}
-                <div class="w-full h-full bg-gray-200 dark:bg-gray-800"></div>
-                {% endif %}
-            </div>
-            <span class="text-[8px] font-black text-[#008BC6] uppercase tracking-widest mb-3 block">{{
-                post.category.name|default:"Tech" }}</span>
-            <h3
-                class="text-base font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 leading-tight group-hover:text-brandBlue transition-colors">
-                {{ post.title }}</h3>
-            <p class="text-[11px] text-gray-500 dark:text-gray-400 font-light line-clamp-2 leading-relaxed">{{
-                post.excerpt }}</p>
-        </a>
-        {% endfor %}
-    </div>
 </section>
 {% endif %}
 
-<!-- ================= MEDIA BRIEFINGS (VIDEO GALLERY) ================= -->
-{% if featured_videos %}
-<section class="reveal-element max-w-7xl mx-auto px-6 mb-24">
-    <div class="mb-10 flex justify-between items-end">
-        <div>
-            <h2
-                class="text-2xl md:text-3xl font-outfit font-black text-gray-900 dark:text-white uppercase tracking-widest leading-none">
-                Media <span class="text-[#ff7200]">Briefings</span></h2>
-            <p class="text-gray-500 dark:text-gray-400 mt-3 text-[10px] font-black uppercase tracking-widest">Hardware
-                Analysis & Community Highlights</p>
-        </div>
-
-        <!-- CAROUSEL CONTROLS -->
-        <div class="flex gap-2">
-            <button onclick="scrollGallery('mediaCarousel', -350)"
-                class="w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-white dark:hover:bg-white/5 transition shadow-sm hover:shadow-md text-gray-400 hover:text-brandBlue">
-                &larr;
-            </button>
-            <button onclick="scrollGallery('mediaCarousel', 350)"
-                class="w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-white dark:hover:bg-white/5 transition shadow-sm hover:shadow-md text-gray-400 hover:text-brandBlue">
-                &rarr;
-            </button>
-        </div>
-    </div>
-
-    <!-- CAROUSEL TRACK -->
-    <div id="mediaCarousel" class="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-8">
-        {% for video in featured_videos %}
-        <div class="flex-shrink-0 w-[300px] md:w-[350px] snap-start">
-            <a href="{{ video.video_url }}" target="_blank"
-                class="group relative block aspect-video rounded-2xl overflow-hidden border border-gray-100 dark:border-white/10 shadow-lg hover:shadow-2xl hover:shadow-brandBlue/5 transition-all duration-500">
-
-                <!-- THUMBNAIL -->
-                <img src="{{ video.get_thumbnail_url }}"
-                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-
-                <!-- GLASS OVERLAY -->
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
-                </div>
-
-                <!-- PLAY ICON -->
-                <div class="absolute inset-0 flex items-center justify-center z-20">
-                    <div
-                        class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 transform scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-500 shadow-xl">
-                        <svg class="w-5 h-5 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M7 6v12l10-6z" />
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- INFO LABEL -->
-                <div
-                    class="absolute bottom-6 left-6 right-6 z-30 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                    <h4 class="text-sm font-bold text-white uppercase tracking-wider drop-shadow-md line-clamp-1">{{
-                        video.title }}</h4>
-                </div>
-            </a>
-        </div>
-        {% endfor %}
-    </div>
-</section>
-
-<script>
-    function scrollGallery(id, distance) {
-        document.getElementById(id).scrollBy({
-            left: distance,
-            behavior: 'smooth'
-        });
-    }
-</script>
-
-<style>
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
-
-    .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-</style>
-{% endif %}
-
-<!-- ================= FAQ (FINAL FIX) ================= -->
+<!-- ================= FAQ SECTION ================= -->
 {% if faqs %}
-<div class="reveal-element max-w-4xl mx-auto mb-12 px-6 text-center">
-    <h2 class="text-2xl md:text-3xl font-outfit font-black uppercase tracking-widest text-gray-900 dark:text-white">
-        Frequently <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#008BC6] to-blue-500">Asked</span>
-        Questions
-    </h2>
-    <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm font-light">Find quick answers to common questions about our
-        services and parts</p>
-</div>
+<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] pb-32 bg-slate-50 dark:bg-[#0a0a0c] transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-4xl mx-auto pt-16 border-t border-slate-200/60 dark:border-white/5 transition-colors duration-300">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-widest mb-3 transition-colors duration-300">Frequently Asked Questions</h2>
+                <p class="text-gray-500 text-sm font-light tracking-wide">Clear policies, transparent processes.</p>
+            </div>
 
-<section
-    class="reveal-element mb-24 bg-[#0a0a0c] py-12 -mx-6 px-6 sm:mx-0 sm:px-10 border-y sm:border sm:rounded-2xl border-white/5 shadow-2xl relative overflow-hidden">
-    <!-- Glow effects -->
-    <div class="absolute -top-24 -left-24 w-64 h-64 bg-[#ff7200]/5 rounded-full blur-[120px] pointer-events-none"></div>
-    <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-[#008BC6]/5 rounded-full blur-[120px] pointer-events-none">
-    </div>
-
-    <div class="max-w-4xl mx-auto relative z-10">
-        <!-- New Dedicated Scroller Class -->
-        <div class="faq-custom-scroller">
-            <div class="faq-content-wrapper">
+            <div class="space-y-4 faq-container">
                 {% for faq in faqs %}
-                <div class="faq-item border-b border-white/5 group">
-                    <button
-                        class="faq-toggle-btn w-full py-6 flex justify-between items-center text-left focus:outline-none group">
-                        <h4
-                            class="font-bold text-[13px] md:text-sm uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors duration-300 pointer-events-none">
-                            {{ faq.question }}
-                        </h4>
-                        <span
-                            class="faq-icon text-gray-600 group-hover:text-[#008BC6] transition-all duration-300 transform pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4" />
-                            </svg>
+                <div class="bg-white dark:bg-[#12141a] border border-slate-200/60 dark:border-white/5 rounded-xl overflow-hidden faq-item shadow-sm dark:shadow-none transition-colors duration-300">
+                    <button class="faq-toggle w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none">
+                        <span class="text-sm font-bold text-slate-800 dark:text-gray-300 transition-colors duration-300">{{ faq.question }}</span>
+                        <span class="text-gray-400 dark:text-gray-500 transition-transform duration-300 faq-icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </span>
                     </button>
-                    <!-- Grid-based transition (Moved styles to CSS block) -->
-                    <div class="faq-answer-wrapper">
-                        <div class="overflow-hidden">
-                            <div class="pb-6 text-gray-400 text-sm font-light leading-relaxed max-w-3xl">
-                                {{ faq.answer|linebreaks }}
-                            </div>
-                        </div>
+                    <div class="faq-content hidden px-6 pb-6 text-sm text-slate-600 dark:text-gray-400 font-light leading-relaxed border-t border-slate-100 dark:border-white/5 pt-4 transition-colors duration-300">
+                        {{ faq.answer|linebreaks }}
                     </div>
                 </div>
                 {% endfor %}
@@ -497,155 +317,43 @@
         </div>
     </div>
 </section>
-
-<style>
-    /* 1. THE SCROLLER (LEFT SIDE) */
-    .faq-custom-scroller {
-        max-height: 300px;
-        /* Constrains tightly to roughly 4 closed items */
-        overflow-y: auto;
-        direction: rtl;
-        /* Puts scrollbar on the left */
-        padding-left: 20px;
-        /* Space for the scrollbar */
-        display: block;
-    }
-
-    .faq-content-wrapper {
-        direction: ltr;
-        /* Keeps content left-to-right */
-        padding-right: 15px;
-        /* Prevent text clipping */
-    }
-
-    /* 2. CUSTOM LEFT SCROLLBAR (Visible & Premium) */
-    .faq-custom-scroller::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .faq-custom-scroller::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-    }
-
-    .faq-custom-scroller::-webkit-scrollbar-thumb {
-        background: linear-gradient(to bottom, #008BC6, #ff7200);
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 139, 198, 0.5);
-    }
-
-    /* 3. THE TOGGLE LOGIC (Fixed Specificity) */
-    .faq-answer-wrapper {
-        display: grid;
-        grid-template-rows: 0fr;
-        transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        visibility: hidden;
-        opacity: 0;
-    }
-
-    .faq-item.active .faq-answer-wrapper {
-        grid-template-rows: 1fr;
-        visibility: visible;
-        opacity: 1;
-        margin-top: 4px;
-    }
-
-    /* 4. ACTIVE STATES */
-    .faq-item.active .faq-icon {
-        transform: rotate(45deg);
-        color: #008BC6;
-    }
-
-    .faq-item.active h4 {
-        color: #008BC6 !important;
-    }
-
-    .faq-item.active {
-        border-bottom-color: rgba(0, 139, 198, 0.3);
-    }
-</style>
 {% endif %}
 
-<!-- ================= AJAX ================= -->
+<!-- Script for FAQ -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // ✅ FAQ Toggle Logic (Event Delegation)
-        document.addEventListener('click', (e) => {
-            const toggleBtn = e.target.closest('.faq-toggle-btn');
-            if (toggleBtn) {
-                const item = toggleBtn.closest('.faq-item');
-                const isActive = item.classList.contains('active');
+document.addEventListener('DOMContentLoaded', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    const borderColorActive = isDark ? 'rgba(0,139,198,0.3)' : 'rgba(0,139,198,0.3)';
+    const borderColorInactiveDark = 'rgba(255,255,255,0.05)';
+    const borderColorInactiveLight = 'rgba(229,231,235,1)';
+    
+    const getInactiveBorder = () => document.documentElement.classList.contains('dark') ? borderColorInactiveDark : borderColorInactiveLight;
 
-                // Close all other FAQs
-                document.querySelectorAll('.faq-item').forEach(otherItem => {
-                    if (otherItem !== item) {
-                        otherItem.classList.remove('active');
-                    }
-                });
-
-                // Toggle current FAQ
-                item.classList.toggle('active');
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const toggle = item.querySelector('.faq-toggle');
+        const content = item.querySelector('.faq-content');
+        const icon = item.querySelector('.faq-icon');
+        
+        toggle.addEventListener('click', () => {
+            const isOpen = !content.classList.contains('hidden');
+            
+            // Close all
+            faqItems.forEach(otherItem => {
+                otherItem.querySelector('.faq-content').classList.add('hidden');
+                otherItem.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
+                otherItem.style.borderColor = getInactiveBorder();
+            });
+            
+            // Toggle clicked
+            if (!isOpen) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+                item.style.borderColor = borderColorActive;
             }
         });
-
-        // ✅ Category Card Tilt Effect (Subtle)
-        const cards = document.querySelectorAll('.category-card');
-        cards.forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                const xc = rect.width / 2;
-                const yc = rect.height / 2;
-
-                const dx = x - xc;
-                const dy = y - yc;
-
-                // Subtle rotation (max 5 degrees)
-                card.style.transform = `perspective(1000px) rotateX(${-dy / 25}deg) rotateY(${dx / 25}deg) scale(1.02)`;
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
-            });
-        });
-
-        document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
-            btn.addEventListener("click", function () {
-                const productId = this.dataset.productId;
-                const productName = this.dataset.productName;
-
-                this.disabled = true;
-                this.innerText = "Adding...";
-                this.classList.add("opacity-50");
-
-                fetch("/cart/ajax/add/", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRFToken": "{{ csrf_token }}",
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: "product_id=" + productId
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        this.disabled = false;
-                        this.innerText = "Add";
-                        this.classList.remove("opacity-50");
-                        this.classList.add("scale-95");
-                        setTimeout(() => this.classList.remove("scale-95"), 150);
-
-                        if (typeof loadCart === "function") loadCart();
-                        if (typeof loadCartCount === "function") loadCartCount();
-
-                        if (typeof showToast === "function") {
-                            showToast(productName + " added to cart 🛒");
-                        }
-                    });
-            });
-        });
     });
+});
 </script>
 
 {% endblock %}

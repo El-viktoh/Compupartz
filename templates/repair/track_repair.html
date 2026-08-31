@@ -14,8 +14,11 @@
     <div class="max-w-4xl w-full relative z-10 animate-fadeIn text-center">
         
         <div class="mb-12">
-            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-4">Repair Monitoring</h4>
-            <h1 class="text-4xl md:text-5xl font-outfit font-black mb-4 uppercase tracking-widest text-white">
+            <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1 rounded-full mb-6">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#FF7200] animate-pulse"></span>
+                <span class="text-[10px] font-black uppercase tracking-[0.22em] text-[#FF7200]">Repair Monitoring</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-display font-bold mb-4 uppercase tracking-widest text-white">
                 Status: <span class="{% if ticket.status == 'completed' %}text-green-500{% elif ticket.status == 'in_progress' %}text-[#ff7200]{% else %}text-[#008BC6]{% endif %}">
                     {{ ticket.status|title }}
                 </span>
@@ -51,7 +54,10 @@
 
                 <div class="bg-white/5 backdrop-blur-md border border-white/5 p-6 rounded-2xl flex items-center justify-between">
                     <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">Contact Lab</span>
-                    <a href="https://wa.me/233540322533" class="text-[10px] font-black uppercase tracking-widest text-[#25D366] hover:text-white transition-colors">WhatsApp &rarr;</a>
+                    <a href="https://wa.me/233540322533" class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#25D366] hover:text-white transition-colors">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                        WhatsApp
+                    </a>
                 </div>
             </div>
 
@@ -67,8 +73,8 @@
                         <div class="space-y-12 relative z-10">
                             <!-- Step 1 -->
                             <div class="flex gap-8 group">
-                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status in 'pending in_progress completed' %}border-[#008BC6]/50 shadow-[0_0_15px_rgba(0,139,198,0.2)]{% else %}border-white/5{% endif %} rounded-2xl flex items-center justify-center text-xl transition-all">
-                                    📝
+                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status in 'pending in_progress completed' %}border-[#008BC6]/50 shadow-[0_0_15px_rgba(0,139,198,0.2)] text-[#008BC6]{% else %}border-white/5 text-gray-600{% endif %} rounded-2xl flex items-center justify-center transition-all">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                 </div>
                                 <div class="pt-2">
                                     <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status in 'pending in_progress completed' %}text-white{% else %}text-gray-600{% endif %}">REQUEST SUBMITTED</h5>
@@ -78,8 +84,8 @@
 
                             <!-- Step 2 -->
                             <div class="flex gap-8 group">
-                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status in 'in_progress completed' %}border-[#ff7200]/50 shadow-[0_0_15px_rgba(255,114,0,0.2)]{% else %}border-white/5{% endif %} rounded-2xl flex items-center justify-center text-xl transition-all">
-                                    🛠️
+                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status in 'in_progress completed' %}border-[#ff7200]/50 shadow-[0_0_15px_rgba(255,114,0,0.2)] text-[#ff7200]{% else %}border-white/5 text-gray-600{% endif %} rounded-2xl flex items-center justify-center transition-all">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 </div>
                                 <div class="pt-2">
                                     <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status in 'in_progress completed' %}text-white{% else %}text-gray-600{% endif %}">Active Restoration</h5>
@@ -89,8 +95,8 @@
 
                             <!-- Step 3 -->
                             <div class="flex gap-8 group">
-                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status == 'completed' %}border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.2)]{% else %}border-white/5{% endif %} rounded-2xl flex items-center justify-center text-xl transition-all">
-                                    🚀
+                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status == 'completed' %}border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.2)] text-green-500{% else %}border-white/5 text-gray-600{% endif %} rounded-2xl flex items-center justify-center transition-all">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 </div>
                                 <div class="pt-2">
                                     <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status == 'completed' %}text-white{% else %}text-gray-600{% endif %}">System Deployed</h5>
@@ -103,10 +109,100 @@
             </div>
         </div>
 
+        <!-- Messaging Panel -->
+        <div class="mt-8 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden text-left shadow-2xl">
+            <div class="p-6 md:p-8 border-b border-white/10 flex justify-between items-center bg-black/20">
+                <h4 class="text-sm font-black uppercase tracking-[0.2em] text-white">Repair Communication</h4>
+                <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">Need Help? Chat Below</span>
+            </div>
+
+            <!-- Messages List -->
+            <div class="p-6 md:p-8 max-h-96 overflow-y-auto space-y-4" id="chat-box">
+                {% for msg in ticket.messages.all %}
+                    <div class="flex flex-col {% if msg.sender_is_admin %}items-start{% else %}items-end{% endif %}">
+                        {% if msg.sender_is_admin %}
+                            <div class="max-w-[80%] rounded-2xl px-6 py-4 bg-white/10 text-white rounded-tl-sm">
+                                <p class="text-sm font-light leading-relaxed">{{ msg.message }}</p>
+                            </div>
+                            <span class="text-[9px] text-gray-500 mt-2 font-black uppercase tracking-widest">
+                                Support Agent • {{ msg.created_at|date:"M d, g:i A" }}
+                            </span>
+                        {% else %}
+                            <div class="flex items-center gap-3 mb-2 justify-end w-full">
+                                <div class="flex gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                                    <button type="button" onclick="editMessage({{ msg.id }}, '{{ msg.message|escapejs }}')" class="text-gray-400 hover:text-white transition-colors" title="Edit">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    </button>
+                                    <form action="{% url 'delete_repair_message' msg.id %}" method="POST" class="inline m-0 p-0 leading-none" onsubmit="return confirm('Are you sure you want to delete this message?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </form>
+                                </div>
+                                <span class="text-[9px] text-gray-500 font-black uppercase tracking-widest">You • {{ msg.created_at|date:"M d, g:i A" }}</span>
+                            </div>
+                            <div class="max-w-[80%] rounded-2xl px-6 py-4 bg-[#008BC6]/20 border border-[#008BC6]/30 text-white rounded-tr-sm w-full md:w-auto">
+                                <div id="msg-display-{{ msg.id }}"><p class="text-sm font-light leading-relaxed">{{ msg.message }}</p></div>
+                                <form id="msg-edit-form-{{ msg.id }}" action="{% url 'edit_repair_message' msg.id %}" method="POST" class="hidden flex-col gap-2 w-full">
+                                    {% csrf_token %}
+                                    <textarea name="message" class="w-full bg-black/40 border border-white/20 text-white text-sm rounded-lg p-3 outline-none focus:border-[#008BC6] resize-none" rows="2" required></textarea>
+                                    <div class="flex justify-end gap-3 mt-1">
+                                        <button type="button" onclick="cancelEdit({{ msg.id }})" class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">Cancel</button>
+                                        <button type="submit" class="text-[9px] font-bold uppercase tracking-widest text-[#008BC6] hover:text-[#33a5d8] transition-colors">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        {% endif %}
+                {% empty %}
+                    <div class="text-center py-8">
+                        <p class="text-gray-500 text-sm font-light">No messages yet. Send a message to start communicating with the repair lab.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Message Form -->
+            <div class="p-4 md:p-6 bg-black/40 border-t border-white/10">
+                <form method="POST" action="{% url 'track_repair' ticket.ticket_id %}" class="flex items-center gap-4">
+                    {% csrf_token %}
+                    <input type="text" name="message" required placeholder="Type your message here..." class="flex-1 bg-white/5 border border-white/10 text-white text-sm rounded-xl px-6 py-4 outline-none focus:border-[#008BC6]/50 transition-colors">
+                    <button type="submit" class="bg-[#008BC6] hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest transition-colors flex items-center justify-center shrink-0">
+                        Send
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <a href="{% url 'track_repair_lookup' %}" class="inline-block mt-12 text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] hover:text-white transition-colors">
             &larr; Switch Navigation ID
         </a>
     </div>
 </div>
-
 {% endblock %}
+
+<script>
+    // Chat Message Edit Logic
+    function editMessage(msgId, content) {
+        document.getElementById('msg-display-' + msgId).classList.add('hidden');
+        const form = document.getElementById('msg-edit-form-' + msgId);
+        form.classList.remove('hidden');
+        form.classList.add('flex');
+        form.querySelector('textarea').value = content;
+        form.querySelector('textarea').focus();
+    }
+    
+    function cancelEdit(msgId) {
+        document.getElementById('msg-display-' + msgId).classList.remove('hidden');
+        const form = document.getElementById('msg-edit-form-' + msgId);
+        form.classList.add('hidden');
+        form.classList.remove('flex');
+    }
+
+    // Auto-scroll chat box to bottom
+    document.addEventListener("DOMContentLoaded", function() {
+        const chatBox = document.getElementById('chat-box');
+        if (chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    });
+</script>
