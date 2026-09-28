@@ -11,7 +11,7 @@ from .utils import send_repair_email, send_part_request_email
 
 def repair_home(request):
     from core.models import Testimonial
-    testimonials = Testimonial.objects.filter(is_approved=True).order_by('-is_featured', '-created_at')[:6]
+    testimonials = Testimonial.objects.filter(is_approved=True).order_by('-is_featured', '-created_at')[:12]
     return render(request, "repair/repair_home.html", {
         "testimonials": testimonials,
     })
