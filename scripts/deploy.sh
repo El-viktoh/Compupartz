@@ -73,7 +73,12 @@ if res.status_code != 200:
 "
 
 # 10. Restart Web Server & Workers
-echo "🔄 Reloading OpenLiteSpeed and WSGI application..."
+echo "🔄 Forcing fresh lswsgi and worker restart..."
+killall -9 lswsgi 2>/dev/null || true
+pkill -9 -f lswsgi || true
+pkill -9 -f "python.*Compupartz" || true
+pkill -9 -f "fcgi-bin/lswsgi" || true
+
 touch $PROJECT_DIR/config/wsgi.py
 touch /tmp/lshttpd/lsup.eval 2>/dev/null || true
 
@@ -86,15 +91,11 @@ elif command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet lsws; t
 elif command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet openlitespeed; then
     echo "Restarting via systemctl restart openlitespeed..."
     systemctl restart openlitespeed || true
-else
-    echo "Falling back to pkill and touch..."
-    pkill -9 -f "python.*Compupartz" || true
-    touch $PROJECT_DIR/config/wsgi.py
 fi
 
 # 11. Verification Check
 echo "🩺 Verifying live site response..."
-sleep 4
+sleep 6
 HTTP_CODE=$(curl -s -k -o /dev/null -w "%{http_code}" https://compupartz.com/ || true)
 echo "Live site HTTP status: $HTTP_CODE"
 
