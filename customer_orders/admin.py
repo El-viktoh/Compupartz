@@ -29,6 +29,11 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderItemInline]
     actions = ['mark_processing', 'mark_ready', 'mark_completed']
 
+    def has_module_permission(self, request):
+        """Hide Customer Orders section from Django admin dashboard."""
+        return False
+
+
     def order_id_display(self, obj):
         return f"Order #{obj.id}"
     order_id_display.short_description = "Order"

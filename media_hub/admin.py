@@ -9,7 +9,12 @@ class VideoAdmin(admin.ModelAdmin):
     search_fields = ('title', 'video_url')
     
     def thumbnail_preview(self, obj):
-        if obj.thumbnail:
-            return format_html('<img src="{}" style="width: 50px; height: auto; border-radius: 4px;" />', obj.thumbnail.url)
+        url = obj.get_thumbnail_url
+        if url:
+            return format_html(
+                '<img src="{}" style="width: 70px; height: 42px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.15);" />',
+                url
+            )
         return "No Image"
-    thumbnail_preview.short_description = "Preview"
+    thumbnail_preview.short_description = "Thumbnail"
+

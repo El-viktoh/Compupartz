@@ -22,6 +22,8 @@ def home(request):
     faqs = FAQ.objects.filter(is_published=True)
     latest_posts = Post.objects.filter(status='published').order_by('-created_at')[:3]
     featured_videos = Video.objects.filter(is_featured=True)
+    if not featured_videos.exists():
+        featured_videos = Video.objects.all()[:6]
 
     return render(request, "home.html", {
         "faqs": faqs,

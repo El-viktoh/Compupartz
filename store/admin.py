@@ -24,14 +24,26 @@ class ProductAdmin(admin.ModelAdmin):
     radio_fields = {'condition': admin.HORIZONTAL}
     inlines = [ProductImageInline, VariationInline]
 
+    def has_module_permission(self, request):
+        """Hide Store section from Django admin dashboard."""
+        return False
+
 
 # ================= VARIATION CATEGORY =================
 @admin.register(VariationCategory)
 class VariationCategoryAdmin(admin.ModelAdmin):
     list_display = ("name",)
 
+    def has_module_permission(self, request):
+        """Hide Store section from Django admin dashboard."""
+        return False
+
 
 # ================= REVIEW ADMIN =================
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ("product", "user", "rating", "created_at")
+
+    def has_module_permission(self, request):
+        """Hide Store section from Django admin dashboard."""
+        return False
