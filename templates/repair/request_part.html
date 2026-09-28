@@ -5,206 +5,421 @@
 
 {% block content %}
 
-<!-- ================= REQUEST A PART UI ================= -->
-<div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] min-h-[90vh] bg-slate-50 dark:bg-[#0a0a0c] text-slate-800 dark:text-white font-outfit -mt-10 pt-24 pb-32 transition-colors duration-300">
+<!-- Custom Styling for Interactive Cards & Redesign Accents -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
 
-    <!-- Top Custom Header -->
-    <div class="max-w-7xl mx-auto px-6 mb-8 flex items-center justify-between">
-        <div>
-            <div class="flex items-center gap-3 mb-2">
-                <svg class="w-5 h-5 text-[#FF7200]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                <h1 class="text-sm font-black tracking-widest text-slate-500 uppercase">Parts Sourcing Desk</h1>
-            </div>
-            <p class="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-widest mb-1">Request a Part</p>
-            <p class="text-slate-500 text-sm font-light">Can&rsquo;t find the part you need? Tell us the details below and our team will source it and send you a quote &mdash; no store, no cart, just a straight answer.</p>
-        </div>
+.hero-script-font {
+    font-family: 'Caveat', cursive, -apple-system, sans-serif;
+}
+
+/* Condition Preference Interactive Radio Cards */
+.condition-radio-input:checked + .condition-choice-card {
+    border-color: #FF7200;
+    background-color: rgba(255, 114, 0, 0.05);
+    box-shadow: 0 0 0 2px rgba(255, 114, 0, 0.2), 0 10px 25px -5px rgba(255, 114, 0, 0.1);
+}
+.dark .condition-radio-input:checked + .condition-choice-card {
+    border-color: #FF7200;
+    background-color: rgba(255, 114, 0, 0.08);
+    box-shadow: 0 0 0 2px rgba(255, 114, 0, 0.25), 0 10px 25px -5px rgba(255, 114, 0, 0.2);
+}
+.condition-radio-input:checked + .condition-choice-card .radio-circle {
+    border-color: #FF7200;
+    background-color: #FF7200;
+}
+.condition-radio-input:checked + .condition-choice-card .radio-dot {
+    opacity: 1;
+    transform: scale(1);
+}
+.condition-radio-input:checked + .condition-choice-card .condition-icon {
+    color: #FF7200;
+    transform: scale(1.08);
+}
+</style>
+
+<!-- ================= FULL-BLEED REQUEST A PART PAGE ================= -->
+<div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] -mt-24 pt-32 sm:pt-36 md:pt-40 -mb-12 pb-24 sm:pb-32 bg-[#F5F8FA] dark:bg-[#0a0a0c] text-slate-800 dark:text-white font-outfit overflow-hidden transition-colors duration-300 relative min-h-screen">
+
+    <!-- Ambient Glow Spots -->
+    <div class="absolute top-10 left-1/4 w-96 h-96 bg-[#008BC6]/8 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-40 right-10 w-96 h-96 bg-[#FF7200]/8 dark:bg-[#FF7200]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Corner Decorative Motifs (Matching Homepage & Repair Page Style) -->
+    <div class="absolute top-12 left-6 pointer-events-none opacity-20 dark:opacity-10">
+        <svg class="w-24 h-24 sm:w-32 sm:h-32 text-[#008BC6]" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M20 80 Q 25 40 60 20 Q 55 55 20 80 Z" opacity="0.9"/>
+            <path d="M35 55 Q 50 35 70 30 Q 60 50 35 55 Z" opacity="0.7"/>
+            <path d="M45 40 Q 65 20 85 20 Q 75 40 45 40 Z" opacity="0.8"/>
+            <path d="M20 80 L 85 20" stroke="currentColor" stroke-width="2.5" fill="none"/>
+        </svg>
+    </div>
+    <div class="absolute bottom-12 right-6 pointer-events-none opacity-20 dark:opacity-10 rotate-180">
+        <svg class="w-24 h-24 sm:w-32 sm:h-32 text-[#FF7200]" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M20 80 Q 25 40 60 20 Q 55 55 20 80 Z" opacity="0.9"/>
+            <path d="M35 55 Q 50 35 70 30 Q 60 50 35 55 Z" opacity="0.7"/>
+            <path d="M45 40 Q 65 20 85 20 Q 75 40 45 40 Z" opacity="0.8"/>
+            <path d="M20 80 L 85 20" stroke="currentColor" stroke-width="2.5" fill="none"/>
+        </svg>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6">
-        <form method="POST" class="flex flex-col lg:flex-row gap-6">
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+        <!-- Top Header Banner (Aligning with Homepage & Repair Page Typography) -->
+        <div class="mb-10 sm:mb-12 text-center max-w-3xl mx-auto">
+
+            <!-- Script Accent Tagline -->
+            <span class="hero-script-font text-3xl sm:text-4xl text-[#008BC6] dark:text-[#38bdf8] font-bold block mb-1 transform -rotate-1">
+                Direct Hardware Sourcing
+            </span>
+
+            <!-- Main Bold Headline -->
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.12] mb-3 transition-colors duration-300">
+                Need a Part? <span class="text-[#FF7200]">We'll Source It.</span>
+            </h1>
+
+            <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base font-light max-w-2xl mx-auto leading-relaxed">
+                Tell us what component you need. Our certified parts specialists check live warehouse inventory, verified international suppliers, and OEM donor boards to give you a transparent quote within 24 hours — no upfront payment required.
+            </p>
+        </div>
+
+        <!-- Form & Sidebar Grid -->
+        <form method="POST" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
             {% csrf_token %}
 
+            <!-- Error Notification Banner (if any) -->
             {% if form.errors %}
-            <div class="lg:w-full w-full order-first bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-6 py-4 text-sm space-y-1">
-                <p class="font-bold uppercase tracking-widest text-xs mb-2">Please fix the following before submitting:</p>
+            <div class="lg:col-span-12 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 rounded-2xl p-5 text-sm shadow-sm space-y-1">
+                <div class="flex items-center gap-2 font-bold uppercase tracking-wider text-xs mb-1">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span>Please resolve the following before submitting:</span>
+                </div>
                 {% for field in form %}
                     {% for error in field.errors %}
-                        <p>{{ field.label }}: {{ error }}</p>
+                        <p class="text-xs pl-6">• <span class="font-semibold">{{ field.label }}</span>: {{ error }}</p>
                     {% endfor %}
                 {% endfor %}
                 {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
+                    <p class="text-xs pl-6">• {{ error }}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
-            <!-- Left Column: Form Panels -->
-            <div class="lg:w-2/3 w-full space-y-6">
+            <!-- ================= LEFT COLUMN: FORM CARDS (7 COLS) ================= -->
+            <div class="lg:col-span-7 space-y-6">
 
-                <!-- Panel 1: Part Details -->
-                <div class="bg-white dark:bg-[#12141a] rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-200/60 dark:border-white/5 transition-colors duration-300">
-                    <div class="px-6 py-4 bg-slate-50 dark:bg-[#12141a] border-b border-slate-200/60 dark:border-white/5 flex items-center gap-3">
-                        <svg class="w-4 h-4 text-[#FF7200]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
-                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-white">Part Details</h3>
+                <!-- Panel 1: Part Specifications (Step 1) -->
+                <div class="bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40 overflow-hidden transition-all duration-300">
+                    
+                    <!-- Card Header -->
+                    <div class="px-6 sm:px-8 py-5 bg-slate-50/70 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-orange-500/10 text-[#FF7200] flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">Part Specifications</h2>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light">Tell us what needs replacing</p>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400 border border-slate-200/60 dark:border-white/5">
+                            Step 1 of 2
+                        </span>
                     </div>
-                    <div class="p-6 space-y-5">
+
+                    <!-- Card Body -->
+                    <div class="p-6 sm:p-8 space-y-6">
+
+                        <!-- Field: Part Needed -->
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Part Needed</label>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-0 mb-2">
+                                <label class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-1.5">
+                                    Part Needed
+                                    <span class="text-[#FF7200]">*</span>
+                                </label>
+                                <span class="text-[11px] font-medium text-slate-400 dark:text-gray-500">e.g. Battery, Screen, Keyboard</span>
+                            </div>
                             {{ form.part_needed }}
                         </div>
+
+                        <!-- Field: Device / Model -->
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Device / Model</label>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-0 mb-2">
+                                <label class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-1.5">
+                                    Device Model / Serial
+                                    <span class="text-[#FF7200]">*</span>
+                                </label>
+                                <span class="text-[11px] font-medium text-slate-400 dark:text-gray-500">Model number or Service Tag</span>
+                            </div>
                             {{ form.device_model }}
                         </div>
 
+                        <!-- Field: Condition Preference (Interactive Cards) -->
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Condition Preference</label>
-                            <div class="grid grid-cols-3 gap-4">
-                                <label class="relative">
-                                    <input type="radio" name="condition_preference" value="new" class="condition-radio hidden">
-                                    <div class="condition-card flex flex-col items-center text-center gap-2 dark:bg-white/5 dark:border-white/10">
-                                        <div class="w-4 h-4 rounded-full border border-slate-300 dark:border-gray-500 radio-indicator"></div>
-                                        <span class="block text-xs font-bold text-slate-800 dark:text-white">New</span>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-gray-300 mb-2.5">
+                                Condition Preference
+                            </label>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                
+                                <!-- Option 1: New -->
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="condition_preference" value="new" class="condition-radio-input sr-only" {% if form.condition_preference.value == 'new' or not form.condition_preference.value %}checked{% endif %}>
+                                    <div class="condition-choice-card h-full p-4 rounded-xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-slate-300 dark:hover:border-white/20 transition-all duration-200 flex flex-col justify-between">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <svg class="condition-icon w-5 h-5 text-slate-400 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                                            </svg>
+                                            <div class="radio-circle w-4 h-4 rounded-full border border-slate-300 dark:border-gray-500 flex items-center justify-center transition-colors">
+                                                <div class="radio-dot w-1.5 h-1.5 rounded-full bg-white opacity-0 transform scale-50 transition-all"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="block text-xs font-bold text-slate-900 dark:text-white">New</span>
+                                        </div>
                                     </div>
                                 </label>
-                                <label class="relative">
-                                    <input type="radio" name="condition_preference" value="used" class="condition-radio hidden">
-                                    <div class="condition-card flex flex-col items-center text-center gap-2 dark:bg-white/5 dark:border-white/10">
-                                        <div class="w-4 h-4 rounded-full border border-slate-300 dark:border-gray-500 radio-indicator"></div>
-                                        <span class="block text-xs font-bold text-slate-800 dark:text-white">Used</span>
+
+                                <!-- Option 2: Refurbished -->
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="condition_preference" value="refurbished" class="condition-radio-input sr-only" {% if form.condition_preference.value == 'refurbished' %}checked{% endif %}>
+                                    <div class="condition-choice-card h-full p-4 rounded-xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-slate-300 dark:hover:border-white/20 transition-all duration-200 flex flex-col justify-between">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <svg class="condition-icon w-5 h-5 text-slate-400 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                            </svg>
+                                            <div class="radio-circle w-4 h-4 rounded-full border border-slate-300 dark:border-gray-500 flex items-center justify-center transition-colors">
+                                                <div class="radio-dot w-1.5 h-1.5 rounded-full bg-white opacity-0 transform scale-50 transition-all"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="block text-xs font-bold text-slate-900 dark:text-white">Refurbished</span>
+                                        </div>
                                     </div>
                                 </label>
-                                <label class="relative">
-                                    <input type="radio" name="condition_preference" value="either" class="condition-radio hidden" checked>
-                                    <div class="condition-card flex flex-col items-center text-center gap-2 dark:bg-white/5 dark:border-white/10">
-                                        <div class="w-4 h-4 rounded-full border border-slate-300 dark:border-gray-500 radio-indicator"></div>
-                                        <span class="block text-xs font-bold text-slate-800 dark:text-white">Either</span>
+
+                                <!-- Option 3: Used -->
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="condition_preference" value="used" class="condition-radio-input sr-only" {% if form.condition_preference.value == 'used' %}checked{% endif %}>
+                                    <div class="condition-choice-card h-full p-4 rounded-xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-slate-300 dark:hover:border-white/20 transition-all duration-200 flex flex-col justify-between">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <svg class="condition-icon w-5 h-5 text-slate-400 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                            </svg>
+                                            <div class="radio-circle w-4 h-4 rounded-full border border-slate-300 dark:border-gray-500 flex items-center justify-center transition-colors">
+                                                <div class="radio-dot w-1.5 h-1.5 rounded-full bg-white opacity-0 transform scale-50 transition-all"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="block text-xs font-bold text-slate-900 dark:text-white">Used</span>
+                                        </div>
                                     </div>
                                 </label>
+
                             </div>
                         </div>
 
+                        <!-- Field: Additional Details -->
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Additional Details (Optional)</label>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-0 mb-2">
+                                <label class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-gray-300">
+                                    Additional Details
+                                    <span class="text-slate-400 font-normal text-[11px] normal-case tracking-normal ml-1">(Optional)</span>
+                                </label>
+                                <span class="text-[11px] font-medium text-slate-400 dark:text-gray-500">Color, part number, or notes</span>
+                            </div>
                             {{ form.additional_details }}
                         </div>
+
                     </div>
                 </div>
 
-                <!-- Panel 2: Contact Details -->
-                <div class="bg-white dark:bg-[#12141a] rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-200/60 dark:border-white/5 transition-colors duration-300">
-                    <div class="px-6 py-4 bg-slate-50 dark:bg-[#12141a] border-b border-slate-200/60 dark:border-white/5 flex items-center gap-3">
-                        <svg class="w-4 h-4 text-[#FF7200]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-white">Contact Details</h3>
-                    </div>
-                    <div class="p-6 space-y-5">
-                        <div class="grid grid-cols-2 gap-5">
+                <!-- Panel 2: Contact Details (Step 2) -->
+                <div class="bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40 overflow-hidden transition-all duration-300">
+                    
+                    <!-- Card Header -->
+                    <div class="px-6 sm:px-8 py-5 bg-slate-50/70 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-[#008BC6]/10 text-[#008BC6] flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Full Name</label>
+                                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">Contact & Notification</h2>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light">Where to send your verified price quote</p>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400 border border-slate-200/60 dark:border-white/5">
+                            Step 2 of 2
+                        </span>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-6 sm:p-8 space-y-6">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-gray-300 mb-2">
+                                    Full Name <span class="text-[#FF7200]">*</span>
+                                </label>
                                 {{ form.customer_name }}
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Phone Number</label>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-gray-300 mb-2">
+                                    Phone Number <span class="text-[#FF7200]">*</span>
+                                </label>
                                 {{ form.customer_phone }}
                             </div>
                         </div>
+
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Email (Optional)</label>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-0 mb-2">
+                                <label class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-gray-300">
+                                    Email Address
+                                    <span class="text-slate-400 font-normal text-[11px] normal-case tracking-normal ml-1">(Optional)</span>
+                                </label>
+                                <span class="text-[11px] font-medium text-slate-400 dark:text-gray-500">For written PDF quote copy</span>
+                            </div>
                             {{ form.customer_email }}
                         </div>
+
                     </div>
                 </div>
 
-                <div class="flex justify-end pt-2">
-                    <button type="submit" class="bg-gradient-to-r from-[#FF7200] to-orange-500 hover:from-orange-500 hover:to-orange-600 shadow-[0_0_20px_rgba(255,114,0,0.25)] text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all flex items-center gap-2 transform hover:-translate-y-1 active:scale-95">
-                        Request a Part
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <!-- Submit Action Box -->
+                <div class="bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 shadow-xl shadow-slate-900/5 dark:shadow-black/40 flex flex-col sm:flex-row items-center justify-between gap-5 transition-all duration-300">
+                    <div class="flex items-center gap-3 text-left">
+                        <div class="w-10 h-10 rounded-xl bg-green-500/10 text-green-600 dark:text-green-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">No Commitment Required</p>
+                            <p class="text-xs text-slate-500 dark:text-gray-400 font-light">Free stock lookup & quotes with 90-day warranty backing.</p>
+                        </div>
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#FF7200] hover:bg-[#e66600] text-white px-9 py-4 rounded-xl font-bold uppercase tracking-wider text-xs sm:text-sm shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 shrink-0 group">
+                        <span>Submit Part Request</span>
+                        <span class="transform group-hover:translate-x-1 transition-transform duration-200 font-bold">→</span>
                     </button>
                 </div>
+
             </div>
 
-            <!-- Right Column: Sidebar Panel -->
-            <div class="lg:w-1/3 w-full space-y-6">
-                <div class="bg-white dark:bg-[#12141a] rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-200/60 dark:border-white/5 p-6 transition-colors duration-300">
-                    <div class="flex items-center gap-3 mb-6">
-                        <svg class="w-4 h-4 text-[#008BC6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-white">How It Works</h3>
+            <!-- ================= RIGHT COLUMN: SIDEBAR & ASSURANCES (5 COLS) ================= -->
+            <div class="lg:col-span-5 space-y-6">
+
+                <!-- Card 1: How Sourcing Works -->
+                <div class="bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40 p-6 sm:p-8 transition-colors duration-300">
+                    
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-white/5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-[#008BC6]/10 text-[#008BC6] flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">How It Works</h3>
+                        </div>
                     </div>
 
                     <div class="space-y-6">
-                        <div class="flex gap-4">
-                            <div class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 flex items-center justify-center text-[#008BC6] shrink-0">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        
+                        <!-- Step 1 -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-xl bg-orange-500/10 text-[#FF7200] font-black text-xs flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                                01
                             </div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-800 dark:text-white mb-1">Tell Us What You Need</h4>
-                                <p class="text-[10px] text-slate-500 font-light leading-relaxed">Part, device model, and condition preference &mdash; the more specific, the faster we can source it.</p>
+                                <h4 class="text-xs font-bold uppercase tracking-wide text-slate-900 dark:text-white mb-1">
+                                    Submit Request
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light leading-relaxed">
+                                    Specify your device and component. The more exact the serial or model, the faster our search.
+                                </p>
                             </div>
                         </div>
 
-                        <div class="flex gap-4">
-                            <div class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 flex items-center justify-center text-[#008BC6] shrink-0">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <!-- Step 2 -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-xl bg-[#008BC6]/10 text-[#008BC6] font-black text-xs flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                                02
                             </div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-800 dark:text-white mb-1">We Source &amp; Quote</h4>
-                                <p class="text-[10px] text-slate-500 font-light leading-relaxed">Our team checks stock and suppliers, then calls or messages you with a price &mdash; no payment taken here.</p>
+                                <h4 class="text-xs font-bold uppercase tracking-wide text-slate-900 dark:text-white mb-1">
+                                    Inventory Match & Quote
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light leading-relaxed">
+                                    Our technicians verify availability, test compatibility, and send you a formal quote via WhatsApp or phone call.
+                                </p>
                             </div>
                         </div>
 
-                        <div class="flex gap-4">
-                            <div class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 flex items-center justify-center text-[#008BC6] shrink-0">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <!-- Step 3 -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-xl bg-green-500/10 text-green-600 dark:text-green-400 font-black text-xs flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                                03
                             </div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-800 dark:text-white mb-1">You Confirm</h4>
-                                <p class="text-[10px] text-slate-500 font-light leading-relaxed">Happy with the quote? We arrange pickup, delivery, or install as part of a repair.</p>
+                                <h4 class="text-xs font-bold uppercase tracking-wide text-slate-900 dark:text-white mb-1">
+                                    Pickup, Delivery, or Fitting
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light leading-relaxed">
+                                    Happy with the price? Pick up the part, request delivery anywhere in Ghana, or have our lab fit it with a 90-day warranty.
+                                </p>
                             </div>
                         </div>
+
+                    </div>
+
+                    <!-- Warranty & Quality Checklist -->
+                    <div class="mt-8 pt-6 border-t border-slate-100 dark:border-white/5 space-y-2.5">
+                        <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-gray-300 font-light">
+                            <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <span>90-Day Warranty on all replacement parts</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-gray-300 font-light">
+                            <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <span>100% Genuine OEM or verified Grade-A hardware</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-gray-300 font-light">
+                            <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <span>Nationwide delivery across all regions</span>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- Card 3: Common Sourced Hardware Categories -->
+                <div class="bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40 p-6 sm:p-7 transition-colors duration-300">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-3">
+                        Regularly Sourced Components
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/5">Retina / OLED Panels</span>
+                        <span class="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/5">High-Wh OEM Batteries</span>
+                        <span class="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/5">Logic Boards & VRMs</span>
+                        <span class="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/5">Backlit Keyboards</span>
+                        <span class="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/5">DC Jack & USB-C Ports</span>
+                        <span class="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/5">Cooling Fan & Heat Pipes</span>
+                        <span class="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/5">Trackpads & Ribbon Cables</span>
                     </div>
                 </div>
 
-                <!-- WhatsApp Shortcut -->
-                <div class="bg-gray-900 dark:bg-[#12141a] rounded-2xl overflow-hidden p-6 relative transition-colors duration-300">
-                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent z-0"></div>
-                    <div class="absolute top-6 left-[50%] -translate-x-[50%] w-10 h-10 bg-[#FF7200]/20 rounded-full flex items-center justify-center text-[#FF7200] mb-4 z-10">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                    </div>
-                    <div class="pt-16 relative z-10 text-center">
-                        <h4 class="text-sm font-bold text-white mb-2">Need it faster?</h4>
-                        <p class="text-[11px] text-gray-400 font-light leading-relaxed mb-6">Message us directly on WhatsApp with the part and device model.</p>
-                        <a href="https://wa.me/233540322533?text=Hi%20Compupartz%2C%20I'm%20looking%20for%20a%20part..." target="_blank" class="w-full bg-white/10 hover:bg-white/20 border border-white/5 text-white py-3 rounded-lg font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-colors">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-                            WhatsApp Us
-                        </a>
-                    </div>
-                </div>
             </div>
 
         </form>
-    </div>
-</div>
 
-<style>
-    .condition-card {
-        border: 1px solid rgba(156, 163, 175, 0.3);
-        border-radius: 0.75rem;
-        padding: 1rem 0.5rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background-color: transparent;
-    }
-    .condition-card:hover {
-        border-color: rgba(156, 163, 175, 0.6);
-    }
-    .condition-radio:checked + .condition-card {
-        border-color: #FF7200;
-        background-color: rgba(255, 114, 0, 0.05);
-    }
-    .condition-radio:checked + .condition-card .radio-indicator {
-        border-color: #FF7200;
-        background-color: #FF7200;
-    }
-</style>
+    </div>
+
+</div>
 
 {% endblock %}

@@ -1,85 +1,156 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ post.title }} | Compupartz Tech Hub{% endblock %}
+{% block title %}{{ post.title }} | How We Work | Compupartz{% endblock %}
 
 {% block content %}
 
-<!-- ✅ READING PROGRESS BAR -->
-<div id="readingProgress" class="fixed top-0 left-0 h-1 bg-brandBlue z-[60] transition-all duration-300 w-0"></div>
+<!-- Custom Styling for Interactive Elements & Redesign Accents -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
 
-<div class="max-w-4xl mx-auto px-6 py-12 md:py-20 animate-fadeIn">
+.hero-script-font {
+    font-family: 'Caveat', cursive, -apple-system, sans-serif;
+}
+</style>
 
-    <!-- HEADER -->
-    <header class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <span class="text-[10px] font-black py-1.5 px-4 rounded-full bg-brandBlue text-white uppercase tracking-widest shadow-lg shadow-brandBlue/20">
-                {{ post.category.name|default:"Intelligence" }}
-            </span>
-            <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                {{ post.created_at|date:"M d, Y" }} • {{ post.reading_time }} Min Read
+<!-- Reading Progress Indicator -->
+<div id="readingProgress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-[#008BC6] to-[#FF7200] z-[60] transition-all duration-150 w-0"></div>
+
+<!-- ================= FULL-BLEED POST DETAIL PAGE ================= -->
+<div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] -mt-24 pt-32 sm:pt-36 md:pt-40 -mb-12 pb-24 sm:pb-32 bg-[#F5F8FA] dark:bg-[#0a0a0c] text-slate-800 dark:text-white font-outfit overflow-hidden transition-colors duration-300 relative min-h-screen">
+
+    <!-- Ambient Glow Spots -->
+    <div class="absolute top-10 left-1/4 w-96 h-96 bg-[#008BC6]/8 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-40 right-10 w-96 h-96 bg-[#FF7200]/8 dark:bg-[#FF7200]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-4xl mx-auto px-6 relative z-10">
+
+        <!-- Navigation breadcrumb -->
+        <div class="mb-8 flex items-center justify-between">
+            <a href="{% url 'blog:post_list' %}" 
+               class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#FF7200] hover:text-orange-600 transition-colors">
+                <span>&larr;</span>
+                <span>Return to How We Work Hub</span>
+            </a>
+            <span class="text-xs text-slate-400 dark:text-gray-500 font-medium">
+                {{ post.created_at|date:"M d, Y" }}
             </span>
         </div>
-        
-        <h1 class="text-2xl md:text-6xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight leading-[1.1] mb-8">
-            {{ post.title }}
-        </h1>
 
-        {% if post.featured_image %}
-        <div class="aspect-[21/9] rounded-2xl md:rounded-[2.5rem] overflow-hidden mb-12 border border-gray-100 dark:border-white/10 shadow-2xl">
-            <img src="{{ post.featured_image.url }}" class="w-full h-full object-cover">
-        </div>
-        {% endif %}
-    </header>
+        <!-- Article Header -->
+        <header class="mb-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-[#008BC6] border border-blue-500/20">
+                    {{ post.category.name|default:"Laboratory Intelligence" }}
+                </span>
+                <span class="text-xs text-slate-400 dark:text-gray-500 font-medium">
+                    ⏱️ {{ post.reading_time }} Min Read
+                </span>
+            </div>
 
-    <!-- CONTENT -->
-    <div class="grid lg:grid-cols-[1fr_200px] gap-12">
-        
-        <!-- ARTICLE BODY -->
-        <article class="prose prose-lg dark:prose-invert max-w-none prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-headings:font-outfit prose-headings:uppercase prose-headings:tracking-widest prose-headings:text-gray-900 dark:prose-headings:text-white prose-strong:text-brandBlue prose-a:text-[#ff7200] hover:prose-a:underline">
-            {{ post.content|linebreaks }}
-        </article>
+            <h1 class="text-2xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.15] mb-6">
+                {{ post.title }}
+            </h1>
 
-        <!-- SIDEBAR INFO -->
-        <aside class="hidden lg:block space-y-10 py-4">
-            <div class="space-y-2">
-                <p class="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400">Analyst</p>
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-brandBlue/10 flex items-center justify-center text-xs text-brandBlue font-black">
-                        {{ post.author.username|slice:":1"|upper }}
+            <p class="text-sm sm:text-base text-slate-600 dark:text-gray-300 font-light leading-relaxed mb-8">
+                {{ post.excerpt }}
+            </p>
+
+            {% if post.featured_image %}
+            <div class="aspect-[16/9] rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/10 shadow-2xl relative bg-slate-900">
+                <img src="{{ post.featured_image.url }}" 
+                     alt="{{ post.title }}" 
+                     class="w-full h-full object-cover">
+            </div>
+            {% endif %}
+        </header>
+
+        <!-- Article Body & Sidebar -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+            
+            <!-- Main Content Area -->
+            <article class="lg:col-span-8 bg-white dark:bg-[#12141a] rounded-3xl p-7 sm:p-10 border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40 text-slate-800 dark:text-gray-200 text-sm sm:text-base leading-relaxed space-y-6">
+                {{ post.content|linebreaks }}
+            </article>
+
+            <!-- Sidebar Info -->
+            <aside class="lg:col-span-4 space-y-6">
+                <!-- Author & Lab Card -->
+                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-3">Bench Analyst</span>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-[#008BC6] flex items-center justify-center font-bold text-sm shadow-inner">
+                            🔬
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Compupartz Lab</p>
+                            <p class="text-[11px] text-slate-400 dark:text-gray-500 font-light">Hardware Engineering Desk</p>
+                        </div>
                     </div>
-                    <p class="text-xs font-bold text-gray-900 dark:text-white uppercase">{{ post.author.username }}</p>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 font-light leading-relaxed">
+                        Authored by certified board-level technicians at our KNUST repair facility.
+                    </p>
                 </div>
-            </div>
 
-            <div class="space-y-2">
-                <p class="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400">Share Briefing</p>
-                <div class="flex gap-4">
-                    <button class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-xs hover:bg-[#ff7200] hover:text-white transition-all">FB</button>
-                    <button class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-xs hover:bg-[#008BC6] hover:text-white transition-all">TW</button>
+                <!-- CTA Card -->
+                <div class="bg-gradient-to-br from-[#12141a] to-slate-900 text-white rounded-3xl p-6 border border-white/10 shadow-xl text-center">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#FF7200] block mb-2">Need This Fixed?</span>
+                    <h3 class="text-sm font-bold text-white mb-2">Have a Similar Fault?</h3>
+                    <p class="text-xs text-gray-300 font-light leading-relaxed mb-4">
+                        Book a diagnostic triage ticket or consult our technicians on WhatsApp.
+                    </p>
+                    <a href="{% url 'book_repair' %}" 
+                       class="w-full inline-flex items-center justify-center gap-2 bg-[#FF7200] hover:bg-[#e66600] text-white py-3 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-orange-500/25 transition-all">
+                        <span>Book a Repair</span>
+                        <span>&rarr;</span>
+                    </a>
                 </div>
-            </div>
-        </aside>
 
-    </div>
+                {% if related_posts %}
+                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-4">Related Intelligence</span>
+                    <div class="space-y-4">
+                        {% for rel in related_posts %}
+                        <a href="{% url 'blog:post_detail' rel.slug %}" class="block group">
+                            <h4 class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#008BC6] transition-colors line-clamp-2">
+                                {{ rel.title }}
+                            </h4>
+                            <span class="text-[10px] text-slate-400 dark:text-gray-500">{{ rel.created_at|date:"M d, Y" }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </aside>
 
-    <!-- FOOTER NAV -->
-    <div class="mt-20 pt-10 border-t border-gray-100 dark:border-white/10">
-        <div class="flex justify-between items-center">
-             <a href="{% url 'blog:post_list' %}" class="text-[10px] font-black uppercase tracking-widest text-[#ff7200] hover:underline">&larr; Return to Archive</a>
-             <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors">Top of Briefing &uarr;</button>
         </div>
+
+        <!-- Footer Back Nav -->
+        <div class="mt-14 pt-8 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between">
+            <a href="{% url 'blog:post_list' %}" 
+               class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#FF7200] hover:text-orange-600 transition-colors">
+                <span>&larr;</span>
+                <span>Return to How We Work Hub</span>
+            </a>
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+                    class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
+                Top of Briefing &uarr;
+            </button>
+        </div>
+
     </div>
 
 </div>
 
 <script>
-    window.addEventListener('scroll', () => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrolled = (winScroll / height) * 100;
-        document.getElementById("readingProgress").style.width = scrolled + "%";
-    });
+window.addEventListener('scroll', () => {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    const bar = document.getElementById("readingProgress");
+    if (bar) bar.style.width = scrolled + "%";
+});
 </script>
 
 {% endblock %}

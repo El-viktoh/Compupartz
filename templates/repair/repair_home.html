@@ -5,401 +5,601 @@
 
 {% block content %}
 
-<!-- ================= HERO SECTION ================= -->
-<div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] min-h-[75vh] flex flex-col justify-center -mt-24 pt-24 sm:pt-32 pb-20 border-b border-slate-200/60 dark:border-white/5 bg-slate-50 dark:bg-[#0a0a0c] overflow-hidden transition-colors duration-300">
-    <!-- Full Background Image -->
-    <div class="absolute inset-0 z-0">
-        <img src="{% static 'images/repair_page_hero.png' %}" alt="Repair Lab" class="w-full h-full object-cover opacity-80 dark:opacity-60 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-slate-50/90 to-transparent dark:from-[#0a0a0c] dark:via-[#0a0a0c]/90 dark:to-transparent transition-colors duration-300"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-transparent dark:from-[#0a0a0c] dark:via-transparent dark:to-transparent transition-colors duration-300"></div>
-    </div>
+<!-- ================= HERO SECTION (REFERENCE DESIGN) ================= -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
+.hero-script-font {
+    font-family: 'Caveat', cursive, -apple-system, sans-serif;
+}
+.hero-technician-img {
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.22));
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+}
+.hero-technician-img:hover {
+    transform: scale(1.025) translateY(-4px);
+    filter: drop-shadow(0 28px 40px rgba(0, 139, 198, 0.3)) drop-shadow(0 20px 30px rgba(0, 0, 0, 0.3));
+}
+.dark .hero-technician-img {
+    filter: drop-shadow(0 25px 45px rgba(0, 0, 0, 0.8)) drop-shadow(0 15px 30px rgba(0, 139, 198, 0.25));
+}
+.dark .hero-technician-img:hover {
+    filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.9)) drop-shadow(0 20px 40px rgba(0, 139, 198, 0.4));
+}
+</style>
+
+<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] -mt-24 pt-32 sm:pt-36 md:pt-40 pb-0 bg-[#F5F8FA] dark:bg-[#0a0a0c] overflow-hidden transition-colors duration-300">
+    
+    <!-- Ambient Atmospheric Glows -->
+    <div class="absolute top-10 left-10 w-96 h-96 bg-[#008BC6]/10 dark:bg-[#008BC6]/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-10 right-10 w-96 h-96 bg-[#FF7200]/10 dark:bg-[#FF7200]/10 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
-        <div class="max-w-2xl">
-            <div class="inline-flex items-center gap-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 px-3 py-1 rounded-full mb-6 shadow-sm dark:shadow-none">
-                <span class="w-2 h-2 rounded-full bg-[#008BC6] animate-pulse"></span>
-                <span class="text-gray-800 dark:text-white text-[10px] font-black uppercase tracking-widest transition-colors duration-300">System Diagnostics</span>
-            </div>
-            
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-display font-bold leading-[1.1] mb-6 text-slate-800 dark:text-white tracking-wide transition-colors duration-300">
-                Precision Repairs. Minimum Downtime.
-            </h1>
-            
-            <p class="text-slate-600 dark:text-gray-400 text-base md:text-lg mb-10 font-light leading-relaxed transition-colors duration-300">
-                From micro-soldering to full system restorations, our expert lab is equipped to handle the most complex hardware failures. 
-            </p>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-end">
 
-            <div class="flex flex-wrap items-center gap-4">
-                <a href="{% url 'book_repair' %}"
-                    class="bg-[#008BC6] hover:bg-blue-600 text-white px-8 py-3.5 rounded-lg font-bold transition-all text-sm shadow-[0_0_20px_rgba(0,139,198,0.3)] hover:shadow-[0_0_30px_rgba(0,139,198,0.5)]">
-                    Create Repair Ticket
-                </a>
-                <a href="{% url 'track_repair_lookup' %}"
-                    class="bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-white px-8 py-3.5 rounded-lg font-bold hover:bg-slate-50 hover:shadow-md dark:hover:bg-white/10 transition-all text-sm flex items-center gap-2 shadow-sm dark:shadow-none">
-                    Track Existing Ticket <span class="text-gray-400">&rarr;</span>
-                </a>
+            <!-- LEFT COLUMN: Content (Headline, Paragraph & Buttons) -->
+            <div class="lg:col-span-7 flex flex-col justify-center items-start text-left pl-0 lg:pr-6 py-6 lg:py-10">
+                
+                <!-- Handwritten Script Tagline (Matches Homepage Hero Spacing) -->
+                <span class="hero-script-font text-2xl sm:text-3xl lg:text-[2.25rem] text-[#008BC6] dark:text-[#38bdf8] font-bold mb-2.5 sm:mb-3 tracking-wide transform -rotate-1 block">
+                    Expert Repairs
+                </span>
+
+                <!-- Main Bold Headline (Separated into 2 distinct phrases) -->
+                <h1 class="text-3xl sm:text-4xl lg:text-[3.25rem] xl:text-[3.5rem] font-display font-black tracking-tight leading-[1.15] mb-5 sm:mb-6 transition-colors duration-300">
+                    <span class="block text-slate-900 dark:text-white">Minimal Downtime.</span>
+                    <span class="block text-[#008BC6] mt-2 sm:mt-2.5">Back to Work Faster.</span>
+                </h1>
+
+                <!-- Subtitle (Matches Homepage 2-Line Cadence & Spacing) -->
+                <p class="text-slate-600 dark:text-gray-300 text-base sm:text-lg font-light leading-relaxed mb-8 max-w-xl">
+                    From micro-soldering to full system restorations,<br class="hidden sm:inline">
+                    our expert lab is equipped to handle the most complex hardware failures.
+                </p>
+
+                <!-- Action Buttons (Matches reference button styles) -->
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Button 1: Solid Brand Blue (Reference BOOK A REPAIR) -->
+                    <a href="{% url 'book_repair' %}"
+                       class="inline-flex items-center justify-center bg-[#008BC6] hover:bg-[#0076a8] text-white px-8 py-4 rounded-xl font-bold uppercase tracking-wider text-xs sm:text-sm shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-95">
+                        Create Repair Ticket
+                    </a>
+                </div>
+
             </div>
+
+            <!-- RIGHT COLUMN: Technician Bench Image (Reduced & Sent to the Right Side) -->
+            <div class="lg:col-span-5 relative flex items-end justify-end self-end pt-6 lg:pt-0 ml-auto w-full">
+                
+                <!-- Tailored Graphic Backdrop (Framing compact bench posture on the right) -->
+                <div class="absolute inset-0 flex items-end justify-end pointer-events-none scale-105 sm:scale-110 pb-1">
+                    <svg class="w-full max-w-[460px] sm:max-w-[500px] lg:max-w-[540px] h-auto transform -rotate-1" viewBox="0 0 680 480" fill="none">
+                        <defs>
+                            <linearGradient id="repairBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#008BC6"/>
+                                <stop offset="100%" stop-color="#006b99"/>
+                            </linearGradient>
+                            <linearGradient id="repairOrangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FF7200"/>
+                                <stop offset="100%" stop-color="#ff8e32"/>
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Main sweeping cyan backdrop tuned to bench posture -->
+                        <path d="M100,240 C130,140 240,60 390,50 C520,40 600,90 635,160 C660,210 650,280 620,350 C580,430 480,465 330,460 C200,455 110,410 75,340 C50,290 70,260 100,240 Z" fill="url(#repairBlueGrad)" fill-opacity="0.95"/>
+                        
+                        <!-- High-energy safety orange tech wing above shoulder -->
+                        <path d="M560,75 C600,55 645,50 670,75 C685,95 670,125 630,145 Z" fill="url(#repairOrangeGrad)" fill-opacity="0.95"/>
+                        
+                        <!-- Accent energetic orange splash near bottom tools -->
+                        <path d="M70,360 C45,390 25,415 45,435 C65,445 105,430 140,405 Z" fill="url(#repairOrangeGrad)" fill-opacity="0.95"/>
+                        
+                        <!-- Dynamic technical streaks & accents -->
+                        <path d="M580,105 L640,65 M600,150 L655,120 M590,370 L645,410 M540,420 L595,455 M95,170 L45,130 M80,310 L30,345" stroke="#008BC6" stroke-width="7" stroke-linecap="round"/>
+                        
+                        <!-- Precision Splatters & Nodes -->
+                        <circle cx="630" cy="180" r="7.5" fill="#FF7200"/>
+                        <circle cx="590" cy="330" r="5.5" fill="#008BC6"/>
+                        <circle cx="75" cy="200" r="6.5" fill="#008BC6"/>
+                        <circle cx="50" cy="280" r="5" fill="#FF7200"/>
+                        <circle cx="660" cy="95" r="4.5" fill="#008BC6"/>
+                    </svg>
+                </div>
+
+                <!-- Bench Repair Technician Image (Reduced, Flush to Bottom, Aligned to Right) -->
+                <div class="relative z-10 w-full max-w-[400px] sm:max-w-[450px] lg:max-w-[490px] flex items-end justify-end ml-auto">
+                    <img src="{% static 'images/repair_technician_bench.png' %}?v=4" 
+                         alt="Certified Compupartz Technician Repairing Laptop Motherboard" 
+                         class="hero-technician-img w-full h-auto max-h-[420px] lg:max-h-[460px] object-contain block mb-0">
+                </div>
+
+            </div>
+
         </div>
+
     </div>
-</div>
+</section>
 
 <!-- ================= STEP-BY-STEP PROCESS ================= -->
-<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] py-24 bg-slate-50/30 dark:bg-[#12141a] transition-colors duration-300 border-b border-slate-200/60 dark:border-white/5">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16">
-            <div class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Workflow</div>
-            <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-widest transition-colors duration-300">How It Works</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <!-- Step 1 -->
-            <div class="relative group text-center md:text-left">
-                <div class="w-12 h-12 bg-slate-100 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 rounded-xl flex items-center justify-center text-[#008BC6] mb-6 mx-auto md:mx-0 shadow-sm dark:shadow-none">
-                    <span class="font-black text-lg">1</span>
-                </div>
-                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg">Initialize Ticket</h3>
-                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed">Submit your device details and symptoms via our secure online portal.</p>
-                <!-- Connector Line -->
-                <div class="hidden md:block absolute top-6 left-16 right-0 h-[1px] bg-slate-200 dark:bg-white/10 -z-10"></div>
-            </div>
-            
-            <!-- Step 2 -->
-            <div class="relative group text-center md:text-left">
-                <div class="w-12 h-12 bg-slate-100 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 rounded-xl flex items-center justify-center text-[#008BC6] mb-6 mx-auto md:mx-0 shadow-sm dark:shadow-none">
-                    <span class="font-black text-lg">2</span>
-                </div>
-                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg">Lab Intake</h3>
-                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed">Drop off your device or use our secure courier pickup service.</p>
-                <!-- Connector Line -->
-                <div class="hidden md:block absolute top-6 left-16 right-0 h-[1px] bg-slate-200 dark:bg-white/10 -z-10"></div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="relative group text-center md:text-left">
-                <div class="w-12 h-12 bg-[#008BC6] rounded-xl flex items-center justify-center text-white mb-6 mx-auto md:mx-0 shadow-[0_0_15px_rgba(0,139,198,0.3)]">
-                    <span class="font-black text-lg">3</span>
-                </div>
-                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg">Diagnostics & Repair</h3>
-                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed">Our technicians perform root-cause analysis and execute the repair protocol.</p>
-                <!-- Connector Line -->
-                <div class="hidden md:block absolute top-6 left-16 right-0 h-[1px] bg-slate-200 dark:bg-white/10 -z-10"></div>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="relative group text-center md:text-left">
-                <div class="w-12 h-12 bg-slate-100 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 rounded-xl flex items-center justify-center text-[#008BC6] mb-6 mx-auto md:mx-0 shadow-sm dark:shadow-none">
-                    <span class="font-black text-lg">4</span>
-                </div>
-                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg">Return Protocol</h3>
-                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed">Device undergoes final QA testing before being returned to you with warranty.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ================= FEATURED SERVICES ================= -->
-<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] py-24 bg-slate-50 dark:bg-[#0a0a0c] transition-colors duration-300">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="flex justify-between items-end mb-10 border-t border-slate-200/60 dark:border-white/5 pt-16 transition-colors duration-300">
-            <div>
-                <div class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Our Capabilities</div>
-                <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-widest transition-colors duration-300">Diagnostic & Repair Services</h2>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Large Card (Motherboard) -->
-            <div class="md:col-span-2 relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group h-64 md:h-auto shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
-                <div class="absolute inset-0 z-0">
-                    <img src="{% static 'images/motherboard_repair.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
-                </div>
-                <div class="relative z-10 p-8 flex flex-col justify-end h-full">
-                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white mb-auto backdrop-blur-md">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-white font-bold text-xl mb-2 transition-colors duration-300">Motherboard Repair</h3>
-                        <p class="text-gray-300 dark:text-gray-400 text-sm font-light max-w-sm transition-colors duration-300">Component-level diagnostics, liquid damage recovery, and micro-soldering solutions for seemingly dead logic boards.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Small Card (Screen) -->
-            <div class="relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group flex flex-col justify-end shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
-                <div class="absolute inset-0 z-0">
-                    <img src="{% static 'images/repair_screen.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
-                </div>
-                <div class="relative z-10 p-6 flex flex-col h-full justify-between">
-                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white backdrop-blur-md">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-white font-bold mb-2 transition-colors duration-300">Screen Replacement</h3>
-                        <p class="text-gray-300 dark:text-gray-400 text-xs font-light leading-relaxed transition-colors duration-300">Original and OEM-grade display panels with color calibration services.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Small Card (Battery) -->
-            <div class="relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group flex flex-col justify-end shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
-                <div class="absolute inset-0 z-0">
-                    <img src="{% static 'images/repair_battery.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
-                </div>
-                <div class="relative z-10 p-6 flex flex-col h-full justify-between">
-                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white backdrop-blur-md">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-white font-bold mb-2 transition-colors duration-300">Battery Service</h3>
-                        <p class="text-gray-300 dark:text-gray-400 text-xs font-light leading-relaxed transition-colors duration-300">High-capacity genuine battery replacements with diagnostic health checks.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Small Card (Keyboard) -->
-            <div class="relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group flex flex-col justify-end shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
-                <div class="absolute inset-0 z-0">
-                    <img src="{% static 'images/repair_keyboard.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
-                </div>
-                <div class="relative z-10 p-6 flex flex-col h-full justify-between">
-                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white backdrop-blur-md">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-white font-bold mb-2 transition-colors duration-300">Keyboard Repair</h3>
-                        <p class="text-gray-300 dark:text-gray-400 text-xs font-light leading-relaxed transition-colors duration-300">Individual key repair or full top-case replacements for all major brands.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Small Card (Port) -->
-            <div class="relative bg-gray-900 dark:bg-[#12141a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 group flex flex-col justify-end shadow-sm dark:shadow-none transition-colors duration-300 min-h-[16rem]">
-                <div class="absolute inset-0 z-0">
-                    <img src="{% static 'images/repair_port.png' %}" class="w-full h-full object-cover opacity-80 dark:opacity-50 mix-blend-luminosity group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent dark:from-[#12141a] dark:via-[#12141a]/80 dark:to-transparent transition-colors duration-300"></div>
-                </div>
-                <div class="relative z-10 p-6 flex flex-col h-full justify-between">
-                    <div class="w-10 h-10 bg-white/20 dark:bg-white/10 rounded-lg flex items-center justify-center text-white backdrop-blur-md">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-white font-bold mb-2 transition-colors duration-300">Port Replacement</h3>
-                        <p class="text-gray-300 dark:text-gray-400 text-xs font-light leading-relaxed transition-colors duration-300">USB-C, DC-IN, and HDMI port replacements using precision soldering.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ================= TRUST FACTORS ================= -->
-<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] py-24 bg-slate-50/30 dark:bg-[#12141a] transition-colors duration-300 border-t border-b border-slate-200/60 dark:border-white/5">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="flex justify-between items-end mb-10">
-            <div>
-                <div class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Service Protocols</div>
-                <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-widest transition-colors duration-300">Precision in Every Process</h2>
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-white dark:bg-[#12141a] border border-slate-200/50 dark:border-white/5 p-8 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 hover:border-slate-300/60 dark:hover:border-[#ff7200]/30 transition-all duration-300 group dark:shadow-none">
-                <div class="w-10 h-10 bg-slate-50 dark:bg-white/5 rounded-lg flex items-center justify-center text-slate-500 dark:text-gray-400 group-hover:text-[#ff7200] dark:group-hover:text-[#ff7200] transition-colors mb-6 shadow-sm dark:shadow-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-                </div>
-                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg transition-colors duration-300">OEM Grade Hardware</h3>
-                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed transition-colors duration-300">We utilize only original equipment manufacturer or equivalent high-grade components for all technical repairs.</p>
-            </div>
-            <div class="bg-white dark:bg-[#12141a] border border-slate-200/50 dark:border-white/5 p-8 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 hover:border-slate-300/60 dark:hover:border-[#ff7200]/30 transition-all duration-300 group dark:shadow-none">
-                <div class="w-10 h-10 bg-slate-50 dark:bg-white/5 rounded-lg flex items-center justify-center text-slate-500 dark:text-gray-400 group-hover:text-[#ff7200] dark:group-hover:text-[#ff7200] transition-colors mb-6 shadow-sm dark:shadow-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg transition-colors duration-300">48-Hour Standard SLA</h3>
-                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed transition-colors duration-300">Most standard diagnostic and repair procedures are completed within a 48-hour service level agreement.</p>
-            </div>
-            <div class="bg-white dark:bg-[#12141a] border border-slate-200/50 dark:border-white/5 p-8 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 hover:border-slate-300/60 dark:hover:border-[#ff7200]/30 transition-all duration-300 group dark:shadow-none">
-                <div class="w-10 h-10 bg-slate-50 dark:bg-white/5 rounded-lg flex items-center justify-center text-slate-500 dark:text-gray-400 group-hover:text-[#ff7200] dark:group-hover:text-[#ff7200] transition-colors mb-6 shadow-sm dark:shadow-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                </div>
-                <h3 class="text-slate-800 dark:text-white font-bold mb-3 tracking-wide text-lg transition-colors duration-300">90-Day Warranty</h3>
-                <p class="text-slate-600 dark:text-gray-400 text-sm font-light leading-relaxed transition-colors duration-300">All labor and components are covered by our comprehensive 90-day technical assurance warranty.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ================= TESTIMONIALS ================= -->
-<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] py-24 bg-slate-50 dark:bg-[#0a0a0c] transition-colors duration-300">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16">
-            <div class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] mb-3">Client Details</div>
-            <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-widest transition-colors duration-300">Trusted by Professionals</h2>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-white dark:bg-[#12141a] p-8 rounded-xl border border-slate-200/50 dark:border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none transition-colors duration-300">
-                <div class="flex gap-1 text-[#FF7200] mb-4">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                </div>
-                <p class="text-slate-600 dark:text-gray-300 text-sm font-light leading-relaxed mb-6">"My MacBook Pro's logic board was declared 'unfixable' by others. Compupartz diagnosed a blown capacitor, micro-soldered a replacement, and had it working perfectly in 48 hours."</p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-gray-800 flex items-center justify-center font-bold text-slate-500 dark:text-gray-400">EK</div>
-                    <div>
-                        <h4 class="text-slate-800 dark:text-white text-xs font-bold uppercase tracking-wider">Emmanuel K.</h4>
-                        <p class="text-slate-500 dark:text-gray-500 text-[10px] uppercase tracking-widest">Software Engineer</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white dark:bg-[#12141a] p-8 rounded-xl border border-gray-200 dark:border-white/5 shadow-sm dark:shadow-none transition-colors duration-300">
-                <div class="flex gap-1 text-[#FF7200] mb-4">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                </div>
-                <p class="text-gray-600 dark:text-gray-300 text-sm font-light leading-relaxed mb-6">"Incredible transparency throughout the whole process. Tracking the repair ticket online gave me peace of mind, and the new screen looks OEM-perfect."</p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-gray-500 dark:text-gray-400">SA</div>
-                    <div>
-                        <h4 class="text-gray-900 dark:text-white text-xs font-bold uppercase tracking-wider">Sarah A.</h4>
-                        <p class="text-gray-500 dark:text-gray-500 text-[10px] uppercase tracking-widest">Graphic Designer</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white dark:bg-[#12141a] p-8 rounded-xl border border-slate-200/50 dark:border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none transition-colors duration-300">
-                <div class="flex gap-1 text-[#FF7200] mb-4">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                </div>
-                <p class="text-slate-600 dark:text-gray-300 text-sm font-light leading-relaxed mb-6">"Fast turnaround time on my Dell XPS battery replacement. The lab feels like a high-tech facility, and the staff are incredibly knowledgeable."</p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-gray-800 flex items-center justify-center font-bold text-slate-500 dark:text-gray-400">DO</div>
-                    <div>
-                        <h4 class="text-slate-800 dark:text-white text-xs font-bold uppercase tracking-wider">David O.</h4>
-                        <p class="text-slate-500 dark:text-gray-500 text-[10px] uppercase tracking-widest">Student</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ================= FAQ SECTION ================= -->
-<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] py-24 bg-slate-50/30 dark:bg-[#12141a] transition-colors duration-300 border-t border-slate-200/60 dark:border-white/5">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="max-w-4xl mx-auto">
-            <div class="text-center mb-10">
-                <div class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] mb-3">Knowledge Base</div>
-                <h2 class="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white tracking-widest mb-3 transition-colors duration-300">Frequently Asked Questions</h2>
-                <p class="text-slate-500 text-sm font-light tracking-wide">Clear policies, transparent processes.</p>
-            </div>
-
-            <div class="space-y-4 faq-container">
-                <!-- Hardcoded FAQs for Repair Page -->
-                <div class="bg-white dark:bg-[#12141a] border border-slate-200/60 dark:border-white/5 rounded-xl overflow-hidden faq-item shadow-sm dark:shadow-none transition-colors duration-300">
-                    <button class="faq-toggle w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none">
-                        <span class="text-sm font-bold text-slate-800 dark:text-gray-300 transition-colors duration-300">Do you provide a warranty on repairs?</span>
-                        <span class="text-gray-400 dark:text-gray-500 transition-transform duration-300 faq-icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </span>
-                    </button>
-                    <div class="faq-content hidden px-6 pb-6 text-sm text-slate-600 dark:text-gray-400 font-light leading-relaxed border-t border-slate-100 dark:border-white/5 pt-4 transition-colors duration-300">
-                        Yes, all our repairs come with a comprehensive 90-day technical assurance warranty covering both parts and labor. If the same issue reoccurs within this period, we will fix it free of charge.
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-[#12141a] border border-slate-200/60 dark:border-white/5 rounded-xl overflow-hidden faq-item shadow-sm dark:shadow-none transition-colors duration-300">
-                    <button class="faq-toggle w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none">
-                        <span class="text-sm font-bold text-slate-800 dark:text-gray-300 transition-colors duration-300">How long does a typical repair take?</span>
-                        <span class="text-gray-400 dark:text-gray-500 transition-transform duration-300 faq-icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </span>
-                    </button>
-                    <div class="faq-content hidden px-6 pb-6 text-sm text-slate-600 dark:text-gray-400 font-light leading-relaxed border-t border-slate-100 dark:border-white/5 pt-4 transition-colors duration-300">
-                        Most standard repairs (like screen or battery replacements) are completed within our 48-hour SLA. Complex motherboard diagnostics or micro-soldering may take 3-5 business days depending on part availability.
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-[#12141a] border border-slate-200/60 dark:border-white/5 rounded-xl overflow-hidden faq-item shadow-sm dark:shadow-none transition-colors duration-300">
-                    <button class="faq-toggle w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none">
-                        <span class="text-sm font-bold text-slate-800 dark:text-gray-300 transition-colors duration-300">How do I track my repair status?</span>
-                        <span class="text-gray-400 dark:text-gray-500 transition-transform duration-300 faq-icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </span>
-                    </button>
-                    <div class="faq-content hidden px-6 pb-6 text-sm text-slate-600 dark:text-gray-400 font-light leading-relaxed border-t border-slate-100 dark:border-white/5 pt-4 transition-colors duration-300">
-                        Once you submit a ticket, you will receive a unique tracking ID (e.g., R-1024). You can enter this ID along with your phone number on our Track Repair page to get real-time updates and communicate directly with the assigned technician.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ================= FINAL CTA ================= -->
-<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] bg-slate-50 dark:bg-[#0a0a0c] py-32 overflow-hidden transition-colors duration-300">
-    <div class="absolute inset-0 z-0">
-        <img src="{% static 'images/repair_page_diag.png' %}" class="w-full h-full object-cover opacity-70 dark:opacity-50 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-gray-900/10 dark:bg-[#0a0a0c]/80"></div>
-    </div>
-    <div class="max-w-4xl mx-auto px-6 relative z-10 text-center">
-        <h2 class="text-3xl md:text-5xl font-display font-bold text-slate-800 dark:text-white mb-6 tracking-wide transition-colors duration-300">Ready to restore your device?</h2>
-        <p class="text-slate-600 dark:text-gray-400 text-lg mb-10 font-light max-w-2xl mx-auto transition-colors duration-300">Our lab is on standby. Initialize a repair ticket now and let our experts handle the rest.</p>
-        <a href="{% url 'book_repair' %}" class="inline-block bg-[#008BC6] hover:bg-blue-600 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(0,139,198,0.3)] hover:shadow-[0_0_40px_rgba(0,139,198,0.6)]">
-            Create Repair Ticket
-        </a>
-    </div>
-</section>
-
-<!-- Script for FAQ -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const isDark = document.documentElement.classList.contains('dark');
-    const borderColorActive = isDark ? 'rgba(0,139,198,0.3)' : 'rgba(0,139,198,0.3)';
-    const borderColorInactiveDark = 'rgba(255,255,255,0.05)';
-    const borderColorInactiveLight = 'rgba(229,231,235,1)';
+<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] py-16 sm:py-20 bg-[#F5F8FA] dark:bg-[#0a0a0c] transition-colors duration-300 relative overflow-hidden">
     
-    const getInactiveBorder = () => document.documentElement.classList.contains('dark') ? borderColorInactiveDark : borderColorInactiveLight;
+    <!-- Ambient Atmospheric Glows -->
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#008BC6]/5 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-[#FF7200]/5 dark:bg-[#FF7200]/5 rounded-full blur-3xl pointer-events-none"></div>
 
-    const faqItems = document.querySelectorAll('.faq-item');
-    faqItems.forEach(item => {
-        const toggle = item.querySelector('.faq-toggle');
-        const content = item.querySelector('.faq-content');
-        const icon = item.querySelector('.faq-icon');
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
         
-        toggle.addEventListener('click', () => {
-            const isOpen = !content.classList.contains('hidden');
+        <!-- Section Header -->
+        <div class="text-center max-w-3xl mx-auto mb-14 sm:mb-16">
+            <span class="hero-script-font text-3xl sm:text-4xl text-[#008BC6] dark:text-[#38bdf8] font-bold block mb-1 transform -rotate-1">
+                Transparent & Predictable
+            </span>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.15] mb-4 transition-colors duration-300">
+                How It <span class="text-[#008BC6]">Works</span>
+            </h2>
+            <p class="text-slate-600 dark:text-gray-400 text-sm sm:text-base font-light leading-relaxed">
+                From initial symptom diagnosis to bench-tested completion, track every phase of your repair with complete clarity and live updates.
+            </p>
+        </div>
+
+        <!-- 4 Step Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6 relative">
             
-            // Close all
-            faqItems.forEach(otherItem => {
-                otherItem.querySelector('.faq-content').classList.add('hidden');
-                otherItem.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
-                otherItem.style.borderColor = getInactiveBorder();
-            });
+            <!-- Step 1: Initialize Ticket -->
+            <div class="group relative bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-lg shadow-slate-900/5 dark:shadow-black/40 hover:shadow-2xl hover:shadow-[#008BC6]/10 hover:-translate-y-1.5 hover:border-[#008BC6]/40 dark:hover:border-[#008BC6]/50 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+                <!-- Large Watermark Numeral -->
+                <span class="text-7xl font-display font-black text-slate-900/[0.04] dark:text-white/[0.04] absolute right-4 -top-2 select-none pointer-events-none group-hover:text-[#008BC6]/10 transition-colors duration-300">
+                    01
+                </span>
+
+                <div>
+                    <!-- Step Pill & Icon Row -->
+                    <div class="flex items-center justify-between mb-6 relative z-10">
+                        <div class="w-12 h-12 rounded-2xl bg-[#008BC6]/10 dark:bg-[#008BC6]/20 text-[#008BC6] dark:text-[#38bdf8] flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                            <!-- Ticket / Clipboard SVG -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/60 dark:border-white/10">
+                            Step 01
+                        </span>
+                    </div>
+
+                    <!-- Step Content -->
+                    <h3 class="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white mb-2.5 group-hover:text-[#008BC6] dark:group-hover:text-[#38bdf8] transition-colors duration-300">
+                        Initialize Ticket
+                    </h3>
+                    <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-light leading-relaxed">
+                        Submit your device details and symptoms via our secure online portal. Receive a designated ticket ID instantly.
+                    </p>
+                </div>
+
+                <!-- Footer Tag -->
+                <div class="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-2 text-[11px] font-medium text-slate-500 dark:text-gray-400">
+                    <svg class="w-3.5 h-3.5 text-[#008BC6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span>Instant Ticket Generation</span>
+                </div>
+            </div>
+
+            <!-- Step 2: Lab Intake -->
+            <div class="group relative bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-lg shadow-slate-900/5 dark:shadow-black/40 hover:shadow-2xl hover:shadow-[#FF7200]/10 hover:-translate-y-1.5 hover:border-[#FF7200]/40 dark:hover:border-[#FF7200]/50 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+                <!-- Large Watermark Numeral -->
+                <span class="text-7xl font-display font-black text-slate-900/[0.04] dark:text-white/[0.04] absolute right-4 -top-2 select-none pointer-events-none group-hover:text-[#FF7200]/10 transition-colors duration-300">
+                    02
+                </span>
+
+                <div>
+                    <!-- Step Pill & Icon Row -->
+                    <div class="flex items-center justify-between mb-6 relative z-10">
+                        <div class="w-12 h-12 rounded-2xl bg-orange-500/10 text-[#FF7200] flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                            <!-- Package / Delivery SVG -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/60 dark:border-white/10">
+                            Step 02
+                        </span>
+                    </div>
+
+                    <!-- Step Content -->
+                    <h3 class="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white mb-2.5 group-hover:text-[#FF7200] transition-colors duration-300">
+                        Lab Intake
+                    </h3>
+                    <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-light leading-relaxed">
+                        Drop off your device at our lab or use our secure tracked courier pickup service. Serial number logged into custody.
+                    </p>
+                </div>
+
+                <!-- Footer Tag -->
+                <div class="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-2 text-[11px] font-medium text-slate-500 dark:text-gray-400">
+                    <svg class="w-3.5 h-3.5 text-[#FF7200]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span>Secure Chain-of-Custody</span>
+                </div>
+            </div>
+
+            <!-- Step 3: Diagnostics & Repair -->
+            <div class="group relative bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-lg shadow-slate-900/5 dark:shadow-black/40 hover:shadow-2xl hover:shadow-[#008BC6]/10 hover:-translate-y-1.5 hover:border-[#008BC6]/40 dark:hover:border-[#008BC6]/50 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+                <!-- Large Watermark Numeral -->
+                <span class="text-7xl font-display font-black text-slate-900/[0.04] dark:text-white/[0.04] absolute right-4 -top-2 select-none pointer-events-none group-hover:text-[#008BC6]/10 transition-colors duration-300">
+                    03
+                </span>
+
+                <div>
+                    <!-- Step Pill & Icon Row -->
+                    <div class="flex items-center justify-between mb-6 relative z-10">
+                        <div class="w-12 h-12 rounded-2xl bg-[#008BC6]/10 dark:bg-[#008BC6]/20 text-[#008BC6] dark:text-[#38bdf8] flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                            <!-- Circuit / Tool SVG -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#008BC6]/10 text-[#008BC6] dark:text-[#38bdf8] border border-[#008BC6]/20">
+                            Active Lab
+                        </span>
+                    </div>
+
+                    <!-- Step Content -->
+                    <h3 class="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white mb-2.5 group-hover:text-[#008BC6] dark:group-hover:text-[#38bdf8] transition-colors duration-300">
+                        Diagnostics & Repair
+                    </h3>
+                    <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-light leading-relaxed">
+                        Our technicians perform root-cause analysis and execute the repair protocol using precision tools and genuine OEM components.
+                    </p>
+                </div>
+
+                <!-- Footer Tag -->
+                <div class="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-2 text-[11px] font-medium text-slate-500 dark:text-gray-400">
+                    <svg class="w-3.5 h-3.5 text-[#008BC6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Component-Level Precision</span>
+                </div>
+            </div>
+
+            <!-- Step 4: Return Protocol -->
+            <div class="group relative bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-lg shadow-slate-900/5 dark:shadow-black/40 hover:shadow-2xl hover:shadow-[#FF7200]/10 hover:-translate-y-1.5 hover:border-[#FF7200]/40 dark:hover:border-[#FF7200]/50 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+                <!-- Large Watermark Numeral -->
+                <span class="text-7xl font-display font-black text-slate-900/[0.04] dark:text-white/[0.04] absolute right-4 -top-2 select-none pointer-events-none group-hover:text-[#FF7200]/10 transition-colors duration-300">
+                    04
+                </span>
+
+                <div>
+                    <!-- Step Pill & Icon Row -->
+                    <div class="flex items-center justify-between mb-6 relative z-10">
+                        <div class="w-12 h-12 rounded-2xl bg-orange-500/10 text-[#FF7200] flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                            <!-- Shield Check / Warranty SVG -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200/60 dark:border-white/10">
+                            Step 04
+                        </span>
+                    </div>
+
+                    <!-- Step Content -->
+                    <h3 class="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white mb-2.5 group-hover:text-[#FF7200] transition-colors duration-300">
+                        Return Protocol
+                    </h3>
+                    <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-light leading-relaxed">
+                        Device undergoes comprehensive QA burn-in testing before being returned to you with our 90-day technical warranty.
+                    </p>
+                </div>
+
+                <!-- Footer Tag -->
+                <div class="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-2 text-[11px] font-medium text-slate-500 dark:text-gray-400">
+                    <svg class="w-3.5 h-3.5 text-[#FF7200]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>90-Day Guaranteed Warranty</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Assistance / Quick Action Strip -->
+        <div class="mt-12 p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5 text-center sm:text-left">
+                <div class="w-10 h-10 rounded-xl bg-[#008BC6]/10 text-[#008BC6] flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-slate-900 dark:text-white">Have a critical laptop emergency?</h4>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 font-light">Direct intake is open Monday to Saturday with priority 24h bench testing available.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+                <a href="{% url 'book_repair' %}" class="inline-flex items-center gap-2 bg-[#008BC6] hover:bg-[#0076a8] text-white px-5 py-2.5 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md transition-all hover:-translate-y-0.5">
+                    <span>Initialize Ticket</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= SERVICE PROTOCOLS (REFERENCE-INSPIRED SHOWCASE) ================= -->
+<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] py-12 sm:py-16 bg-[#F5F8FA] dark:bg-[#0a0a0c] transition-colors duration-300 relative overflow-hidden">
+    
+    <!-- Ambient Backdrop Blurs -->
+    <div class="absolute top-1/3 left-0 -translate-y-1/2 w-96 h-96 bg-[#008BC6]/5 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-10 right-10 w-96 h-96 bg-[#E8873D]/5 dark:bg-[#E8873D]/5 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
             
-            // Toggle clicked
-            if (!isOpen) {
-                content.classList.remove('hidden');
-                icon.style.transform = 'rotate(180deg)';
-                item.style.borderColor = borderColorActive;
-            }
-        });
-    });
-});
-</script>
+            <!-- LEFT COLUMN: Heading, Squiggle, Copy & Pill Button (Exact Reference Architecture) -->
+            <div class="lg:col-span-4 xl:col-span-3 flex flex-col items-start pt-1">
+                
+                <!-- Orange Eyebrow (Reference "SELECTED WORK") -->
+                <span class="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#E8873D] dark:text-[#E8873D] mb-2.5 block">
+                    Service Protocols
+                </span>
+
+                <!-- Main Heading (Reference "A few recent favorites") -->
+                <h2 class="text-2xl sm:text-3xl lg:text-[2.35rem] font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.15] mb-2.5 transition-colors duration-300">
+                    Precision in<br class="hidden sm:inline">
+                    every process
+                </h2>
+
+                <!-- Hand-Drawn Blue Wavy Squiggle Underline (Reference SVG) -->
+                <svg class="w-14 sm:w-16 h-3 text-[#008BC6] mb-4" viewBox="0 0 70 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 6C8 1.5 14 10.5 20 6C26 1.5 32 10.5 38 6C44 1.5 50 10.5 56 6C62 1.5 68 10.5 70 6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                <!-- Concise Body Description (Reference "Every project is unique...") -->
+                <p class="text-slate-600 dark:text-gray-400 text-sm sm:text-base font-light leading-relaxed mb-6 max-w-xs">
+                    Every device is serviced according to certified laboratory protocols, verified with enterprise diagnostics and backed by guaranteed warranty.
+                </p>
+
+                <!-- Rounded Pill Button (Reference "See All Projects >") -->
+                <a href="{% url 'book_repair' %}"
+                   class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white dark:bg-[#12141a] border border-slate-200/90 dark:border-white/10 text-slate-900 dark:text-white font-bold text-xs sm:text-sm shadow-md shadow-slate-900/5 hover:shadow-xl hover:border-[#008BC6] dark:hover:border-[#008BC6] hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-all duration-300 group">
+                    <span>Book Diagnosis</span>
+                    <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300 group-hover:text-[#008BC6] dark:group-hover:text-[#38bdf8] transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+
+            </div>
+
+            <!-- RIGHT COLUMN: 3 Showcase Cards + Pagination Dots -->
+            <div class="lg:col-span-8 xl:col-span-9 flex flex-col justify-between">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+                    
+                    <!-- Card 1: OEM Grade Hardware -->
+                    <a href="{% url 'book_repair' %}" class="group relative bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-lg shadow-slate-900/5 dark:shadow-black/40 hover:shadow-2xl hover:-translate-y-1.5 hover:border-slate-300 dark:hover:border-white/20 transition-all duration-300 flex flex-col overflow-hidden">
+                        <!-- Top Visual Showcase Area (Warm Gallery Container) -->
+                        <div class="h-48 sm:h-52 bg-[#F5F2EB] dark:bg-[#181a24] p-3.5 sm:p-4 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
+                            <img src="{% static 'images/oem_hardware_parts.jpg' %}"
+                                 alt="OEM Grade Hardware"
+                                 class="w-full h-full object-cover rounded-xl shadow-md border border-black/5 dark:border-white/5 transform group-hover:scale-[1.04] transition-transform duration-500">
+                        </div>
+
+                        <!-- Bottom Info Bar (Title, Category & Orange Arrow Circle) -->
+                        <div class="p-4 sm:p-5 flex items-center justify-between gap-3 bg-white dark:bg-[#12141a] border-t border-slate-100 dark:border-white/5 transition-colors duration-300">
+                            <div>
+                                <h3 class="text-base sm:text-lg font-display font-bold text-slate-900 dark:text-white group-hover:text-[#008BC6] dark:group-hover:text-[#38bdf8] transition-colors duration-200 leading-snug">
+                                    OEM Grade Hardware
+                                </h3>
+                                <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-normal mt-0.5">
+                                    100% Genuine Components
+                                </p>
+                            </div>
+                            <!-- Orange Arrow Circle Button (Exact Reference Match) -->
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#E8873D] hover:bg-[#d9782e] text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                <svg class="w-4 h-4 font-bold transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card 2: 48-Hour Standard SLA -->
+                    <a href="{% url 'book_repair' %}" class="group relative bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-lg shadow-slate-900/5 dark:shadow-black/40 hover:shadow-2xl hover:-translate-y-1.5 hover:border-slate-300 dark:hover:border-white/20 transition-all duration-300 flex flex-col overflow-hidden">
+                        <!-- Top Visual Showcase Area (Cool Slate Gallery Container) -->
+                        <div class="h-48 sm:h-52 bg-[#EBF0F5] dark:bg-[#161a24] p-3.5 sm:p-4 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
+                            <img src="{% static 'images/bench_sla_diagnostics.jpg' %}"
+                                 alt="48-Hour Standard SLA"
+                                 class="w-full h-full object-cover rounded-xl shadow-md border border-black/5 dark:border-white/5 transform group-hover:scale-[1.04] transition-transform duration-500">
+                        </div>
+
+                        <!-- Bottom Info Bar (Title, Category & Orange Arrow Circle) -->
+                        <div class="p-4 sm:p-5 flex items-center justify-between gap-3 bg-white dark:bg-[#12141a] border-t border-slate-100 dark:border-white/5 transition-colors duration-300">
+                            <div>
+                                <h3 class="text-base sm:text-lg font-display font-bold text-slate-900 dark:text-white group-hover:text-[#E8873D] transition-colors duration-200 leading-snug">
+                                    48-Hour Standard SLA
+                                </h3>
+                                <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-normal mt-0.5">
+                                    Rapid Bench Turnaround
+                                </p>
+                            </div>
+                            <!-- Orange Arrow Circle Button (Exact Reference Match) -->
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#E8873D] hover:bg-[#d9782e] text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                <svg class="w-4 h-4 font-bold transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card 3: 90-Day Warranty -->
+                    <a href="{% url 'book_repair' %}" class="group relative bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-lg shadow-slate-900/5 dark:shadow-black/40 hover:shadow-2xl hover:-translate-y-1.5 hover:border-slate-300 dark:hover:border-white/20 transition-all duration-300 flex flex-col overflow-hidden">
+                        <!-- Top Visual Showcase Area (Soft Lavender/Muted Neutral Gallery Container) -->
+                        <div class="h-48 sm:h-52 bg-[#F2EFE9] dark:bg-[#1a1822] p-3.5 sm:p-4 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
+                            <img src="{% static 'images/quality_warranty_check.jpg' %}"
+                                 alt="90-Day Warranty"
+                                 class="w-full h-full object-cover rounded-xl shadow-md border border-black/5 dark:border-white/5 transform group-hover:scale-[1.04] transition-transform duration-500">
+                        </div>
+
+                        <!-- Bottom Info Bar (Title, Category & Orange Arrow Circle) -->
+                        <div class="p-4 sm:p-5 flex items-center justify-between gap-3 bg-white dark:bg-[#12141a] border-t border-slate-100 dark:border-white/5 transition-colors duration-300">
+                            <div>
+                                <h3 class="text-base sm:text-lg font-display font-bold text-slate-900 dark:text-white group-hover:text-[#008BC6] dark:group-hover:text-[#38bdf8] transition-colors duration-200 leading-snug">
+                                    90-Day Warranty
+                                </h3>
+                                <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-normal mt-0.5">
+                                    Comprehensive Assurance
+                                </p>
+                            </div>
+                            <!-- Orange Arrow Circle Button (Exact Reference Match) -->
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#E8873D] hover:bg-[#d9782e] text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                <svg class="w-4 h-4 font-bold transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+
+                <!-- Reference Pagination Indicator Dots (Bottom Right) -->
+                <div class="flex items-center justify-end gap-2.5 mt-5 pr-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-slate-400 dark:bg-slate-300 transition-colors"></span>
+                    <span class="w-2 h-2 rounded-full bg-slate-300/70 dark:bg-white/20 transition-colors"></span>
+                    <span class="w-2 h-2 rounded-full bg-slate-300/70 dark:bg-white/20 transition-colors"></span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- ================= TESTIMONIALS (COMPACT REFERENCE-INSPIRED) ================= -->
+<section class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] py-16 sm:py-20 -mb-12 bg-[#F5F8FA] dark:bg-[#0a0a0c] transition-colors duration-300 relative overflow-hidden">
+    
+    <!-- Subtle Ambient Glows -->
+    <div class="absolute top-1/2 left-0 -translate-y-1/2 w-80 h-80 bg-[#008BC6]/5 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/2 right-10 -translate-y-1/2 w-80 h-80 bg-[#E8873D]/5 dark:bg-[#E8873D]/5 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+            
+            <!-- LEFT COLUMN: Headline, Heart Doodle, Blue Underline & Pill Button -->
+            <div class="lg:col-span-4 xl:col-span-4 flex flex-col items-start">
+                
+                <!-- Orange Eyebrow (Reference "HAPPY CLIENTS") -->
+                <span class="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#E8873D] mb-3 block">
+                    Happy Clients
+                </span>
+
+                <!-- Heading with Heart Doodle (Reference Layout) -->
+                <div class="flex items-center gap-3.5 mb-1.5">
+                    <h2 class="text-3xl sm:text-4xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.15]">
+                        Happy Clients.<br>
+                        <span class="hero-script-font text-[#008BC6] dark:text-[#38bdf8] font-bold text-3xl sm:text-4xl block mt-0.5">Real Results.</span>
+                    </h2>
+                    <!-- Hand-Drawn Heart Doodle in Orange (Matches Reference) -->
+                    <svg class="w-9 h-9 sm:w-11 sm:h-11 text-[#E8873D] shrink-0 transform rotate-6 -mt-3.5" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 20 C10 11, 15 5, 22 8 C24.5 9.5, 26 12.5, 26.5 14 C28 11, 31 6, 37 7 C43 8, 44 17, 39 24 C32 32, 26 36, 23 39 C21.5 37, 19 33, 23 34 C26 35, 25 39, 22 37" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+
+                <!-- Blue Underline Stroke beneath Real Results -->
+                <svg class="w-32 h-2.5 text-[#008BC6] mb-6" viewBox="0 0 120 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 6C35 1.5 85 8.5 118 4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+
+                <!-- Pill Button (Reference "Read More Reviews >") -->
+                <a href="{% url 'contact' %}"
+                   class="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white dark:bg-[#12141a] border border-slate-200/90 dark:border-white/10 text-slate-900 dark:text-white font-bold text-xs sm:text-sm shadow-sm hover:shadow-md hover:border-[#008BC6] dark:hover:border-[#008BC6] hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-all duration-300 group">
+                    <span>Read More Reviews</span>
+                    <svg class="w-3.5 h-3.5 text-slate-600 dark:text-slate-400 group-hover:text-[#008BC6] dark:group-hover:text-[#38bdf8] transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+
+            </div>
+
+            <!-- RIGHT COLUMN: 2 Testimonial Cards + Arrow Navigation Buttons -->
+            <div class="lg:col-span-8 xl:col-span-8 flex items-center gap-4 lg:gap-5">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6 flex-1">
+                    
+                    <!-- Card 1 (Matches Reference 1st Card) -->
+                    <div class="bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl p-6 sm:p-7 border border-slate-200/70 dark:border-white/10 shadow-md shadow-slate-900/5 dark:shadow-black/30 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+                        <div>
+                            <!-- Cyan Double Quote Mark (Reference Match) -->
+                            <svg class="w-9 h-9 text-[#008BC6] dark:text-[#38bdf8] mb-4 opacity-95" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                            </svg>
+                            <p class="text-slate-700 dark:text-gray-300 text-sm sm:text-base font-light leading-relaxed mb-6">
+                                "My MacBook Pro's logic board was declared unfixable elsewhere. Compupartz micro-soldered the power rail capacitor and had it running in 48 hours!"
+                            </p>
+                        </div>
+
+                        <!-- Author Meta (Seamless without divider line to match reference) -->
+                        <div class="flex items-center gap-3.5 pt-1">
+                            <img src="{% static 'images/avatar_1.jpg' %}" alt="Emmanuel Kwesi" class="w-11 h-11 rounded-full object-cover border border-slate-200/80 dark:border-white/10 shadow-sm shrink-0">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-tight">Emmanuel Kwesi</h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-normal mt-0.5">Software Engineer, TechLab</p>
+                                <div class="flex items-center gap-0.5 text-[#E8873D] mt-1.5">
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 (Matches Reference 2nd Card) -->
+                    <div class="bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl p-6 sm:p-7 border border-slate-200/70 dark:border-white/10 shadow-md shadow-slate-900/5 dark:shadow-black/30 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+                        <div>
+                            <!-- Cyan Double Quote Mark (Reference Match) -->
+                            <svg class="w-9 h-9 text-[#008BC6] dark:text-[#38bdf8] mb-4 opacity-95" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                            </svg>
+                            <p class="text-slate-700 dark:text-gray-300 text-sm sm:text-base font-light leading-relaxed mb-6">
+                                "Incredible transparency throughout the whole repair. Live ticket tracking gave me peace of mind, and the new display looks factory-original."
+                            </p>
+                        </div>
+
+                        <!-- Author Meta (Seamless without divider line to match reference) -->
+                        <div class="flex items-center gap-3.5 pt-1">
+                            <img src="{% static 'images/avatar_2.jpg' %}" alt="Sarah Arthur" class="w-11 h-11 rounded-full object-cover border border-slate-200/80 dark:border-white/10 shadow-sm shrink-0">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-tight">Sarah Arthur</h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-normal mt-0.5">Creative Director, Studio X</p>
+                                <div class="flex items-center gap-0.5 text-[#E8873D] mt-1.5">
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Navigation Arrow Buttons Stacked Vertically (Reference Match: Up & Down Arrows) -->
+                <div class="hidden sm:flex flex-col gap-3 justify-center items-center shrink-0">
+                    <button type="button" aria-label="Previous review" class="w-10 h-10 rounded-full bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-sm flex items-center justify-center text-slate-700 dark:text-gray-300 hover:text-[#008BC6] dark:hover:text-[#38bdf8] hover:border-[#008BC6] dark:hover:border-[#008BC6] transition-all duration-200 active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5m0 0l-5 5m5-5l5 5"/>
+                        </svg>
+                    </button>
+                    <button type="button" aria-label="Next review" class="w-10 h-10 rounded-full bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-sm flex items-center justify-center text-slate-700 dark:text-gray-300 hover:text-[#008BC6] dark:hover:text-[#38bdf8] hover:border-[#008BC6] dark:hover:border-[#008BC6] transition-all duration-200 active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m0 0l-5-5m5 5l5-5"/>
+                        </svg>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
 
 {% endblock %}
+

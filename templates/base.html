@@ -8,9 +8,11 @@
     <title>{% block title %}Compupartz{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.jpg' %}">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}?v={% now 'U' %}">
 
     <script>
         // Check local storage or system preference to prevent flashing before page load
@@ -22,91 +24,201 @@
     </script>
 
     {% include "partials/toast.html" %}
+
+    <style>
+        /* Floating navbar top spacing & smooth transition */
+        #main-nav {
+            top: 24px;
+            transition: top 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        background 0.3s ease,
+                        border 0.3s ease,
+                        box-shadow 0.3s ease;
+        }
+        @media (min-width: 640px) {
+            #main-nav {
+                top: 28px;
+            }
+        }
+        @media (min-width: 1024px) {
+            #main-nav {
+                top: 32px;
+            }
+        }
+
+        /* Floating navbar capsule inner padding */
+        #main-nav .nav-capsule-inner {
+            padding-top: 13px !important;
+            padding-bottom: 13px !important;
+            transition: padding 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @media (min-width: 640px) {
+            #main-nav .nav-capsule-inner {
+                padding-top: 16px !important;
+                padding-bottom: 16px !important;
+            }
+        }
+        @media (min-width: 1024px) {
+            #main-nav .nav-capsule-inner {
+                padding-top: 18px !important;
+                padding-bottom: 18px !important;
+            }
+        }
+
+        /* ================= SCROLLED STATE ================= */
+        /* White outline running all through the capsule + dark glass backdrop */
+        #main-nav.scrolled {
+            top: 16px;
+            border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+            background: rgba(10, 10, 12, 0.88) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+        }
+        @media (min-width: 640px) {
+            #main-nav.scrolled {
+                top: 18px;
+            }
+        }
+        @media (min-width: 1024px) {
+            #main-nav.scrolled {
+                top: 20px;
+            }
+        }
+
+        /* Reduced top and bottom padding when scrolled as in the image */
+        #main-nav.scrolled .nav-capsule-inner {
+            padding-top: 6px !important;
+            padding-bottom: 6px !important;
+        }
+        @media (min-width: 640px) {
+            #main-nav.scrolled .nav-capsule-inner {
+                padding-top: 7px !important;
+                padding-bottom: 7px !important;
+            }
+        }
+        @media (min-width: 1024px) {
+            #main-nav.scrolled .nav-capsule-inner {
+                padding-top: 8px !important;
+                padding-bottom: 8px !important;
+            }
+        }
+
+        /* Change text color to white when the navbar has the dark scrolled background */
+        #main-nav.scrolled .scroll-text-white,
+        #main-nav.scrolled .scroll-text-white a {
+            color: #ffffff !important;
+        }
+        #main-nav.scrolled .scroll-text-white:hover,
+        #main-nav.scrolled .scroll-text-white a:hover {
+            color: #ff7200 !important; /* brandOrange */
+        }
+    </style>
 </head>
 
 <body
     class="font-outfit bg-slate-50 dark:bg-[#0a0a0c] text-slate-800 dark:text-gray-100 overflow-x-hidden w-full relative min-h-screen flex flex-col transition-colors duration-300">
 
+    <!-- ================= CART ================= -->
+    <div id="cartOverlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-[80] transition-opacity duration-300"></div>
 
-    <!-- ================= CART REMOVED ================= -->
+    <div id="cartDrawer"
+        class="fixed top-0 right-0 h-full w-96 max-w-full bg-white dark:bg-[#12141a] shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-[90] flex flex-col border-l border-gray-100 dark:border-white/5">
+
+        <div class="flex justify-between items-center p-6 border-b border-gray-100 dark:border-white/5">
+            <h2 class="text-xl font-bold dark:text-gray-100">Your Cart</h2>
+            <button onclick="closeCart()"
+                class="text-3xl text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition">&times;</button>
+        </div>
+
+        <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
+
+        <div class="p-6 border-t border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
+            <p class="flex justify-between text-lg font-bold mb-5 dark:text-gray-100">
+                <span>Total</span>
+                <span id="cartTotal" class="text-brandBlue">GHS 0.00</span>
+            </p>
+
+            <a href="/cart/checkout/"
+                class="flex items-center justify-center w-full bg-gradient-to-r from-brandOrange to-orange-500 text-white text-center py-4 rounded-xl font-bold shadow-lg hover:shadow-orange-500/30 hover:-translate-y-0.5 transition-all duration-300 active:scale-95">
+                Proceed to Checkout
+            </a>
+        </div>
+    </div>
 
     <!-- ================= NAVBAR ================= -->
     <nav id="main-nav"
-        class="font-inter bg-gradient-to-r from-[#993d00]/70 to-orange-950/70 backdrop-blur-md sticky top-0 z-[70] shadow-xl border-b border-orange-900/50">
+        class="font-inter fixed left-0 right-0 mx-auto w-[95%] md:w-[80%] max-w-4xl z-[70] bg-white/80 backdrop-blur-xl border border-gray-200/50 shadow-lg shadow-gray-200/20 rounded-full transition-colors duration-300">
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-start md:justify-between md:gap-6">
+        <div class="nav-capsule-inner px-4 sm:px-6 flex items-center justify-between gap-4 sm:gap-6">
 
-            <!-- LEFT SIDE (Hamburger + Logo) -->
-            <div class="flex items-center gap-3 md:gap-0">
-                <!-- MOBILE HAMBURGER -->
-                <button onclick="toggleSidebar()" class="md:hidden text-white/90 hover:text-white transition-colors p-1 relative z-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                    </svg>
-                </button>
+            <!-- MOBILE HAMBURGER (stands alone at the far left on mobile/tablet) -->
+            <button onclick="toggleSidebar()" class="lg:hidden text-gray-800 scroll-text-white hover:text-brandOrange transition-colors p-1 relative z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
 
-                <!-- LOGO -->
-                <a href="/" class="flex items-center shrink-0 transform hover:scale-105 transition bg-white px-2.5 py-1 md:px-3 md:py-1.5 rounded-[1rem] shadow-[0_0_15px_rgba(255,255,255,0.3)] border border-white/20 ml-[5px] md:ml-0">
-                    <img src="{% static 'images/Logo-Only.png' %}" class="h-6 sm:h-7 md:h-9 w-auto object-contain">
-                </a>
-            </div>
+            <!-- SPACER: equal distance from hamburger to logo (Mobile/Tablet Only) -->
+            <div class="flex-1 lg:hidden"></div>
 
-            <!-- FLEX SPACERS FOR PERFECT CENTERING (Mobile Only) -->
-            <div class="flex-1 md:hidden"></div>
-            
-            <!-- MOBILE LOGIN BUTTON (Centered) -->
-            <div class="md:hidden flex items-center">
+            <!-- LOGO (true center on mobile/tablet, left-aligned on desktop) -->
+            <a href="/" class="flex items-center shrink-0 transform hover:scale-105 transition">
+                <img src="{% static 'images/Logo-Only.png' %}" class="h-6 sm:h-7 md:h-8 w-auto object-contain dark:brightness-110">
+            </a>
+
+            <!-- SPACER: equal distance from logo to login (Mobile/Tablet Only) -->
+            <div class="flex-1 lg:hidden"></div>
+
+            <!-- MOBILE LOGIN BUTTON (stands alone at the far right on mobile/tablet) -->
+            <div class="lg:hidden flex items-center">
                 {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}" class="relative group">
-                    <div class="w-9 h-9 rounded-full border-2 border-brandOrange/30 overflow-hidden shadow-[0_0_15px_rgba(255,114,0,0.1)]">
+                    <div class="w-8 h-8 rounded-full border border-brandOrange/30 overflow-hidden">
                         {% if user.profile.avatar %}
                             <img src="{{ user.profile.avatar.url }}" class="w-full h-full object-cover">
                         {% else %}
-                            <div class="w-full h-full bg-brandOrange/10 flex items-center justify-center text-brandOrange font-bold text-sm">
+                            <div class="w-full h-full bg-brandOrange/10 flex items-center justify-center text-brandOrange font-bold text-xs">
                                 {{ user.username|slice:":1"|upper }}
                             </div>
                         {% endif %}
                     </div>
                 </a>
                 {% else %}
-                <a href="{% url 'login' %}" class="bg-white/10 border border-white/20 px-4 py-1.5 rounded-full text-[13px] font-bold text-white hover:bg-white/20 active:scale-95 active:bg-white/30 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(255,255,255,0.05)]">Login</a>
+                <a href="{% url 'login' %}" class="text-[12px] font-bold text-gray-800 scroll-text-white hover:text-brandOrange transition-colors">Login</a>
                 {% endif %}
             </div>
 
-            <div class="flex-1 md:hidden"></div>
-
 
             <!-- NAV LINKS -->
-            <div
-                class="hidden md:flex items-center gap-8 font-medium text-sm text-white/90 tracking-wide">
-                <a href="/repair/" class="hover:text-white transition-colors">Repair</a>
-                <a href="/repair/track/" class="hover:text-white transition-colors">Track Repair</a>
-                <a href="{% url 'blog:post_list' %}" class="hover:text-white transition-colors">Tech Hub</a>
-                <a href="{% url 'contact' %}" class="hover:text-white transition-colors">Contact</a>
+            <div class="hidden lg:flex justify-center items-center gap-6 font-semibold text-sm text-gray-800 scroll-text-white tracking-wide shrink-0">
+
+                <a href="/repair/" class="hover:text-black transition-colors">Repair</a>
+                <a href="/repair/track/" class="hover:text-black transition-colors">Track</a>
+                <a href="{% url 'blog:post_list' %}" class="hover:text-black transition-colors">Tech Hub</a>
+                <a href="{% url 'request_part' %}" class="hover:text-black transition-colors">Parts</a>
+                <a href="{% url 'contact' %}" class="hover:text-black transition-colors">Contact</a>
             </div>
 
 
-            <!-- SEARCH REMOVED -->
-
-
             <!-- RIGHT SIDE -->
-            <div class="flex items-center gap-5 md:ml-auto text-white/90">
+            <div class="flex items-center justify-end gap-4 text-gray-800 lg:ml-auto">
 
-                <button type="button" class="theme-toggle hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/5 hover:bg-white/20 border border-white/10 transition-all duration-300">
-                    <!-- Sun Icon (Stroke Style) -->
-                    <svg class="theme-toggle-light-icon hidden w-5 h-5 transition-transform hover:rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <button type="button" class="theme-toggle hidden lg:flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 border border-transparent transition-all duration-300">
+                    <!-- Sun Icon -->
+                    <svg class="theme-toggle-light-icon hidden w-4 h-4 transition-transform hover:rotate-45 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <circle cx="12" cy="12" r="4"></circle>
                         <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
                     </svg>
-                    <!-- Moon Icon (Stroke Style) -->
-                    <svg class="theme-toggle-dark-icon hidden w-5 h-5 transition-transform -rotate-12 hover:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <!-- Moon Icon -->
+                    <svg class="theme-toggle-dark-icon hidden w-4 h-4 transition-transform -rotate-12 hover:rotate-0 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
                 </button>
 
                 {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="hidden md:block relative group">
-                    <div class="w-10 h-10 rounded-full border-2 border-brandOrange/30 group-hover:border-brandOrange overflow-hidden transition-all duration-300 shadow-[0_0_15px_rgba(255,114,0,0.1)] group-hover:shadow-[0_0_15px_rgba(255,114,0,0.3)]">
+                <a href="{% url 'dashboard' %}" class="hidden lg:block relative group">
+                    <div class="w-9 h-9 rounded-full border border-gray-200 group-hover:border-brandOrange overflow-hidden transition-all duration-300">
                         {% if user.profile.avatar %}
                             <img src="{{ user.profile.avatar.url }}" class="w-full h-full object-cover">
                         {% else %}
@@ -117,19 +229,15 @@
                     </div>
                 </a>
 
-                <form action="/accounts/logout/" method="post" class="ml-1 md:ml-2 relative z-10 hidden md:block">
+                <form action="/accounts/logout/" method="post" class="ml-1 relative z-10 hidden lg:block">
                     {% csrf_token %}
-                    <button type="submit" class="text-[9px] md:text-xs font-bold text-white hover:bg-white/20 active:bg-white/30 active:scale-[0.98] active:brightness-90 px-2 py-1.5 md:px-3 md:py-1.5 rounded transition-all border border-white/20 flex items-center justify-center">
+                    <button type="submit" class="text-xs font-bold text-gray-600 scroll-text-white hover:text-red-500 transition-colors px-2 py-1.5 flex items-center justify-center">
                         <span class="pointer-events-none">Logout</span>
                     </button>
                 </form>
                 {% else %}
-                <a href="{% url 'login' %}" class="hidden md:block text-sm font-bold text-white hover:text-orange-200 transition-colors active:scale-95">Login</a>
-                <a href="{% url 'signup' %}" class="hidden md:inline-block text-[9px] md:text-xs font-bold text-white bg-brandOrange hover:bg-orange-600 px-2.5 py-1.5 md:px-4 md:py-2 rounded-full transition-all ml-1 md:ml-2 shadow-lg shadow-brandOrange/20">Join</a>
+                <a href="{% url 'login' %}" class="hidden lg:block text-sm font-bold text-gray-800 scroll-text-white hover:text-brandOrange transition-colors active:scale-95">Login</a>
                 {% endif %}
-
-
-                <!-- CART ICON REMOVED -->
 
             </div>
 
@@ -156,14 +264,18 @@
             </div>
             
             <div class="flex-1 overflow-y-auto p-6 space-y-2">
+
                 <a href="/repair/" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
                     <span class="text-lg">🛠️</span> Repair
                 </a>
                 <a href="/repair/track/" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
-                    <span class="text-lg">📦</span> Track Repair
+                    <span class="text-lg">📦</span> Track
                 </a>
                 <a href="{% url 'blog:post_list' %}" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
                     <span class="text-lg">📰</span> Tech Hub
+                </a>
+                <a href="{% url 'request_part' %}" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
+                    <span class="text-lg">🔌</span> Parts
                 </a>
                 <a href="{% url 'contact' %}" class="flex items-center gap-4 py-4 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-[10px]">
                     <span class="text-lg">📞</span> Contact
@@ -202,9 +314,8 @@
                 
                 <!-- DASHBOARD SUBLINKS -->
                 <div id="dashboardSubmenu" class="hidden flex-col gap-1 pl-12 pr-4 pb-2 transition-all duration-300">
-                    <a href="{% url 'my_repairs' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px]">
-                        <span class="text-gray-300 dark:text-gray-600">•</span> My Repairs
-                    </a>
+
+
                     <a href="/repair/track/" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px]">
                         <span class="text-gray-300 dark:text-gray-600">•</span> Track Repair
                     </a>
@@ -237,7 +348,7 @@
     <main class="max-w-7xl mx-auto px-6 pt-24 mb-12 flex-grow w-full">
         <!-- ✅ ALERTS / MESSAGES -->
         {% if messages %}
-        <div class="max-w-7xl mx-auto px-4 mt-6">
+        <div class="max-w-7xl mx-auto px-4 mt-6 relative z-50">
             {% for message in messages %}
             <div class="p-4 rounded-2xl mb-4 flex items-center justify-between animate-fadeIn 
                 {% if message.tags == 'success' %}bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-900/20
@@ -258,80 +369,148 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="bg-gradient-to-b from-gray-900 to-black text-gray-300 mt-auto border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-6 py-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
+    <!-- ================= SIMPLE MODERN FOOTER ================= -->
+    <footer class="mt-auto bg-slate-50 dark:bg-[#07080a] text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-white/10 font-outfit transition-colors duration-300">
 
-            <div class="space-y-4">
-                <h3 class="text-2xl font-bold text-white tracking-tight">Compupartz</h3>
-                <p class="text-sm text-gray-400 leading-relaxed">
-                    Trusted laptop repairs, genuine parts, and accessories across Ghana. Your premier tech solution.
+        <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
+                
+                <!-- Col 1: Brand & Bio -->
+                <div class="lg:col-span-4 space-y-4">
+                    <a href="/" class="inline-block group">
+                        <img src="{% static 'images/Logo-Only.png' %}" alt="Compupartz" class="h-8 w-auto object-contain dark:brightness-110 group-hover:scale-105 transition-transform duration-200">
+                    </a>
+
+                    <p class="text-xs text-slate-500 dark:text-gray-400 leading-relaxed max-w-sm font-light">
+                        Certified hardware diagnostic laboratory in Ghana. Specializing in board-level micro-soldering, liquid spill recovery, screen refurbishment, and OEM spare parts.
+                    </p>
+
+                    <div class="flex items-center gap-3 pt-1">
+                        <a href="https://wa.me/233540322533" target="_blank" rel="noopener noreferrer" 
+                           class="w-8 h-8 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:text-emerald-500 hover:border-emerald-500/40 flex items-center justify-center transition-all duration-200" title="WhatsApp">
+                            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                        </a>
+                        <a href="tel:0540322533" 
+                           class="w-8 h-8 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:text-[#008BC6] hover:border-[#008BC6]/40 flex items-center justify-center transition-all duration-200" title="Call Us">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        </a>
+                        <a href="https://instagram.com/compupartz" target="_blank" rel="noopener noreferrer"
+                           class="w-8 h-8 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:text-[#FF7200] hover:border-[#FF7200]/40 flex items-center justify-center transition-all duration-200" title="Instagram">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Services -->
+                <div class="lg:col-span-3 space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                        Services
+                    </h4>
+                    <ul class="space-y-2 text-xs">
+                        <li>
+                            <a href="{% url 'repair_home' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                Board-Level Micro-Soldering
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'repair_home' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                Screen &amp; Display Assembly
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'repair_home' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                Liquid Spill Recovery
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'repair_home' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                Power Rail &amp; Battery Diagnostics
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'request_part' %}" class="text-[#FF7200] hover:text-orange-600 font-medium transition-colors">
+                                Request OEM Parts &rarr;
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Navigation -->
+                <div class="lg:col-span-2 space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                        Quick Links
+                    </h4>
+                    <ul class="space-y-2 text-xs">
+                        <li>
+                            <a href="{% url 'book_repair' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                Book Repair
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'track_repair_lookup' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                Track Ticket
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                Client Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'blog:post_list' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                Tech Hub
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'contact' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                Contact Desk
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Lab & Workshop -->
+                <div class="lg:col-span-3 space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                        Workshop Desk
+                    </h4>
+                    <div class="space-y-2 text-xs">
+                        <p class="text-slate-600 dark:text-gray-300">
+                            KNUST Commercial Area<br>
+                            <span class="text-slate-400 dark:text-gray-500">Tech Junction, Kumasi, Ghana</span>
+                        </p>
+                        <p class="text-slate-600 dark:text-gray-300 pt-1">
+                            <span class="text-slate-400 dark:text-gray-500 block text-[11px]">Hours</span>
+                            Mon &ndash; Fri: 8:30 AM &ndash; 6:30 PM<br>
+                            Sat: 9:30 AM &ndash; 4:30 PM
+                        </p>
+                        <p class="pt-1">
+                            <a href="tel:0540322533" class="font-bold text-slate-800 dark:text-white hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">
+                                0540 322 533
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom Copyright & Legal Line -->
+        <div class="border-t border-slate-200/80 dark:border-white/5 py-6">
+            <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400 dark:text-gray-500">
+                <p>
+                    &copy; 2026 Compupartz Ghana. All rights reserved.
                 </p>
+                <div class="flex items-center gap-4 text-xs">
+                    <a href="{% url 'terms' %}" class="hover:text-slate-600 dark:hover:text-gray-300 transition-colors">Terms &amp; Warranty</a>
+                    <span>&bull;</span>
+                    <a href="{% url 'privacy_policy' %}" class="hover:text-slate-600 dark:hover:text-gray-300 transition-colors">Privacy Policy</a>
+                    <span>&bull;</span>
+                    <a href="{% url 'contact' %}" class="hover:text-slate-600 dark:hover:text-gray-300 transition-colors">Contact</a>
+                </div>
             </div>
-
-            <div>
-                <h4 class="text-white font-semibold mb-6 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-brandBlue"></span> Quick Links
-                </h4>
-                <ul class="space-y-3 text-sm">
-                    <li><a href="/" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
-                                class="text-gray-600">→</span> Home</a></li>
-                    <li><a href="/repair/" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
-                                class="text-gray-600">→</span> Repairs</a></li>
-                    <li><a href="/repair/track/"
-                            class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
-                                class="text-gray-600">→</span> Track Repair</a></li>
-                    <li><a href="{% url 'blog:post_list' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
-                                class="text-gray-600">→</span> Tech Hub</a></li>
-                    <li><a href="{% url 'contact' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
-                                class="text-gray-600">→</span> Contact</a></li>
-                    <li><a href="{% url 'terms' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
-                                class="text-gray-600">→</span> Terms of Service</a></li>
-                    <li><a href="{% url 'privacy_policy' %}" class="hover:text-brandBlue transition-colors flex items-center gap-2"><span
-                                class="text-gray-600">→</span> Privacy Policy</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <h4 class="text-white font-semibold mb-6 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-brandOrange"></span> Contact
-                </h4>
-                <ul class="text-sm space-y-4">
-                    <li>
-                        <a href="tel:0540322533" class="flex items-center gap-3 hover:text-brandOrange transition-colors group">
-                            <span class="bg-gray-800 p-2 rounded-lg text-lg group-hover:bg-brandOrange/20 transition-colors">📞</span> 0540 322 533
-                        </a>
-                    </li>
-                    <li>
-                        <a href="mailto:support@compupartz.com" class="flex items-center gap-3 hover:text-brandOrange transition-colors group">
-                            <span class="bg-gray-800 p-2 rounded-lg text-lg group-hover:bg-brandOrange/20 transition-colors">📧</span> support@compupartz.com
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://maps.google.com/?q=KNUST,+Kumasi" target="_blank" class="flex items-center gap-3 hover:text-brandOrange transition-colors group">
-                            <span class="bg-gray-800 p-2 rounded-lg text-lg group-hover:bg-brandOrange/20 transition-colors">📍</span> KNUST, Kumasi
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div>
-                <h4 class="text-white font-semibold mb-6">Need Help?</h4>
-                <a href="https://wa.me/233540322533"
-                    class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-brandOrange to-orange-500 text-white px-6 py-3.5 rounded-full font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 w-full lg:w-auto">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
-                    </svg>
-                    Chat on WhatsApp
-                </a>
-            </div>
-
         </div>
 
-        <div class="border-t border-gray-800/80 py-8 text-center text-sm text-gray-500">
-            © 2026 Compupartz. Built for excellence. All rights reserved.
-        </div>
     </footer>
 
     <!-- ================= JS ================= -->

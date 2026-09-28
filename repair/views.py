@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RepairBookingForm, PartRequestForm
@@ -31,7 +32,15 @@ def book_repair(request):
             return redirect("repair_success", ticket_id=ticket.id)
 
     else:
-        form = RepairBookingForm()
+        initial = {}
+        if request.user.is_authenticated:
+            full_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
+            initial["customer_name"] = full_name
+            if request.user.email:
+                initial["customer_email"] = request.user.email
+            if hasattr(request.user, "profile") and getattr(request.user.profile, "phone", None):
+                initial["customer_phone"] = request.user.profile.phone
+        form = RepairBookingForm(initial=initial)
 
     return render(request, "repair/book_repair.html", {"form": form})
 
@@ -58,7 +67,15 @@ def request_part(request):
             return redirect("part_request_success", request_id=part_request.id)
 
     else:
-        form = PartRequestForm()
+        initial = {}
+        if request.user.is_authenticated:
+            full_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
+            initial["customer_name"] = full_name
+            if request.user.email:
+                initial["customer_email"] = request.user.email
+            if hasattr(request.user, "profile") and getattr(request.user.profile, "phone", None):
+                initial["customer_phone"] = request.user.profile.phone
+        form = PartRequestForm(initial=initial)
 
     return render(request, "repair/request_part.html", {"form": form})
 
@@ -71,13 +88,14 @@ def part_request_success(request, request_id):
 # ===========================
 # ✅ ACCESS CONTROL
 # ===========================
-# A ticket is visible to: its owner, staff, or a browser session that has
-# proven it knows the ticket ID + phone number via track_repair_lookup.
-# This keeps the no-account booking + guest tracking flow working while
-# closing off tracking-by-guessing-the-URL.
+# A ticket is visible to: its owner, staff, matching registered email,
+# or a browser session verified via track_repair_lookup.
 def _can_access_ticket(request, ticket):
-    if request.user.is_authenticated and (request.user.is_staff or ticket.user_id == request.user.id):
-        return True
+    if request.user.is_authenticated:
+        if request.user.is_staff or ticket.user_id == request.user.id:
+            return True
+        if request.user.email and ticket.customer_email and ticket.customer_email.strip().lower() == request.user.email.strip().lower():
+            return True
 
     verified_tickets = request.session.get("verified_repair_tickets", [])
     return ticket.ticket_id in verified_tickets
@@ -138,6 +156,10 @@ def track_repair(request, ticket_id):
                 sender_is_admin=request.user.is_authenticated and request.user.is_staff
             )
             messages.success(request, "Message sent successfully.")
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer and 'dashboard' in referer:
+            return redirect('dashboard')
         return redirect("track_repair", ticket_id=ticket.ticket_id)
 
     return render(request, "repair/track_repair.html", {
@@ -147,7 +169,14 @@ def track_repair(request, ticket_id):
 
 @login_required
 def my_repairs(request):
-    repairs = RepairTicket.objects.filter(user=request.user).order_by("-created_at")
+    if request.user.is_staff:
+        repairs = RepairTicket.objects.all().order_by("-created_at")
+    else:
+        user_ticket_filter = Q(user=request.user)
+        if request.user.email:
+            user_ticket_filter |= Q(customer_email__iexact=request.user.email.strip())
+        repairs = RepairTicket.objects.filter(user_ticket_filter).distinct().order_by("-created_at")
+
     return render(request, "repair/my_repairs.html", {
         "repairs": repairs
     })
@@ -156,7 +185,16 @@ def my_repairs(request):
 def edit_repair_message(request, message_id):
     message = get_object_or_404(RepairMessage, id=message_id)
 
-    if request.method != "POST" or message.sender_is_admin or not _can_access_ticket(request, message.ticket):
+    is_owner = False
+    if request.user.is_authenticated:
+        if request.user.is_staff and message.sender_is_admin:
+            is_owner = True
+        elif not message.sender_is_admin and _can_access_ticket(request, message.ticket):
+            is_owner = True
+    elif not message.sender_is_admin and _can_access_ticket(request, message.ticket):
+        is_owner = True
+
+    if request.method != "POST" or not is_owner:
         raise PermissionDenied
 
     new_text = request.POST.get("message", "").strip()
@@ -165,17 +203,32 @@ def edit_repair_message(request, message_id):
         message.save()
         messages.success(request, "Message updated successfully.")
 
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'dashboard' in referer:
+        return redirect('dashboard')
     return redirect("track_repair", ticket_id=message.ticket.ticket_id)
 
 
 def delete_repair_message(request, message_id):
     message = get_object_or_404(RepairMessage, id=message_id)
 
-    if request.method != "POST" or message.sender_is_admin or not _can_access_ticket(request, message.ticket):
+    is_owner = False
+    if request.user.is_authenticated:
+        if request.user.is_staff and message.sender_is_admin:
+            is_owner = True
+        elif not message.sender_is_admin and _can_access_ticket(request, message.ticket):
+            is_owner = True
+    elif not message.sender_is_admin and _can_access_ticket(request, message.ticket):
+        is_owner = True
+
+    if request.method != "POST" or not is_owner:
         raise PermissionDenied
 
     ticket_id = message.ticket.ticket_id
     message.delete()
     messages.success(request, "Message deleted successfully.")
 
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'dashboard' in referer:
+        return redirect('dashboard')
     return redirect("track_repair", ticket_id=ticket_id)

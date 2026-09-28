@@ -9,6 +9,13 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: ['Outfit', 'sans-serif'],
+        outfit: ['Outfit', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
+        script: ['Caveat', 'cursive'],
+      },
       colors: {
         brandBlue: '#008BC6',
         brandOrange: '#FF7200',
@@ -40,6 +47,12 @@ module.exports = {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+      },
+      boxShadow: {
+        'glow-blue': '0 0 25px rgba(0, 139, 198, 0.15)',
+        'glow-orange': '0 0 25px rgba(255, 114, 0, 0.15)',
+        'glow-blue-strong': '0 0 40px rgba(0, 139, 198, 0.3)',
+        'glow-orange-strong': '0 0 40px rgba(255, 114, 0, 0.3)',
       },
     },
   },

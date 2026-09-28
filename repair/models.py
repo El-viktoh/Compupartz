@@ -107,8 +107,8 @@ class PartRequest(models.Model):
 
     CONDITION_CHOICES = [
         ('new', 'New'),
+        ('refurbished', 'Refurbished'),
         ('used', 'Used'),
-        ('either', 'Either'),
     ]
 
     user = models.ForeignKey(
@@ -136,7 +136,7 @@ class PartRequest(models.Model):
     condition_preference = models.CharField(
         max_length=20,
         choices=CONDITION_CHOICES,
-        default='either'
+        default='new'
     )
     additional_details = models.TextField(blank=True)
 

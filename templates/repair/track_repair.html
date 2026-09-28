@@ -1,119 +1,233 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Repair Status | Compupartz{% endblock %}
+{% block title %}Repair Status #{{ ticket.ticket_id }} | Compupartz{% endblock %}
 
 {% block content %}
 
-<!-- ================= STATUS DASHBOARD (HI-TECH) ================= -->
-<div class="relative -mx-6 px-6 sm:-mx-0 sm:px-0 sm:w-screen sm:left-1/2 sm:-translate-x-1/2 bg-[#0a0a0c] text-white -mt-10 py-20 min-h-[90vh] flex items-center justify-center overflow-hidden">
-    <!-- Glow effects -->
-    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#008BC6]/10 rounded-full blur-[100px] -z-10 animate-pulseGlow"></div>
-    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#ff7200]/5 rounded-full blur-[100px] -z-10 animate-pulseGlow" style="animation-delay: 1.5s;"></div>
+<!-- Custom Styling for Interactive Elements & Redesign Accents -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
 
-    <div class="max-w-4xl w-full relative z-10 animate-fadeIn text-center">
-        
-        <div class="mb-12">
-            <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1 rounded-full mb-6">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#FF7200] animate-pulse"></span>
-                <span class="text-[10px] font-black uppercase tracking-[0.22em] text-[#FF7200]">Repair Monitoring</span>
+.hero-script-font {
+    font-family: 'Caveat', cursive, -apple-system, sans-serif;
+}
+
+.track-interactive-card {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.track-interactive-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.08);
+}
+.dark .track-interactive-card:hover {
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 114, 0, 0.35);
+}
+</style>
+
+<!-- ================= FULL-BLEED REPAIR STATUS DASHBOARD ================= -->
+<div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] -mt-24 pt-32 sm:pt-36 md:pt-40 -mb-12 pb-24 sm:pb-32 bg-[#F5F8FA] dark:bg-[#0a0a0c] text-slate-800 dark:text-white font-outfit overflow-hidden transition-colors duration-300 relative min-h-screen">
+
+    <!-- Ambient Glow Spots -->
+    <div class="absolute top-10 left-1/4 w-96 h-96 bg-[#008BC6]/8 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-44 right-10 w-96 h-96 bg-[#FF7200]/8 dark:bg-[#FF7200]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Corner Decorative Motifs -->
+    <div class="absolute top-12 left-6 pointer-events-none opacity-20 dark:opacity-10">
+        <svg class="w-24 h-24 sm:w-32 sm:h-32 text-[#008BC6]" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M20 80 Q 25 40 60 20 Q 55 55 20 80 Z" opacity="0.9"/>
+            <path d="M35 55 Q 50 35 70 30 Q 60 50 35 55 Z" opacity="0.7"/>
+            <path d="M45 40 Q 65 20 85 20 Q 75 40 45 40 Z" opacity="0.8"/>
+            <path d="M20 80 L 85 20" stroke="currentColor" stroke-width="2.5" fill="none"/>
+        </svg>
+    </div>
+    <div class="absolute bottom-16 right-6 pointer-events-none opacity-20 dark:opacity-10 rotate-180">
+        <svg class="w-24 h-24 sm:w-32 sm:h-32 text-[#FF7200]" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M20 80 Q 25 40 60 20 Q 55 55 20 80 Z" opacity="0.9"/>
+            <path d="M35 55 Q 50 35 70 30 Q 60 50 35 55 Z" opacity="0.7"/>
+            <path d="M45 40 Q 65 20 85 20 Q 75 40 45 40 Z" opacity="0.8"/>
+            <path d="M20 80 L 85 20" stroke="currentColor" stroke-width="2.5" fill="none"/>
+        </svg>
+    </div>
+
+    <!-- Center Stippling Dots Motif -->
+    <div class="absolute top-24 left-1/2 -translate-x-1/2 w-48 h-20 opacity-25 pointer-events-none" style="background-image: radial-gradient(circle, #008BC6 1.5px, transparent 1.5px); background-size: 14px 14px;"></div>
+
+    <div class="max-w-5xl mx-auto px-6 relative z-10">
+
+        <!-- Top Header & Status Banner -->
+        <div class="mb-10 sm:mb-12">
+            <!-- Navigation Back Link -->
+            <a href="{% url 'track_repair_lookup' %}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-[#008BC6] dark:text-gray-400 dark:hover:text-[#38bdf8] uppercase tracking-wider mb-4 transition-colors">
+                <span>&larr;</span>
+                <span>Switch Ticket ID</span>
+            </a>
+
+            <!-- Eyebrow Badge -->
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-500/10 text-[#FF7200] border border-orange-500/20 mb-3 ml-2">
+                <span class="w-2 h-2 rounded-full bg-[#FF7200] animate-pulse"></span>
+                Active Job Card #{{ ticket.ticket_id }}
             </div>
-            <h1 class="text-4xl md:text-5xl font-display font-bold mb-4 uppercase tracking-widest text-white">
-                Status: <span class="{% if ticket.status == 'completed' %}text-green-500{% elif ticket.status == 'in_progress' %}text-[#ff7200]{% else %}text-[#008BC6]{% endif %}">
-                    {{ ticket.status|title }}
-                </span>
-            </h1>
-            <p class="text-gray-500 font-light text-sm tracking-widest uppercase">
-                Ticket ID: <span class="text-white">{{ ticket.ticket_id }}</span>
-            </p>
+
+            <!-- Script Accent Tagline -->
+            <span class="hero-script-font text-3xl sm:text-4xl text-[#008BC6] dark:text-[#38bdf8] font-bold block mb-1 transform -rotate-1">
+                Live Workshop Telemetry
+            </span>
+
+            <!-- Main Headline with Status Chip -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h1 class="text-3xl sm:text-4xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+                    Repair Status: 
+                    <span class="{% if ticket.status == 'completed' %}text-emerald-500{% elif ticket.status == 'in_progress' %}text-[#FF7200]{% else %}text-[#008BC6]{% endif %}">
+                        {{ ticket.status|title }}
+                    </span>
+                </h1>
+
+                <!-- Direct WhatsApp Hotline -->
+                <a href="https://wa.me/233540322533?text=Inquiry%20regarding%20ticket%20{{ ticket.ticket_id }}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-all self-start sm:self-auto">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    <span>Lab WhatsApp</span>
+                </a>
+            </div>
         </div>
 
-        <div class="grid lg:grid-cols-3 gap-8 text-left">
-            <!-- Left Panel: Device Info -->
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white/5 backdrop-blur-2xl border border-white/10 p-8 rounded-[2rem] relative overflow-hidden group">
-                    <div class="absolute -top-12 -right-12 w-24 h-24 bg-[#008BC6]/5 rounded-full blur-2xl group-hover:bg-[#008BC6]/10 transition-all"></div>
-                    
-                    <h4 class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] mb-6">Device Specifications</h4>
-                    
+        <!-- Main Grid: Device Info & Milestone Pipeline -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+
+            <!-- Left Panel: Device Specifications (4 cols) -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative overflow-hidden">
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="w-8 h-8 rounded-xl bg-blue-500/10 text-[#008BC6] flex items-center justify-center text-sm font-bold">💻</span>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8]">
+                            Device Specifications
+                        </h3>
+                    </div>
+
                     <div class="space-y-4">
                         <div>
-                            <label class="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1">Customer</label>
-                            <p class="text-sm font-bold text-white tracking-wide">{{ ticket.customer_name }}</p>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Customer</span>
+                            <p class="text-sm font-bold text-slate-800 dark:text-white">{{ ticket.customer_name }}</p>
                         </div>
                         <div>
-                            <label class="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1">Hardware</label>
-                            <p class="text-sm font-bold text-white tracking-wide">{{ ticket.device }}</p>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Hardware Model</span>
+                            <p class="text-sm font-bold text-slate-800 dark:text-white">{{ ticket.device }}</p>
                         </div>
                         <div>
-                            <label class="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1">Registration Date</label>
-                            <p class="text-xs text-gray-400 font-light">{{ ticket.created_at|date:"M d, Y" }}</p>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Registration Date</span>
+                            <p class="text-xs text-slate-600 dark:text-gray-300 font-medium">{{ ticket.created_at|date:"M d, Y • g:i A" }}</p>
                         </div>
+                        {% if ticket.issue_description %}
+                        <div class="pt-3 border-t border-slate-100 dark:border-white/5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Reported Issue</span>
+                            <p class="text-xs text-slate-600 dark:text-gray-300 leading-relaxed font-light">{{ ticket.issue_description }}</p>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
 
-                <div class="bg-white/5 backdrop-blur-md border border-white/5 p-6 rounded-2xl flex items-center justify-between">
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">Contact Lab</span>
-                    <a href="https://wa.me/233540322533" class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#25D366] hover:text-white transition-colors">
-                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-                        WhatsApp
-                    </a>
-                </div>
-            </div>
-
-            <!-- Right Panel: Timeline -->
-            <div class="lg:col-span-2">
-                <div class="bg-white/5 backdrop-blur-2xl border border-white/10 p-8 md:p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-                    <h4 class="text-xs font-black uppercase tracking-[0.2em] text-white mb-10 text-center md:text-left">Repair Milestone Pipeline</h4>
-                    
-                    <div class="relative">
-                        <!-- Vertical line -->
-                        <div class="absolute left-6 md:left-8 top-0 bottom-0 w-px bg-white/10"></div>
-                        
-                        <div class="space-y-12 relative z-10">
-                            <!-- Step 1 -->
-                            <div class="flex gap-8 group">
-                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status in 'pending in_progress completed' %}border-[#008BC6]/50 shadow-[0_0_15px_rgba(0,139,198,0.2)] text-[#008BC6]{% else %}border-white/5 text-gray-600{% endif %} rounded-2xl flex items-center justify-center transition-all">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                </div>
-                                <div class="pt-2">
-                                    <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status in 'pending in_progress completed' %}text-white{% else %}text-gray-600{% endif %}">REQUEST SUBMITTED</h5>
-                                    <p class="text-[11px] text-gray-500 font-light mt-1">Order registered and diagnostic path assigned.</p>
-                                </div>
-                            </div>
-
-                            <!-- Step 2 -->
-                            <div class="flex gap-8 group">
-                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status in 'in_progress completed' %}border-[#ff7200]/50 shadow-[0_0_15px_rgba(255,114,0,0.2)] text-[#ff7200]{% else %}border-white/5 text-gray-600{% endif %} rounded-2xl flex items-center justify-center transition-all">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                </div>
-                                <div class="pt-2">
-                                    <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status in 'in_progress completed' %}text-white{% else %}text-gray-600{% endif %}">Active Restoration</h5>
-                                    <p class="text-[11px] text-gray-500 font-light mt-1">Technicians are executing hardware/software fixes.</p>
-                                </div>
-                            </div>
-
-                            <!-- Step 3 -->
-                            <div class="flex gap-8 group">
-                                <div class="w-12 md:w-16 h-12 md:h-16 shrink-0 bg-[#0a0a0c] border {% if ticket.status == 'completed' %}border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.2)] text-green-500{% else %}border-white/5 text-gray-600{% endif %} rounded-2xl flex items-center justify-center transition-all">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </div>
-                                <div class="pt-2">
-                                    <h5 class="text-xs font-black uppercase tracking-widest {% if ticket.status == 'completed' %}text-white{% else %}text-gray-600{% endif %}">System Deployed</h5>
-                                    <p class="text-[11px] text-gray-500 font-light mt-1">Final stress tests passed. Ready for re-entry.</p>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Warranty & Intake Desk Info -->
+                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] text-xs space-y-3">
+                    <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
+                        <span>🛡️</span>
+                        <span>Compupartz Lab Guarantee</span>
+                    </div>
+                    <p class="text-slate-500 dark:text-gray-400 font-light leading-relaxed">
+                        Every hardware repair includes a comprehensive 90-day parts and labor warranty seal.
+                    </p>
+                    <div class="pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-[11px] font-bold">
+                        <span class="text-slate-400">Workshop Desk</span>
+                        <a href="tel:0540322533" class="text-[#FF7200] hover:underline">0540 322 533</a>
                     </div>
                 </div>
             </div>
+
+            <!-- Right Panel: Repair Milestone Pipeline (8 cols) -->
+            <div class="lg:col-span-8">
+                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-7 sm:p-10 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8] block mb-1">Live Progress</span>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Repair Milestone Pipeline</h3>
+                        </div>
+                        <span class="w-10 h-10 rounded-2xl bg-orange-500/10 text-[#FF7200] flex items-center justify-center text-lg">
+                            ⚙️
+                        </span>
+                    </div>
+
+                    <!-- Steps Timeline -->
+                    <div class="relative pl-8 space-y-8 before:content-[''] before:absolute before:left-3.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200 dark:before:bg-white/10">
+
+                        <!-- Step 1: Request Submitted -->
+                        <div class="relative group">
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if ticket.status in 'pending in_progress completed' %}bg-[#008BC6] text-white shadow-md shadow-blue-500/30{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
+                                ✓
+                            </div>
+                            <div class="pl-3">
+                                <h4 class="text-xs font-bold uppercase tracking-wider {% if ticket.status in 'pending in_progress completed' %}text-[#008BC6] dark:text-[#38bdf8]{% else %}text-slate-400 dark:text-gray-500{% endif %}">
+                                    01. Request Submitted & Device Received
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
+                                    Order registered in our system, physical intake verified, and diagnostic bench path assigned.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Active Restoration -->
+                        <div class="relative group">
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if ticket.status in 'in_progress completed' %}bg-[#FF7200] text-white shadow-md shadow-orange-500/30 animate-pulse{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
+                                {% if ticket.status == 'in_progress' %}⚙️{% elif ticket.status == 'completed' %}✓{% else %}2{% endif %}
+                            </div>
+                            <div class="pl-3">
+                                <h4 class="text-xs font-bold uppercase tracking-wider {% if ticket.status in 'in_progress completed' %}text-[#FF7200]{% else %}text-slate-400 dark:text-gray-500{% endif %}">
+                                    02. Active Bench Restoration & Diagnostics
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
+                                    Hardware specialists are actively executing component micro-soldering, board rework, or OEM part replacement.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Quality Testing & Ready -->
+                        <div class="relative group">
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if ticket.status == 'completed' %}bg-emerald-500 text-white shadow-md shadow-emerald-500/30{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
+                                {% if ticket.status == 'completed' %}✓{% else %}3{% endif %}
+                            </div>
+                            <div class="pl-3">
+                                <h4 class="text-xs font-bold uppercase tracking-wider {% if ticket.status == 'completed' %}text-emerald-500{% else %}text-slate-400 dark:text-gray-500{% endif %}">
+                                    03. System Deployed & Ready for Collection
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
+                                    Final thermal stress loops and 3DMark benchmarks cleared. Machine sealed and ready for collection or courier dispatch.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Messaging Panel -->
-        <div class="mt-8 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden text-left shadow-2xl">
-            <div class="p-6 md:p-8 border-b border-white/10 flex justify-between items-center bg-black/20">
-                <h4 class="text-sm font-black uppercase tracking-[0.2em] text-white">Repair Communication</h4>
-                <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">Need Help? Chat Below</span>
+        <!-- ================= TWO-WAY REPAIR CHAT PANEL ================= -->
+        <div class="bg-white dark:bg-[#12141a] rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] overflow-hidden mb-16">
+            <div class="p-6 md:p-8 border-b border-slate-100 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/60 dark:bg-black/20">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                        Direct Technician Communication
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 font-light">
+                        Leave notes, questions, or approval for replacement parts directly for the lead technician.
+                    </p>
+                </div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 self-start sm:self-auto">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Live Thread
+                </span>
             </div>
 
             <!-- Messages List -->
@@ -121,88 +235,94 @@
                 {% for msg in ticket.messages.all %}
                     <div class="flex flex-col {% if msg.sender_is_admin %}items-start{% else %}items-end{% endif %}">
                         {% if msg.sender_is_admin %}
-                            <div class="max-w-[80%] rounded-2xl px-6 py-4 bg-white/10 text-white rounded-tl-sm">
-                                <p class="text-sm font-light leading-relaxed">{{ msg.message }}</p>
+                            <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 sm:p-5 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white rounded-tl-sm border border-slate-200/60 dark:border-white/5 shadow-sm">
+                                <p class="text-sm font-normal leading-relaxed">{{ msg.message }}</p>
                             </div>
-                            <span class="text-[9px] text-gray-500 mt-2 font-black uppercase tracking-widest">
-                                Support Agent • {{ msg.created_at|date:"M d, g:i A" }}
+                            <span class="text-[10px] text-slate-400 dark:text-gray-500 mt-1.5 font-bold uppercase tracking-wider">
+                                🔧 Compupartz Engineer • {{ msg.created_at|date:"M d, g:i A" }}
                             </span>
                         {% else %}
-                            <div class="flex items-center gap-3 mb-2 justify-end w-full">
-                                <div class="flex gap-3 opacity-60 hover:opacity-100 transition-opacity">
-                                    <button type="button" onclick="editMessage({{ msg.id }}, '{{ msg.message|escapejs }}')" class="text-gray-400 hover:text-white transition-colors" title="Edit">
+                            <div class="flex items-center gap-2 mb-1.5 justify-end w-full">
+                                <div class="flex gap-2 opacity-60 hover:opacity-100 transition-opacity">
+                                    <button type="button" onclick="editMessage({{ msg.id }}, '{{ msg.message|escapejs }}')" class="text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors" title="Edit">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     </button>
                                     <form action="{% url 'delete_repair_message' msg.id %}" method="POST" class="inline m-0 p-0 leading-none" onsubmit="return confirm('Are you sure you want to delete this message?');">
                                         {% csrf_token %}
-                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                        <button type="submit" class="text-slate-400 hover:text-red-500 transition-colors" title="Delete">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </form>
                                 </div>
-                                <span class="text-[9px] text-gray-500 font-black uppercase tracking-widest">You • {{ msg.created_at|date:"M d, g:i A" }}</span>
+                                <span class="text-[10px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-wider">You • {{ msg.created_at|date:"M d, g:i A" }}</span>
                             </div>
-                            <div class="max-w-[80%] rounded-2xl px-6 py-4 bg-[#008BC6]/20 border border-[#008BC6]/30 text-white rounded-tr-sm w-full md:w-auto">
-                                <div id="msg-display-{{ msg.id }}"><p class="text-sm font-light leading-relaxed">{{ msg.message }}</p></div>
+                            <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-[#008BC6]/15 to-[#008BC6]/25 dark:from-[#008BC6]/30 dark:to-[#008BC6]/20 border border-[#008BC6]/30 text-slate-800 dark:text-white rounded-tr-sm shadow-sm w-full sm:w-auto">
+                                <div id="msg-display-{{ msg.id }}"><p class="text-sm font-normal leading-relaxed">{{ msg.message }}</p></div>
                                 <form id="msg-edit-form-{{ msg.id }}" action="{% url 'edit_repair_message' msg.id %}" method="POST" class="hidden flex-col gap-2 w-full">
                                     {% csrf_token %}
-                                    <textarea name="message" class="w-full bg-black/40 border border-white/20 text-white text-sm rounded-lg p-3 outline-none focus:border-[#008BC6] resize-none" rows="2" required></textarea>
+                                    <textarea name="message" class="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/20 text-slate-800 dark:text-white text-sm rounded-lg p-3 outline-none focus:border-[#008BC6] resize-none" rows="2" required></textarea>
                                     <div class="flex justify-end gap-3 mt-1">
-                                        <button type="button" onclick="cancelEdit({{ msg.id }})" class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">Cancel</button>
-                                        <button type="submit" class="text-[9px] font-bold uppercase tracking-widest text-[#008BC6] hover:text-[#33a5d8] transition-colors">Save</button>
+                                        <button type="button" onclick="cancelEdit({{ msg.id }})" class="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors">Cancel</button>
+                                        <button type="submit" class="text-[10px] font-bold uppercase tracking-widest text-[#008BC6] hover:text-[#33a5d8] transition-colors">Save</button>
                                     </div>
                                 </form>
                             </div>
                         {% endif %}
                 {% empty %}
-                    <div class="text-center py-8">
-                        <p class="text-gray-500 text-sm font-light">No messages yet. Send a message to start communicating with the repair lab.</p>
+                    <div class="text-center py-12">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-[#008BC6] flex items-center justify-center text-xl mx-auto mb-3">
+                            💬
+                        </div>
+                        <p class="text-slate-500 dark:text-gray-400 text-sm font-light">No messages on this ticket yet. Submit a message below to reach the bench engineer.</p>
                     </div>
                 {% endfor %}
             </div>
 
-            <!-- Message Form -->
-            <div class="p-4 md:p-6 bg-black/40 border-t border-white/10">
-                <form method="POST" action="{% url 'track_repair' ticket.ticket_id %}" class="flex items-center gap-4">
+            <!-- Message Form Input -->
+            <div class="p-4 sm:p-6 bg-slate-50/80 dark:bg-black/30 border-t border-slate-100 dark:border-white/5">
+                <form method="POST" action="{% url 'track_repair' ticket.ticket_id %}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     {% csrf_token %}
-                    <input type="text" name="message" required placeholder="Type your message here..." class="flex-1 bg-white/5 border border-white/10 text-white text-sm rounded-xl px-6 py-4 outline-none focus:border-[#008BC6]/50 transition-colors">
-                    <button type="submit" class="bg-[#008BC6] hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest transition-colors flex items-center justify-center shrink-0">
-                        Send
+                    <input type="text" 
+                           name="message" 
+                           required 
+                           placeholder="Type a message or question for the technician..." 
+                           class="flex-1 bg-white dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white text-sm rounded-xl px-4 py-3.5 outline-none focus:border-[#FF7200] focus:ring-4 focus:ring-[#FF7200]/10 transition-all shadow-sm">
+                    <button type="submit" class="bg-gradient-to-r from-[#FF7200] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white px-7 py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center shrink-0 active:scale-95">
+                        Transmit Note &rarr;
                     </button>
                 </form>
             </div>
         </div>
 
-        <a href="{% url 'track_repair_lookup' %}" class="inline-block mt-12 text-[10px] font-black uppercase tracking-[0.3em] text-[#008BC6] hover:text-white transition-colors">
-            &larr; Switch Navigation ID
-        </a>
     </div>
+
 </div>
-{% endblock %}
 
+<!-- Chat Message Edit Logic -->
 <script>
-    // Chat Message Edit Logic
-    function editMessage(msgId, content) {
-        document.getElementById('msg-display-' + msgId).classList.add('hidden');
-        const form = document.getElementById('msg-edit-form-' + msgId);
-        form.classList.remove('hidden');
-        form.classList.add('flex');
-        form.querySelector('textarea').value = content;
-        form.querySelector('textarea').focus();
-    }
-    
-    function cancelEdit(msgId) {
-        document.getElementById('msg-display-' + msgId).classList.remove('hidden');
-        const form = document.getElementById('msg-edit-form-' + msgId);
-        form.classList.add('hidden');
-        form.classList.remove('flex');
-    }
+function editMessage(msgId, content) {
+    document.getElementById('msg-display-' + msgId).classList.add('hidden');
+    const form = document.getElementById('msg-edit-form-' + msgId);
+    form.classList.remove('hidden');
+    form.classList.add('flex');
+    form.querySelector('textarea').value = content;
+    form.querySelector('textarea').focus();
+}
 
-    // Auto-scroll chat box to bottom
-    document.addEventListener("DOMContentLoaded", function() {
-        const chatBox = document.getElementById('chat-box');
-        if (chatBox) {
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    });
+function cancelEdit(msgId) {
+    document.getElementById('msg-display-' + msgId).classList.remove('hidden');
+    const form = document.getElementById('msg-edit-form-' + msgId);
+    form.classList.add('hidden');
+    form.classList.remove('flex');
+}
+
+// Auto-scroll chat box to bottom
+document.addEventListener("DOMContentLoaded", function() {
+    const chatBox = document.getElementById('chat-box');
+    if (chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+});
 </script>
+
+{% endblock %}

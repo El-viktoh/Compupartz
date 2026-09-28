@@ -2,123 +2,236 @@
 {% load static %}
 {% load socialaccount %}
 
-{% block title %}Login | Compupartz{% endblock %}
+{% block title %}Sign In | Client Portal | Compupartz{% endblock %}
 
 {% block content %}
 
-<!-- ================= PREMIUM LOGIN DASHBOARD ================= -->
-<div class="relative -mx-6 px-6 sm:-mx-0 sm:px-0 sm:w-screen sm:left-1/2 sm:-translate-x-1/2 bg-white dark:bg-[#0a0a0c] text-gray-900 dark:text-white -mt-10 py-16 min-h-[90vh] flex items-center justify-center overflow-hidden transition-colors duration-500">
-    
-    <div class="max-w-md w-full relative z-10 animate-fadeIn text-center">
-        
+<!-- Custom Styling for Interactive Elements & Redesign Accents -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
 
+.hero-script-font {
+    font-family: 'Caveat', cursive, -apple-system, sans-serif;
+}
+</style>
 
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
-                Welcome to Compupartz
+<!-- ================= FULL-BLEED LOGIN PAGE ================= -->
+<div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] -mt-24 pt-32 sm:pt-36 md:pt-40 -mb-12 pb-24 sm:pb-32 bg-[#F5F8FA] dark:bg-[#0a0a0c] text-slate-800 dark:text-white font-outfit overflow-hidden transition-colors duration-300 relative min-h-screen flex items-center justify-center">
+
+    <!-- Ambient Glow Spots -->
+    <div class="absolute top-10 left-1/4 w-96 h-96 bg-[#008BC6]/8 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-40 right-10 w-96 h-96 bg-[#FF7200]/8 dark:bg-[#FF7200]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Corner Decorative Motifs (Matching Homepage, Repair & Contact Style) -->
+    <div class="absolute top-12 left-6 pointer-events-none opacity-20 dark:opacity-10">
+        <svg class="w-24 h-24 sm:w-32 sm:h-32 text-[#008BC6]" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M20 80 Q 25 40 60 20 Q 55 55 20 80 Z" opacity="0.9"/>
+            <path d="M35 55 Q 50 35 70 30 Q 60 50 35 55 Z" opacity="0.7"/>
+            <path d="M45 40 Q 65 20 85 20 Q 75 40 45 40 Z" opacity="0.8"/>
+            <path d="M20 80 L 85 20" stroke="currentColor" stroke-width="2.5" fill="none"/>
+        </svg>
+    </div>
+    <div class="absolute bottom-12 right-6 pointer-events-none opacity-20 dark:opacity-10 rotate-180">
+        <svg class="w-24 h-24 sm:w-32 sm:h-32 text-[#FF7200]" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M20 80 Q 25 40 60 20 Q 55 55 20 80 Z" opacity="0.9"/>
+            <path d="M35 55 Q 50 35 70 30 Q 60 50 35 55 Z" opacity="0.7"/>
+            <path d="M45 40 Q 65 20 85 20 Q 75 40 45 40 Z" opacity="0.8"/>
+            <path d="M20 80 L 85 20" stroke="currentColor" stroke-width="2.5" fill="none"/>
+        </svg>
+    </div>
+
+    <div class="max-w-md w-full mx-auto px-6 relative z-10">
+
+        <!-- Top Header Banner (Aligning with Homepage, Contact, Repair Typography) -->
+        <div class="mb-8 text-center max-w-sm mx-auto">
+            <!-- Script Accent Tagline -->
+            <span class="hero-script-font text-3xl sm:text-4xl text-[#008BC6] dark:text-[#38bdf8] font-bold block mb-1 transform -rotate-1">
+                Client Portal
+            </span>
+
+            <!-- Main Bold Headline -->
+            <h1 class="text-3xl sm:text-4xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.12] mb-2 transition-colors duration-300">
+                Welcome to <span class="text-[#FF7200]">Compupartz.</span>
             </h1>
-            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">
-                Use your email or phone to log in or sign up.
+
+            <p class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm font-light leading-relaxed">
+                Log in to access your repair tickets, diagnostic telemetry, and component orders.
             </p>
         </div>
 
-        <div class="bg-white dark:bg-gray-900/50 p-8 md:p-10 rounded-[2rem] shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 relative overflow-hidden text-left">
+        <!-- Glassmorphism Login Card -->
+        <div class="bg-white dark:bg-[#12141a] rounded-3xl p-7 sm:p-9 border border-slate-200/80 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.03)] relative overflow-hidden transition-all duration-300">
             
-            <form method="post" class="space-y-6 relative z-10">
+            <!-- Ambient Internal Glow -->
+            <div class="absolute -top-16 -right-16 w-40 h-40 bg-[#FF7200]/5 dark:bg-[#FF7200]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Error Notifications -->
+            {% if form.errors %}
+            <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-center gap-2.5">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <span>Invalid credentials. Please verify your username/email and password.</span>
+            </div>
+            {% endif %}
+
+            {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                <div class="p-3.5 rounded-xl {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-500{% else %}bg-green-500/10 border border-green-500/20 text-green-500{% endif %} text-xs flex items-center gap-2">
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Form -->
+            <form method="post" class="space-y-5 relative z-10">
                 {% csrf_token %}
 
-                <div class="space-y-2">
-                    <div class="relative group">
+                <!-- Username or Email Field -->
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
+                        Username or Email Address <span class="text-[#FF7200]">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">👤</span>
                         <input
                             type="text"
                             name="username"
                             required
-                            placeholder="Email or Mobile Number*"
-                            class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-brandOrange/50 focus:border-brandOrange transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                            autocomplete="username"
+                            placeholder="admin1 or kwame@example.com"
+                            class="w-full bg-[#F8FAFC] dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 rounded-xl pl-10 pr-4 py-3.5 focus:bg-white dark:focus:bg-[#1a1d24] focus:outline-none focus:ring-4 focus:ring-[#FF7200]/10 focus:border-[#FF7200] transition-all text-slate-800 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-gray-500 shadow-sm"
                         >
                     </div>
                 </div>
 
-                <!-- ADDING PASSWORD FIELD FOR FUNCTIONALITY -->
-                <div class="space-y-2">
-                    <div class="relative group">
+                <!-- Password Field -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">
+                            Password <span class="text-[#FF7200]">*</span>
+                        </label>
+                        <a href="{% url 'password_reset' %}" class="text-[10px] font-bold text-[#FF7200] hover:text-orange-600 transition-colors uppercase tracking-wider">
+                            Forgot?
+                        </a>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
                         <input
                             type="password"
                             name="password"
+                            id="login_password_input"
                             required
-                            placeholder="Password*"
-                            class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-brandOrange/50 focus:border-brandOrange transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                            autocomplete="current-password"
+                            placeholder="Enter your account password"
+                            class="w-full bg-[#F8FAFC] dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 rounded-xl pl-10 pr-11 py-3.5 focus:bg-white dark:focus:bg-[#1a1d24] focus:outline-none focus:ring-4 focus:ring-[#FF7200]/10 focus:border-[#FF7200] transition-all text-slate-800 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-gray-500 shadow-sm"
                         >
-                    </div>
-                    <div class="text-right">
-                        <a href="{% url 'password_reset' %}" class="text-[10px] font-bold text-brandOrange hover:underline uppercase tracking-widest">Forgot Password?</a>
+                        <button type="button" 
+                                id="togglePasswordBtn"
+                                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                                title="Show/Hide Password">
+                            <svg id="eyeIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </button>
                     </div>
                 </div>
 
+                <!-- Submit Button -->
                 <div class="pt-2">
-                    <button type="submit" class="w-full bg-brandOrange text-white py-4 rounded-xl font-bold transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg shadow-brandOrange/20">
-                        Continue
+                    <button type="submit" 
+                            class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#FF7200] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white font-bold uppercase tracking-wider text-xs sm:text-sm shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2">
+                        <span>Continue to Portal</span>
+                        <span class="text-base">&rarr;</span>
                     </button>
                 </div>
 
-                <div class="text-center pt-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                        New to Compupartz? <a href="{% url 'signup' %}" class="text-brandOrange font-bold hover:underline">Create an account</a>
+                <!-- Register Link -->
+                <div class="text-center pt-2">
+                    <p class="text-xs text-slate-500 dark:text-gray-400 font-medium">
+                        New to Compupartz? <a href="{% url 'signup' %}" class="text-[#FF7200] font-bold hover:underline ml-1">Create an account</a>
                     </p>
                 </div>
+
             </form>
 
-            <!-- DIVIDER -->
-            <div class="relative flex items-center gap-4 my-8">
-                <div class="flex-1 h-px bg-gray-100 dark:bg-white/10"></div>
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Or log in with</span>
-                <div class="flex-1 h-px bg-gray-100 dark:bg-white/10"></div>
+            <!-- Divider -->
+            <div class="relative flex items-center gap-4 my-6">
+                <div class="flex-1 h-px bg-slate-200/80 dark:border-t dark:border-white/10"></div>
+                <span class="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">Or continue with</span>
+                <div class="flex-1 h-px bg-slate-200/80 dark:border-t dark:border-white/10"></div>
             </div>
 
-            <!-- SOCIAL LOGINS -->
-            <div class="flex justify-center gap-6 mb-10">
-                <!-- Gmail -->
-                <a href="/accounts/google/login/?process=login" class="w-12 h-12 flex items-center justify-center rounded-full border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all shadow-sm">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24">
+            <!-- Social Providers -->
+            <div class="flex justify-center gap-4 mb-6">
+                <!-- Google -->
+                <a href="/accounts/google/login/?process=login" 
+                   title="Continue with Google"
+                   class="w-12 h-12 flex items-center justify-center rounded-2xl border border-slate-200/80 dark:border-white/10 bg-[#F8FAFC] dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-all hover:scale-105 shadow-sm">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
                 </a>
-                <!-- X (Twitter) -->
-                <a href="/accounts/twitter_oauth2/login/?process=login" class="w-12 h-12 flex items-center justify-center rounded-full border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all shadow-sm">
-                    <svg class="w-6 h-6" viewBox="0 0 512 512">
-                        <path fill="#6001d2" d="M331.42 277.62c-29.35-49.23-118-197.87-118-197.87h-59.51l111.94 186.27-116.32 188.75h59.13s73.81-122.31 90.95-150.31c18.52 30.73 90.83 150.31 90.83 150.31h59.51L331.42 277.62z"/>
-                        <path fill="#6001d2" d="M410.88 47.78a31.32 31.32 0 100 62.64 31.32 31.32 0 100-62.64z"/>
-                    </svg>
-                </a>
                 <!-- Apple -->
-                <a href="/accounts/apple/login/?process=login" class="w-12 h-12 flex items-center justify-center rounded-full border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all shadow-sm">
-                    <svg class="w-6 h-6 fill-current text-gray-900 dark:text-white" viewBox="0 0 384 512">
+                <a href="/accounts/apple/login/?process=login" 
+                   title="Continue with Apple"
+                   class="w-12 h-12 flex items-center justify-center rounded-2xl border border-slate-200/80 dark:border-white/10 bg-[#F8FAFC] dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-all hover:scale-105 shadow-sm">
+                    <svg class="w-5 h-5 fill-current text-slate-900 dark:text-white" viewBox="0 0 384 512">
                         <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
                     </svg>
                 </a>
+                <!-- X / Twitter -->
+                <a href="/accounts/twitter_oauth2/login/?process=login" 
+                   title="Continue with X"
+                   class="w-12 h-12 flex items-center justify-center rounded-2xl border border-slate-200/80 dark:border-white/10 bg-[#F8FAFC] dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-all hover:scale-105 shadow-sm">
+                    <svg class="w-4 h-4 fill-current text-slate-900 dark:text-white" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
             </div>
 
-            <div class="text-center">
-                <p class="text-[11px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
+            <!-- Terms Agreement -->
+            <div class="text-center pt-2 border-t border-slate-100 dark:border-white/5">
+                <p class="text-[11px] text-slate-400 dark:text-gray-500 font-light leading-relaxed">
                     By continuing you agree to Compupartz's<br>
-                    <a href="{% url 'terms' %}" class="text-brandOrange hover:underline">Terms and Conditions</a>
+                    <a href="{% url 'terms' %}" class="text-[#FF7200] hover:underline font-semibold">Terms & Conditions</a> and <a href="{% url 'privacy_policy' %}" class="text-[#FF7200] hover:underline font-semibold">Privacy Policy</a>
                 </p>
             </div>
+
         </div>
 
-        <!-- FOOTER INFO -->
-        <div class="mt-12 text-sm text-gray-500 dark:text-gray-400 font-medium space-y-4">
-            <p>Need help? Visit our <a href="#" class="text-brandOrange hover:underline font-bold">Help Center</a> or contact us on <span class="text-gray-900 dark:text-white font-bold">0540 322 533</span></p>
-            
-            <div class="flex justify-center opacity-40 hover:opacity-100 transition-opacity pt-6">
-                <img src="{% static 'images/Logo-Only.png' %}" class="h-8 grayscale group-hover:grayscale-0">
+        <!-- Footnote Support Assistance -->
+        <div class="mt-8 text-center text-xs text-slate-500 dark:text-gray-400 space-y-3">
+            <p>
+                Need assistance? Call our technical desk on 
+                <a href="tel:+233540322533" class="font-bold text-slate-800 dark:text-white hover:text-[#FF7200] transition-colors">0540 322 533</a>
+            </p>
+            <div>
+                <a href="/" class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors">
+                    <span>&larr;</span> Return to Home
+                </a>
             </div>
         </div>
-        
+
     </div>
+
 </div>
+
+<!-- Interactive JS: Password Visibility Toggle -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('togglePasswordBtn');
+    const passwordInput = document.getElementById('login_password_input');
+
+    if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', function() {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            this.classList.toggle('text-[#FF7200]', isPassword);
+        });
+    }
+});
+</script>
 
 {% endblock %}

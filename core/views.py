@@ -93,7 +93,8 @@ def activate(request, uidb64, token):
         return render(request, "registration/account_activation_invalid.html")
 
 
-from repair.models import RepairTicket
+from django.db.models import Q
+from repair.models import RepairTicket, PartRequest
 from .forms import UserUpdateForm, ProfileUpdateForm
 
 # =========================
@@ -101,19 +102,50 @@ from .forms import UserUpdateForm, ProfileUpdateForm
 # =========================
 @login_required
 def dashboard(request):
-    active_repairs = RepairTicket.objects.filter(
-        user=request.user,
-        status__in=['pending', 'in_progress']
-    ).order_by('-created_at')
-    
-    past_repairs = RepairTicket.objects.filter(
-        user=request.user,
-        status='completed'
-    ).order_by('-created_at')
-
     # ✅ ENSURE PROFILE EXISTS (Fixes crash for existing users)
     profile, created = Profile.objects.get_or_create(user=request.user)
-    
+
+    if request.user.is_staff:
+        # Staff/Bench Technicians see all active shop repairs to communicate with clients
+        active_repairs = RepairTicket.objects.filter(
+            status__in=['pending', 'in_progress']
+        ).order_by('-created_at')
+
+        past_repairs = RepairTicket.objects.filter(
+            status='completed'
+        ).order_by('-created_at')
+    else:
+        # Regular Client: automatically link tickets and part requests booked with user's email
+        if request.user.email:
+            user_email = request.user.email.strip()
+            # Claim unassigned tickets or tickets booked with client's email
+            RepairTicket.objects.filter(
+                customer_email__iexact=user_email,
+                user__isnull=True
+            ).update(user=request.user)
+            RepairTicket.objects.filter(
+                customer_email__iexact=user_email,
+                user__is_staff=True
+            ).update(user=request.user)
+            PartRequest.objects.filter(
+                customer_email__iexact=user_email,
+                user__isnull=True
+            ).update(user=request.user)
+
+        user_ticket_filter = Q(user=request.user)
+        if request.user.email:
+            user_ticket_filter |= Q(customer_email__iexact=request.user.email.strip())
+
+        active_repairs = RepairTicket.objects.filter(
+            user_ticket_filter,
+            status__in=['pending', 'in_progress']
+        ).distinct().order_by('-created_at')
+
+        past_repairs = RepairTicket.objects.filter(
+            user_ticket_filter,
+            status='completed'
+        ).distinct().order_by('-created_at')
+
     # ✅ GET FORMS FOR MODAL
     u_form = UserUpdateForm(instance=request.user)
     p_form = ProfileUpdateForm(instance=profile)
@@ -158,14 +190,20 @@ def contact(request):
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
         email = request.POST.get("email", "").strip()
+        phone = request.POST.get("phone", "").strip()
         subject = request.POST.get("subject", "").strip()
         message_body = request.POST.get("message", "").strip()
 
         if name and email and subject and message_body:
             try:
+                body_content = f"From: {name} <{email}>\n"
+                if phone:
+                    body_content += f"Phone / WhatsApp: {phone}\n"
+                body_content += f"\n{message_body}"
+
                 EmailMessage(
                     subject=f"[Contact Form] {subject}",
-                    body=f"From: {name} <{email}>\n\n{message_body}",
+                    body=body_content,
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     to=[settings.SERVER_EMAIL],
                     reply_to=[email],
