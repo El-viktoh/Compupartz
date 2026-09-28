@@ -33,8 +33,32 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-this')
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',') if h.strip()]
+default_hosts = [
+    'compupartz.com',
+    '.compupartz.com',
+    'www.compupartz.com',
+    '187.124.221.97',
+    '127.0.0.1',
+    'localhost',
+]
 if not ALLOWED_HOSTS:
-    ALLOWED_HOSTS = ['*'] if DEBUG else []
+    ALLOWED_HOSTS = ['*'] if DEBUG else default_hosts
+else:
+    for host in default_hosts:
+        if host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(host)
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://compupartz.com',
+    'https://www.compupartz.com',
+    'http://compupartz.com',
+    'http://www.compupartz.com',
+    'https://187.124.221.97',
+    'http://187.124.221.97',
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
 
 # The site currently runs repair-only. Flip this to True (or set the env var)
 # to bring back the store/cart/checkout/order-tracking/parts routes.
@@ -75,13 +99,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
 
@@ -183,7 +207,8 @@ else:
 
 # SMTP Settings (Populate these in your .env file)
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+raw_email_port = str(os.getenv('EMAIL_PORT', '587')).strip()
+EMAIL_PORT = int(raw_email_port) if raw_email_port.isdigit() else 587
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False').lower() == 'true'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
@@ -263,21 +288,27 @@ LOGGING = {
         },
     },
     'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'django_errors.log'),
             'formatter': 'verbose',
+            'delay': True,
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
+            'handlers': ['console', 'file'],
             'level': 'ERROR',
             'propagate': True,
         },
         'core': {
-            'handlers': ['file'],
+            'handlers': ['console', 'file'],
             'level': 'ERROR',
             'propagate': True,
         },

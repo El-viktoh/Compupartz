@@ -18,5 +18,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            cd /var/www/django-app/Compupartz
+            git config --global --add safe.directory /var/www/django-app/Compupartz
+            git fetch origin main
+            git reset --hard origin/main
             chmod +x /var/www/django-app/Compupartz/scripts/deploy.sh
             /var/www/django-app/Compupartz/scripts/deploy.sh
