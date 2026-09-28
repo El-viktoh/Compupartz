@@ -125,11 +125,11 @@ def dashboard(request):
     active_repairs = user_tickets.filter(status__in=['pending', 'in_progress'])
     past_repairs = user_tickets.filter(status='completed')
 
-    # All tickets raised by user for the laboratory communications center
+    # All tickets raised by user for the lab communications center
     user_all_raised_tickets = user_tickets
     total_user_messages = RepairMessage.objects.filter(ticket__user=request.user).count()
 
-    # For staff users: separate workshop queue for triage so personal tickets remain clean
+    # For staff users: separate workshop queue for process so personal tickets remain clean
     staff_bench_repairs = None
     if request.user.is_staff:
         staff_bench_repairs = RepairTicket.objects.filter(

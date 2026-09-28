@@ -244,7 +244,7 @@
                                 💬
                             </span>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-800 dark:text-white group-hover:text-[#008BC6] transition-colors">Laboratory Comms</h4>
+                                <h4 class="text-xs font-bold text-slate-800 dark:text-white group-hover:text-[#008BC6] transition-colors">Lab Communications</h4>
                                 <p class="text-[10px] text-slate-400 dark:text-gray-500">Direct technician chat threads</p>
                             </div>
                         </div>
@@ -311,7 +311,7 @@
                             </span>
                         </button>
 
-                        <!-- Tab 2: Laboratory Communications -->
+                        <!-- Tab 2: Lab Communications -->
                         <button type="button" 
                                 onclick="switchDashboardTab('lab-communications')" 
                                 id="tab-btn-lab-communications"
@@ -320,7 +320,7 @@
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#008BC6] opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-[#008BC6]"></span>
                             </span>
-                            <span>Laboratory Comms</span>
+                            <span>Lab Communications</span>
                             {% if total_user_messages %}
                             <span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-[#008BC6] font-mono font-bold">
                                 {{ total_user_messages }}
@@ -329,13 +329,13 @@
                         </button>
 
                         {% if user.is_staff and staff_bench_repairs %}
-                        <!-- Tab 3: Staff Workshop Queue (Staff/Admin Only) -->
+                        <!-- Tab 3: Lab Process Queue (Staff/Admin Only) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('staff-workshop')" 
                                 id="tab-btn-staff-workshop"
                                 class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
                             <span>⚙️</span>
-                            <span>Shop Workshop Queue</span>
+                            <span>Lab Process Queue</span>
                             <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 font-mono font-bold">
                                 {{ staff_bench_repairs.count }}
                             </span>
@@ -404,7 +404,7 @@
                                     {% else %}
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                                         <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                                        Intake Pending Triage
+                                        Intake Pending Process
                                     </span>
                                     {% endif %}
                                 </div>
@@ -474,7 +474,7 @@
                                             </div>
                                             <div>
                                                 <h4 class="text-xs font-bold {% if ticket.status in 'in_progress completed' %}text-[#FF7200]{% else %}text-slate-400 dark:text-gray-500{% endif %} uppercase tracking-wider">
-                                                    02. Diagnostic Triage & Component Restoration
+                                                    02. Diagnostic Process & Component Restoration
                                                 </h4>
                                                 <p class="text-[11px] text-slate-500 dark:text-gray-400 font-light mt-0.5">
                                                     Technicians inspecting schematics, repairing circuitry, or swapping OEM components.
@@ -598,7 +598,7 @@
 
                 </div>
 
-                <!-- ================= TAB PANEL 2: LABORATORY COMMUNICATIONS ================= -->
+                <!-- ================= TAB PANEL 2: LAB COMMUNICATIONS ================= -->
                 <div id="section-lab-communications" class="dash-section-panel hidden space-y-6">
                     
                     <!-- Comms Header -->
@@ -607,7 +607,7 @@
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                 <span class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8]">
-                                    Laboratory Bench Communications
+                                    Lab Bench Communications
                                 </span>
                             </div>
                             <h2 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white">
@@ -743,7 +743,7 @@
                                                 💬
                                             </div>
                                             <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-1">
-                                                Laboratory Channel Ready
+                                                Lab Channel Ready
                                             </h4>
                                             <p class="text-xs text-slate-500 dark:text-gray-400 font-light max-w-sm mx-auto">
                                                 No technician messages yet on Ticket <span class="font-mono font-bold">{{ ticket.ticket_id }}</span>. Send an update or question below to connect with your assigned bench engineer.
@@ -806,7 +806,7 @@
                                 </span>
                             </div>
                             <h2 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white">
-                                Shop Triage Queue
+                                Lab Process Queue
                             </h2>
                             <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5">
                                 Overview of other client devices currently undergoing diagnostics on the bench.
@@ -837,7 +837,7 @@
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
                                 <a href="{% url 'track_repair' ticket.ticket_id %}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
-                                    Triage &bull; Comms &rarr;
+                                    Process &bull; Comms &rarr;
                                 </a>
                             </div>
                         </div>
