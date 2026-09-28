@@ -205,7 +205,7 @@ def submit_testimonial(request):
         else:
             messages.error(request, "Please enter your review feedback before submitting.")
 
-    return redirect('/dashboard/?tab=parts')
+    return redirect('dashboard')
 
 
 # =========================
