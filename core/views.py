@@ -94,7 +94,7 @@ def activate(request, uidb64, token):
 
 
 from django.db.models import Q
-from repair.models import RepairTicket, PartRequest
+from repair.models import RepairTicket, PartRequest, RepairMessage
 from .forms import UserUpdateForm, ProfileUpdateForm
 
 # =========================
@@ -105,46 +105,36 @@ def dashboard(request):
     # ✅ ENSURE PROFILE EXISTS (Fixes crash for existing users)
     profile, created = Profile.objects.get_or_create(user=request.user)
 
+    # Link unassigned anonymous tickets (user is None) booked with user's email
+    if request.user.email:
+        user_email = request.user.email.strip()
+        RepairTicket.objects.filter(
+            customer_email__iexact=user_email,
+            user__isnull=True
+        ).update(user=request.user)
+        PartRequest.objects.filter(
+            customer_email__iexact=user_email,
+            user__isnull=True
+        ).update(user=request.user)
+
+    # Strictly tickets entered / raised by this logged-in user
+    user_tickets = RepairTicket.objects.filter(
+        user=request.user
+    ).prefetch_related('messages').order_by('-created_at')
+
+    active_repairs = user_tickets.filter(status__in=['pending', 'in_progress'])
+    past_repairs = user_tickets.filter(status='completed')
+
+    # All tickets raised by user for the laboratory communications center
+    user_all_raised_tickets = user_tickets
+    total_user_messages = RepairMessage.objects.filter(ticket__user=request.user).count()
+
+    # For staff users: separate workshop queue for triage so personal tickets remain clean
+    staff_bench_repairs = None
     if request.user.is_staff:
-        # Staff/Bench Technicians see all active shop repairs to communicate with clients
-        active_repairs = RepairTicket.objects.filter(
+        staff_bench_repairs = RepairTicket.objects.filter(
             status__in=['pending', 'in_progress']
-        ).order_by('-created_at')
-
-        past_repairs = RepairTicket.objects.filter(
-            status='completed'
-        ).order_by('-created_at')
-    else:
-        # Regular Client: automatically link tickets and part requests booked with user's email
-        if request.user.email:
-            user_email = request.user.email.strip()
-            # Claim unassigned tickets or tickets booked with client's email
-            RepairTicket.objects.filter(
-                customer_email__iexact=user_email,
-                user__isnull=True
-            ).update(user=request.user)
-            RepairTicket.objects.filter(
-                customer_email__iexact=user_email,
-                user__is_staff=True
-            ).update(user=request.user)
-            PartRequest.objects.filter(
-                customer_email__iexact=user_email,
-                user__isnull=True
-            ).update(user=request.user)
-
-        user_ticket_filter = Q(user=request.user)
-        if request.user.email:
-            user_ticket_filter |= Q(customer_email__iexact=request.user.email.strip())
-
-        active_repairs = RepairTicket.objects.filter(
-            user_ticket_filter,
-            status__in=['pending', 'in_progress']
-        ).distinct().order_by('-created_at')
-
-        past_repairs = RepairTicket.objects.filter(
-            user_ticket_filter,
-            status='completed'
-        ).distinct().order_by('-created_at')
+        ).exclude(user=request.user).prefetch_related('messages').order_by('-created_at')
 
     # ✅ GET FORMS FOR MODAL
     u_form = UserUpdateForm(instance=request.user)
@@ -153,6 +143,9 @@ def dashboard(request):
     return render(request, "account/dashboard.html", {
         "active_repairs": active_repairs,
         "past_repairs": past_repairs,
+        "user_all_raised_tickets": user_all_raised_tickets,
+        "total_user_messages": total_user_messages,
+        "staff_bench_repairs": staff_bench_repairs,
         "u_form": u_form,
         "p_form": p_form,
     })

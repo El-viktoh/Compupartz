@@ -94,7 +94,7 @@ def _can_access_ticket(request, ticket):
     if request.user.is_authenticated:
         if request.user.is_staff or ticket.user_id == request.user.id:
             return True
-        if request.user.email and ticket.customer_email and ticket.customer_email.strip().lower() == request.user.email.strip().lower():
+        if ticket.user_id is None and request.user.email and ticket.customer_email and ticket.customer_email.strip().lower() == request.user.email.strip().lower():
             return True
 
     verified_tickets = request.session.get("verified_repair_tickets", [])
@@ -159,7 +159,7 @@ def track_repair(request, ticket_id):
 
         referer = request.META.get('HTTP_REFERER')
         if referer and 'dashboard' in referer:
-            return redirect('dashboard')
+            return redirect(f"/dashboard/?tab=communications&ticket={ticket.id}#comms-ticket-{ticket.id}")
         return redirect("track_repair", ticket_id=ticket.ticket_id)
 
     return render(request, "repair/track_repair.html", {
@@ -169,13 +169,7 @@ def track_repair(request, ticket_id):
 
 @login_required
 def my_repairs(request):
-    if request.user.is_staff:
-        repairs = RepairTicket.objects.all().order_by("-created_at")
-    else:
-        user_ticket_filter = Q(user=request.user)
-        if request.user.email:
-            user_ticket_filter |= Q(customer_email__iexact=request.user.email.strip())
-        repairs = RepairTicket.objects.filter(user_ticket_filter).distinct().order_by("-created_at")
+    repairs = RepairTicket.objects.filter(user=request.user).order_by("-created_at")
 
     return render(request, "repair/my_repairs.html", {
         "repairs": repairs
@@ -205,7 +199,7 @@ def edit_repair_message(request, message_id):
 
     referer = request.META.get('HTTP_REFERER')
     if referer and 'dashboard' in referer:
-        return redirect('dashboard')
+        return redirect(f"/dashboard/?tab=communications&ticket={message.ticket.id}#comms-ticket-{message.ticket.id}")
     return redirect("track_repair", ticket_id=message.ticket.ticket_id)
 
 
@@ -225,10 +219,11 @@ def delete_repair_message(request, message_id):
         raise PermissionDenied
 
     ticket_id = message.ticket.ticket_id
+    ticket_pk = message.ticket.id
     message.delete()
     messages.success(request, "Message deleted successfully.")
 
     referer = request.META.get('HTTP_REFERER')
     if referer and 'dashboard' in referer:
-        return redirect('dashboard')
+        return redirect(f"/dashboard/?tab=communications&ticket={ticket_pk}#comms-ticket-{ticket_pk}")
     return redirect("track_repair", ticket_id=ticket_id)
