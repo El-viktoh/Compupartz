@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import FAQ
+from .models import FAQ, Testimonial
 from .utils import send_activation_email
 from django.contrib import messages
 
@@ -12,6 +12,35 @@ class FAQAdmin(admin.ModelAdmin):
     list_filter = ('is_published', 'created_at')
     search_fields = ('question', 'answer')
     list_editable = ('is_published',)
+
+
+# 2. CLIENT TESTIMONIALS
+@admin.register(Testimonial)
+class TestimonialAdmin(admin.ModelAdmin):
+    list_display = ('name', 'role_or_title', 'rating_stars', 'service_rendered', 'is_approved', 'is_featured', 'created_at')
+    list_filter = ('is_approved', 'is_featured', 'rating', 'created_at')
+    search_fields = ('name', 'role_or_title', 'quote', 'service_rendered')
+    list_editable = ('is_approved', 'is_featured')
+    actions = ['approve_testimonials', 'feature_testimonials', 'unapprove_testimonials']
+
+    def rating_stars(self, obj):
+        return "★" * obj.rating + "☆" * (5 - obj.rating)
+    rating_stars.short_description = "Rating"
+
+    @admin.action(description="Approve selected testimonials")
+    def approve_testimonials(self, request, queryset):
+        count = queryset.update(is_approved=True)
+        self.message_user(request, f"{count} testimonial(s) approved for publication.", messages.SUCCESS)
+
+    @admin.action(description="Unapprove selected testimonials")
+    def unapprove_testimonials(self, request, queryset):
+        count = queryset.update(is_approved=False)
+        self.message_user(request, f"{count} testimonial(s) unapproved.", messages.WARNING)
+
+    @admin.action(description="Feature selected testimonials on homepage")
+    def feature_testimonials(self, request, queryset):
+        count = queryset.update(is_featured=True, is_approved=True)
+        self.message_user(request, f"{count} testimonial(s) featured on homepage.", messages.SUCCESS)
 
 # 2. BETTER USER MANAGEMENT
 try:

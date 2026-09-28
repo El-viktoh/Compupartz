@@ -1,0 +1,64 @@
+{% autoescape off %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+        .header { background: #0a0a0c; padding: 36px 30px; text-align: center; border-bottom: 4px solid #008BC6; }
+        .logo-title { color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+        .logo-subtitle { color: #008BC6; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
+        .content { padding: 36px 32px; color: #1e293b; }
+        .bench-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 139, 198, 0.1); color: #008BC6; padding: 8px 16px; border-radius: 999px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px; border: 1px solid rgba(0, 139, 198, 0.2); }
+        .message-box { background: #f0f9ff; border-left: 4px solid #008BC6; border-radius: 0 16px 16px 0; padding: 20px 22px; margin: 22px 0; color: #0c4a6e; font-size: 14px; line-height: 1.7; }
+        .device-info { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 18px; font-size: 12px; margin-bottom: 24px; }
+        .button-container { margin: 28px 0 10px; text-align: center; }
+        .button { display: inline-block; background: linear-gradient(135deg, #008BC6, #0284c7); color: #ffffff !important; padding: 16px 36px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(0, 139, 198, 0.25); }
+        .footer { padding: 26px; text-align: center; color: #94a3b8; font-size: 11px; border-top: 1px solid #f1f5f9; background: #fafafa; }
+        h2 { font-size: 22px; font-weight: 900; color: #0f172a; margin: 0 0 10px; }
+        p { line-height: 1.65; color: #475569; font-size: 14px; margin: 0 0 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="logo-title">Compupartz</h1>
+            <div class="logo-subtitle">Lab Communications & Technician Channel</div>
+        </div>
+        <div class="content">
+            <div class="bench-pill">
+                💬 Lab Bench Direct Update
+            </div>
+
+            <h2>New Note from Your Technician</h2>
+            <p>Hello <strong>{{ ticket.customer_name }}</strong>,</p>
+            <p>Our bench engineering team has transmitted a diagnostic note regarding your device repair:</p>
+
+            <div class="message-box">
+                "{{ message_text }}"
+            </div>
+
+            <div class="device-info">
+                <strong>Ticket:</strong> <span style="font-family: monospace; color: #ff7200;">{{ ticket.ticket_id }}</span> &bull; 
+                <strong>Device:</strong> {{ ticket.device }}
+            </div>
+
+            <div class="button-container">
+                <a href="{{ tracking_url }}" class="button">View & Reply in Portal &rarr;</a>
+            </div>
+
+            <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 20px;">
+                You can respond directly through your client dashboard or by visiting the repair tracker link above.
+            </p>
+        </div>
+        <div class="footer">
+            &copy; 2026 Compupartz Ghana. All rights reserved.<br>
+            Certified Hardware Engineering Desk &bull; +233 54 032 2533
+        </div>
+    </div>
+</body>
+</html>
+{% endautoescape %}

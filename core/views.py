@@ -95,6 +95,8 @@ def activate(request, uidb64, token):
 
 from django.db.models import Q
 from repair.models import RepairTicket, PartRequest, RepairMessage
+from customer_orders.models import Order
+from .models import FAQ, Profile, Testimonial
 from .forms import UserUpdateForm, ProfileUpdateForm
 
 # =========================
@@ -105,7 +107,7 @@ def dashboard(request):
     # ✅ ENSURE PROFILE EXISTS (Fixes crash for existing users)
     profile, created = Profile.objects.get_or_create(user=request.user)
 
-    # Link unassigned anonymous tickets (user is None) booked with user's email
+    # Link unassigned anonymous tickets, part requests, and orders booked with user's email
     if request.user.email:
         user_email = request.user.email.strip()
         RepairTicket.objects.filter(
@@ -114,6 +116,10 @@ def dashboard(request):
         ).update(user=request.user)
         PartRequest.objects.filter(
             customer_email__iexact=user_email,
+            user__isnull=True
+        ).update(user=request.user)
+        Order.objects.filter(
+            email__iexact=user_email,
             user__isnull=True
         ).update(user=request.user)
 
@@ -128,6 +134,14 @@ def dashboard(request):
     # All tickets raised by user for the lab communications center
     user_all_raised_tickets = user_tickets
     total_user_messages = RepairMessage.objects.filter(ticket__user=request.user).count()
+
+    # Hardware Parts requested & bought by this user
+    user_part_requests = PartRequest.objects.filter(user=request.user).order_by('-created_at')
+    user_orders = Order.objects.filter(user=request.user).prefetch_related('items').order_by('-created_at')
+    total_parts_and_orders = user_part_requests.count() + user_orders.count()
+
+    # User's submitted testimonials
+    user_testimonials = Testimonial.objects.filter(user=request.user).order_by('-created_at')
 
     # For staff users: separate workshop queue for process so personal tickets remain clean
     staff_bench_repairs = None
@@ -145,10 +159,51 @@ def dashboard(request):
         "past_repairs": past_repairs,
         "user_all_raised_tickets": user_all_raised_tickets,
         "total_user_messages": total_user_messages,
+        "user_part_requests": user_part_requests,
+        "user_orders": user_orders,
+        "total_parts_and_orders": total_parts_and_orders,
+        "user_testimonials": user_testimonials,
         "staff_bench_repairs": staff_bench_repairs,
         "u_form": u_form,
         "p_form": p_form,
     })
+
+
+# =========================
+# SUBMIT TESTIMONIAL
+# =========================
+@login_required
+def submit_testimonial(request):
+    if request.method == 'POST':
+        quote = request.POST.get('quote', '').strip()
+        rating = request.POST.get('rating', '5')
+        service_rendered = request.POST.get('service_rendered', '').strip()
+        role_or_title = request.POST.get('role_or_title', '').strip()
+
+        try:
+            rating_val = int(rating)
+            if rating_val < 1 or rating_val > 5:
+                rating_val = 5
+        except (ValueError, TypeError):
+            rating_val = 5
+
+        if quote:
+            customer_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
+            Testimonial.objects.create(
+                user=request.user,
+                name=customer_name,
+                role_or_title=role_or_title or "Verified Client",
+                quote=quote,
+                rating=rating_val,
+                service_rendered=service_rendered or "Hardware Diagnostics & Restoration",
+                is_approved=True,
+                is_featured=False
+            )
+            messages.success(request, "Thank you! Your testimonial has been submitted successfully.")
+        else:
+            messages.error(request, "Please enter your review feedback before submitting.")
+
+    return redirect('/dashboard/?tab=parts')
 
 
 # =========================
