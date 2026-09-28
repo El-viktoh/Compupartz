@@ -97,13 +97,21 @@ echo "🩺 Verifying live site response..."
 sleep 4
 HTTP_CODE=$(curl -s -k -o /dev/null -w "%{http_code}" https://compupartz.com/ || true)
 echo "Live site HTTP status: $HTTP_CODE"
-if [ "$HTTP_CODE" != "200" ]; then
-    echo "⚠️ Checking error logs..."
-    tail -n 30 $PROJECT_DIR/logs/error.log 2>/dev/null || true
-    tail -n 30 $PROJECT_DIR/stderr.log 2>/dev/null || true
-    tail -n 30 $PROJECT_DIR/django_errors.log 2>/dev/null || true
-    tail -n 30 /usr/local/lsws/logs/error.log 2>/dev/null || true
-    tail -n 30 /usr/local/lsws/logs/stderr.log 2>/dev/null || true
-fi
+
+DEBUG_FILE="$PROJECT_DIR/staticfiles/debug.txt"
+echo "HTTP STATUS: $HTTP_CODE" > $DEBUG_FILE
+echo "=== PROCESS LIST ===" >> $DEBUG_FILE
+ps aux | grep -E "python|lsws|wsgi|lshttpd" | head -n 30 >> $DEBUG_FILE 2>&1 || true
+echo "=== LSWS APP CONTEXT / VHOST CONF ===" >> $DEBUG_FILE
+grep -rn -i -E "wsgi|django|python|compupartz" /usr/local/lsws/conf/ 2>/dev/null | head -n 60 >> $DEBUG_FILE 2>&1 || true
+echo "=== LSWS ERROR LOG ===" >> $DEBUG_FILE
+tail -n 60 /usr/local/lsws/logs/error.log >> $DEBUG_FILE 2>&1 || true
+echo "=== LSWS STDERR LOG ===" >> $DEBUG_FILE
+tail -n 60 /usr/local/lsws/logs/stderr.log >> $DEBUG_FILE 2>&1 || true
+echo "=== APP STDERR LOG ===" >> $DEBUG_FILE
+tail -n 60 $PROJECT_DIR/stderr.log >> $DEBUG_FILE 2>&1 || true
+echo "=== DJANGO ERRORS LOG ===" >> $DEBUG_FILE
+tail -n 60 $PROJECT_DIR/django_errors.log >> $DEBUG_FILE 2>&1 || true
+chmod 644 $DEBUG_FILE
 
 echo "✅ Deployment Process Finished!"
