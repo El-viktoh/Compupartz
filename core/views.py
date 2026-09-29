@@ -175,38 +175,10 @@ def dashboard(request):
 # REVIEWS & TESTIMONIALS
 # =========================
 def reviews_list(request):
-    from django.db.models import Avg
     from .models import Testimonial
-
     testimonials = Testimonial.objects.filter(is_approved=True).order_by('-is_featured', '-created_at')
-    total_reviews = testimonials.count()
-    avg_rating_val = testimonials.aggregate(avg=Avg('rating'))['avg'] or 5.0
-    avg_rating = round(avg_rating_val, 1)
-
-    # Star distribution counts
-    star_counts = {
-        5: testimonials.filter(rating=5).count(),
-        4: testimonials.filter(rating=4).count(),
-        3: testimonials.filter(rating=3).count(),
-        2: testimonials.filter(rating=2).count(),
-        1: testimonials.filter(rating=1).count(),
-    }
-
-    star_percentages = {}
-    for star, count in star_counts.items():
-        star_percentages[star] = round((count / total_reviews * 100), 1) if total_reviews > 0 else 0
-
-    # Distinct services for filter tags
-    raw_services = testimonials.exclude(service_rendered='').values_list('service_rendered', flat=True).distinct()
-    services = sorted(list(set(s.strip() for s in raw_services if s and s.strip())))
-
     return render(request, "core/reviews.html", {
         "testimonials": testimonials,
-        "total_reviews": total_reviews,
-        "avg_rating": avg_rating,
-        "star_counts": star_counts,
-        "star_percentages": star_percentages,
-        "services": services,
     })
 
 

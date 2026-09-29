@@ -1,749 +1,180 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Client Reviews & Testimonials | Compupartz{% endblock %}
+{% block title %}Client Reviews | Compupartz{% endblock %}
 
 {% block content %}
 
-<!-- Custom Styling for Interactive Star Picker & Reviews Page -->
+<!-- Custom Styling -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
 
 .hero-script-font {
     font-family: 'Caveat', cursive, -apple-system, sans-serif;
 }
-
-.review-card {
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
-}
-.review-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
-}
-.dark .review-card:hover {
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
-    border-color: rgba(0, 139, 198, 0.35);
-}
-
-/* Star Rating Input Interactive Styles */
-.star-btn {
-    transition: transform 0.15s ease, color 0.15s ease;
-}
-.star-btn:hover {
-    transform: scale(1.18);
-}
-
-/* Filter Tag Pills Active State */
-.filter-btn.active {
-    background-color: #008BC6;
-    color: #ffffff !important;
-    border-color: #008BC6 !important;
-}
-
-.service-pill.active {
-    background-color: #008BC6;
-    color: #ffffff !important;
-    border-color: #008BC6 !important;
-}
 </style>
 
-<!-- ================= FULL-BLEED REVIEWS PAGE ================= -->
+<!-- ================= SIMPLIFIED REVIEWS PAGE ================= -->
 <div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] -mt-24 pt-32 sm:pt-36 md:pt-40 -mb-12 pb-24 sm:pb-32 bg-[#F5F8FA] dark:bg-[#0a0a0c] text-slate-800 dark:text-white font-outfit overflow-hidden transition-colors duration-300 relative min-h-screen">
 
-    <!-- Ambient Glow Spots -->
-    <div class="absolute top-10 left-1/4 w-96 h-96 bg-[#008BC6]/8 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute top-44 right-10 w-96 h-96 bg-[#FF7200]/8 dark:bg-[#FF7200]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
-        <!-- ================= BREADCRUMBS ================= -->
-        <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-gray-400 mb-6 font-medium">
-            <a href="/" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">Home</a>
-            <span>/</span>
-            <a href="{% url 'repair_home' %}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors">Repair Lab</a>
-            <span>/</span>
-            <span class="text-slate-900 dark:text-white font-semibold">Client Reviews</span>
-        </nav>
-
-        <!-- ================= HERO HEADER ================= -->
-        <div class="mb-10 sm:mb-12">
+        <!-- Clean Centered Header -->
+        <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
             
-            <!-- Orange Eyebrow Badge -->
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-[#E8873D]/10 text-[#E8873D] border border-[#E8873D]/25 mb-4 shadow-sm">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            <span class="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#E8873D] mb-2 block">
+                Happy Clients
+            </span>
+
+            <div class="flex items-center justify-center gap-3 mb-2">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                    Client Reviews
+                </h1>
+                <!-- Heart Doodle -->
+                <svg class="w-8 h-8 sm:w-10 sm:h-10 text-[#E8873D] shrink-0 transform rotate-6 -mt-2" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 20 C10 11, 15 5, 22 8 C24.5 9.5, 26 12.5, 26.5 14 C28 11, 31 6, 37 7 C43 8, 44 17, 39 24 C32 32, 26 36, 23 39 C21.5 37, 19 33, 23 34 C26 35, 25 39, 22 37" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span>Verified Client Feedback & Lab Stories</span>
             </div>
 
-            <!-- Main Heading with Heart Doodle -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-2">
+            <!-- Blue Underline -->
+            <svg class="w-28 h-2 text-[#008BC6] mx-auto mb-4" viewBox="0 0 120 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 6C35 1.5 85 8.5 118 4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+
+            <p class="text-sm sm:text-base text-slate-600 dark:text-gray-300 font-light leading-relaxed">
+                Read what our clients have to say about our laptop diagnostics and repair services.
+            </p>
+
+            <!-- Buttons -->
+            <div class="mt-6 flex items-center justify-center gap-3 sm:gap-4">
+                <button type="button"
+                        id="openReviewFormBtn"
+                        onclick="toggleReviewForm()"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#008BC6] hover:bg-[#0077aa] text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-200 active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span>Leave a Review</span>
+                </button>
+                <a href="{% url 'repair_home' %}"
+                   class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-white dark:bg-[#12141a] border border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-[#008BC6] hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-all">
+                    <span>&larr; Back to Repairs</span>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Clean Collapsible Review Form -->
+        <div id="simpleReviewForm" class="hidden mb-12 max-w-xl mx-auto bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-white/10 shadow-lg transition-all duration-300">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Leave Your Review</h3>
+                <button type="button" onclick="toggleReviewForm()" class="text-slate-400 hover:text-slate-600 dark:hover:text-gray-200 text-sm p-1">
+                    ✕
+                </button>
+            </div>
+
+            <form action="{% url 'submit_testimonial' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="reviews">
+
                 <div>
-                    <div class="flex items-center gap-3.5">
-                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.15]">
-                            Real Client Reviews.<br class="hidden sm:inline">
-                            <span class="hero-script-font text-[#008BC6] dark:text-[#38bdf8] font-bold text-3xl sm:text-4xl lg:text-5xl block sm:inline sm:ml-2">Real Results.</span>
-                        </h1>
-                        <!-- Hand-Drawn Heart Doodle in Orange (Matches Repair Page) -->
-                        <svg class="w-8 h-8 sm:w-11 sm:h-11 text-[#E8873D] shrink-0 transform rotate-6 -mt-2 sm:-mt-4" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 20 C10 11, 15 5, 22 8 C24.5 9.5, 26 12.5, 26.5 14 C28 11, 31 6, 37 7 C43 8, 44 17, 39 24 C32 32, 26 36, 23 39 C21.5 37, 19 33, 23 34 C26 35, 25 39, 22 37" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Your Name *</label>
+                    <input type="text" name="name" required placeholder="e.g. Kwame Mensah"
+                           value="{% if user.is_authenticated %}{{ user.first_name }} {{ user.last_name }}{% endif %}"
+                           class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#008BC6]">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Role or Title</label>
+                        <input type="text" name="role_or_title" placeholder="e.g. Software Engineer"
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#008BC6]">
                     </div>
-
-                    <!-- Blue Underline Stroke -->
-                    <svg class="w-36 h-2.5 text-[#008BC6] mt-2 mb-4" viewBox="0 0 120 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 6C35 1.5 85 8.5 118 4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                    </svg>
-
-                    <p class="text-sm sm:text-base text-slate-600 dark:text-gray-300 font-light max-w-2xl leading-relaxed">
-                        Read firsthand reviews from engineers, creative directors, students, and IT teams across Ghana whose laptops and workstations were brought back to life by Compupartz certified technicians.
-                    </p>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Rating</label>
+                        <select name="rating" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#008BC6]">
+                            <option value="5" selected>5 Stars (★★★★★)</option>
+                            <option value="4">4 Stars (★★★★☆)</option>
+                            <option value="3">3 Stars (★★★☆☆)</option>
+                            <option value="2">2 Stars (★★☆☆☆)</option>
+                            <option value="1">1 Star (★☆☆☆☆)</option>
+                        </select>
+                    </div>
                 </div>
 
-                <!-- CTA Action Buttons -->
-                <div class="flex flex-wrap sm:flex-col gap-3 shrink-0 sm:items-end">
-                    <a href="#writeReviewSection"
-                       class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#008BC6] hover:bg-[#0077aa] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-200 active:scale-95">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        <span>Share Your Experience</span>
-                    </a>
-
-                    <a href="{% url 'book_repair' %}"
-                       class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white dark:bg-[#12141a] border border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-white font-bold text-xs sm:text-sm shadow-sm hover:border-[#008BC6] dark:hover:border-[#008BC6] hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-all">
-                        <span>Book a Repair</span>
-                        <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </a>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Your Review *</label>
+                    <textarea name="quote" rows="3" required placeholder="Write a few words about your experience..."
+                              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#008BC6] resize-y"></textarea>
                 </div>
-            </div>
 
+                <div class="flex justify-end gap-2 pt-1">
+                    <button type="button" onclick="toggleReviewForm()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold bg-[#008BC6] hover:bg-[#0077aa] text-white shadow transition-all active:scale-95">
+                        Submit Review
+                    </button>
+                </div>
+            </form>
         </div>
 
-        <!-- ================= RATING BREAKDOWN & TRUST DASHBOARD ================= -->
-        <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-8 lg:p-10 border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40 mb-10 sm:mb-12">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-                
-                <!-- Overall Score (Left) -->
-                <div class="md:col-span-4 lg:col-span-3 flex flex-col items-center md:items-start text-center md:text-left border-b md:border-b-0 md:border-r border-slate-200/70 dark:border-white/10 pb-6 md:pb-0 md:pr-8">
-                    <span class="text-xs uppercase font-bold tracking-widest text-slate-400 dark:text-gray-500 mb-1">Overall Lab Rating</span>
-                    <div class="flex items-baseline gap-2 mb-2">
-                        <span class="text-5xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight font-display">{{ avg_rating }}</span>
-                        <span class="text-lg text-slate-400 dark:text-gray-500 font-bold">/ 5.0</span>
-                    </div>
-
-                    <!-- Stars -->
-                    <div class="flex items-center gap-1 text-[#E8873D] mb-2.5">
-                        {% for i in "12345"|make_list %}
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        {% endfor %}
-                    </div>
-
-                    <p class="text-xs text-slate-500 dark:text-gray-400 mb-3">
-                        Based on <span class="font-bold text-slate-800 dark:text-white">{{ total_reviews }}</span> verified repair reviews
-                    </p>
-
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">
-                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                        </svg>
-                        <span>99.2% Client Recommendation</span>
-                    </div>
-                </div>
-
-                <!-- Star Distribution Bars (Middle) -->
-                <div class="md:col-span-5 lg:col-span-5 space-y-2.5 px-0 md:px-4">
-                    {% for star, count in star_counts.items %}
-                    <button type="button"
-                            onclick="filterByRating('{{ star }}')"
-                            class="w-full flex items-center gap-3 text-xs group hover:opacity-90 transition-opacity"
-                            title="Filter by {{ star }} Stars">
-                        <span class="w-12 text-right font-bold text-slate-700 dark:text-gray-300 group-hover:text-[#008BC6] dark:group-hover:text-[#38bdf8] transition-colors shrink-0">
-                            {{ star }} Stars
-                        </span>
-                        
-                        <div class="flex-1 h-3 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden relative">
-                            <div class="h-full bg-gradient-to-r from-[#008BC6] to-[#E8873D] rounded-full transition-all duration-500"
-                                 style="width: {% if star == 5 %}{{ star_percentages.5 }}{% elif star == 4 %}{{ star_percentages.4 }}{% elif star == 3 %}{{ star_percentages.3 }}{% elif star == 2 %}{{ star_percentages.2 }}{% else %}{{ star_percentages.1 }}{% endif %}%;">
-                            </div>
-                        </div>
-
-                        <span class="w-8 text-right font-medium text-slate-400 dark:text-gray-500 shrink-0">
-                            {{ count }}
-                        </span>
-                    </button>
-                    {% endfor %}
-                </div>
-
-                <!-- Verified Assurances (Right) -->
-                <div class="md:col-span-3 lg:col-span-4 border-t md:border-t-0 md:border-l border-slate-200/70 dark:border-white/10 pt-6 md:pt-0 md:pl-8 space-y-4">
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-xl bg-[#008BC6]/10 text-[#008BC6] dark:text-[#38bdf8] flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-tight">100% Genuine Lab Reviews</h4>
-                            <p class="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5 leading-snug">Every review is tied to verified workshop repair tickets.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-xl bg-[#E8873D]/10 text-[#E8873D] flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-tight">Micro-Soldering Precision</h4>
-                            <p class="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5 leading-snug">Board-level diagnostics save up to 70% vs. whole board swaps.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-500 dark:text-purple-400 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-tight">Direct Lab Communications</h4>
-                            <p class="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5 leading-snug">Live technician status updates and direct ticket messaging.</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- ================= INTERACTIVE FILTER & SEARCH TOOLBAR ================= -->
-        <div class="bg-white dark:bg-[#12141a] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-white/10 shadow-md mb-8">
-            <div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
-                
-                <!-- Search Input -->
-                <div class="relative flex-1 min-w-[240px]">
-                    <svg class="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    <input type="text"
-                           id="reviewSearchInput"
-                           placeholder="Search reviews (e.g. MacBook, liquid spill, turnaround, name)..."
-                           class="w-full pl-10 pr-9 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#008BC6] dark:focus:border-[#008BC6] transition-colors">
-                    <button type="button"
-                            id="clearSearchBtn"
-                            onclick="clearSearch()"
-                            class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-gray-200 text-xs p-1">
-                        ✕
-                    </button>
-                </div>
-
-                <!-- Rating Filters -->
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
-                    <button type="button" onclick="filterByRating('all')" class="filter-btn active px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#12141a] text-slate-700 dark:text-gray-300 hover:border-[#008BC6] dark:hover:border-[#008BC6] transition-all shrink-0" data-rating-filter="all">
-                        All ({{ total_reviews }})
-                    </button>
-                    <button type="button" onclick="filterByRating('5')" class="filter-btn px-3 py-2 rounded-xl text-xs font-bold border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#12141a] text-slate-700 dark:text-gray-300 hover:border-[#008BC6] dark:hover:border-[#008BC6] transition-all shrink-0 flex items-center gap-1" data-rating-filter="5">
-                        <span>5★</span>
-                        <span class="text-[10px] opacity-70">({{ star_counts.5 }})</span>
-                    </button>
-                    <button type="button" onclick="filterByRating('4')" class="filter-btn px-3 py-2 rounded-xl text-xs font-bold border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#12141a] text-slate-700 dark:text-gray-300 hover:border-[#008BC6] dark:hover:border-[#008BC6] transition-all shrink-0 flex items-center gap-1" data-rating-filter="4">
-                        <span>4★</span>
-                        <span class="text-[10px] opacity-70">({{ star_counts.4 }})</span>
-                    </button>
-                    <button type="button" onclick="filterByRating('3')" class="filter-btn px-3 py-2 rounded-xl text-xs font-bold border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#12141a] text-slate-700 dark:text-gray-300 hover:border-[#008BC6] dark:hover:border-[#008BC6] transition-all shrink-0 flex items-center gap-1" data-rating-filter="3">
-                        <span>3★ & Below</span>
-                    </button>
-                </div>
-
-                <!-- Sort Dropdown -->
-                <div class="flex items-center gap-2 shrink-0">
-                    <label for="reviewSortSelect" class="text-xs text-slate-400 dark:text-gray-500 font-medium hidden sm:inline">Sort:</label>
-                    <select id="reviewSortSelect"
-                            onchange="applySort(this.value)"
-                            class="px-3 py-2 rounded-xl text-xs font-bold border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#12141a] text-slate-700 dark:text-gray-200 focus:outline-none focus:border-[#008BC6]">
-                        <option value="featured">Featured & Recent</option>
-                        <option value="rating-high">Highest Rating (5★ → 1★)</option>
-                        <option value="rating-low">Lowest Rating (1★ → 5★)</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <!-- Service Category Filter Pills -->
-            {% if services %}
-            <div class="pt-3.5 mt-3.5 border-t border-slate-100 dark:border-white/5 flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 shrink-0 mr-1">Services:</span>
-                <button type="button" onclick="filterByService('all')" class="service-pill active text-[11px] font-bold px-3 py-1 rounded-full border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-gray-300 hover:border-[#008BC6] transition-all shrink-0" data-service-filter="all">
-                    All Services
-                </button>
-                {% for s in services %}
-                <button type="button" onclick="filterByService('{{ s|escapejs }}')" class="service-pill text-[11px] font-medium px-3 py-1 rounded-full border border-slate-200/80 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:border-[#008BC6] transition-all shrink-0" data-service-filter="{{ s|lower }}">
-                    {{ s }}
-                </button>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-        </div>
-
-        <!-- ================= REVIEWS COUNT & ACTIVE FILTER BADGE ================= -->
-        <div class="flex items-center justify-between text-xs text-slate-500 dark:text-gray-400 mb-6 px-1">
-            <div id="reviewsCountBadge" class="font-semibold text-slate-700 dark:text-gray-300">
-                Showing <span id="visibleReviewCount">{{ total_reviews }}</span> of {{ total_reviews }} verified reviews
-            </div>
-            <button type="button"
-                    id="resetFiltersBtn"
-                    onclick="resetAllFilters()"
-                    class="hidden text-[#008BC6] dark:text-[#38bdf8] font-bold hover:underline">
-                Reset All Filters
-            </button>
-        </div>
-
-        <!-- ================= REVIEWS GRID ================= -->
-        <div id="reviewsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mb-14 sm:mb-16">
+        <!-- Clean 2-Column Grid of Reviews -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
             {% for t in testimonials %}
-            <article class="review-card bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-md flex flex-col justify-between"
-                     data-rating="{{ t.rating }}"
-                     data-service="{{ t.service_rendered|lower }}"
-                     data-text="{{ t.name|lower }} {{ t.quote|lower }} {{ t.role_or_title|lower }} {{ t.service_rendered|lower }}"
-                     data-featured="{% if t.is_featured %}1{% else %}0{% endif %}">
-                
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl sm:rounded-3xl p-6 sm:p-7 border border-slate-200/70 dark:border-white/10 shadow-md shadow-slate-900/5 dark:shadow-black/30 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
                 <div>
-                    <!-- Top Bar: Quote Mark + Rating Stars + Service Tag -->
-                    <div class="flex items-start justify-between gap-3 mb-4">
-                        <div class="flex items-center gap-2">
-                            <!-- Cyan Double Quote Mark -->
-                            <svg class="w-8 h-8 text-[#008BC6] dark:text-[#38bdf8] shrink-0 opacity-95" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-                            </svg>
-
-                            <!-- Star Rating -->
-                            <div class="flex items-center gap-0.5 text-[#E8873D]">
-                                {% for i in "12345"|make_list %}
-                                    <svg class="w-3.5 h-3.5 {% if forloop.counter <= t.rating %}fill-current{% else %}text-slate-300 dark:text-slate-700{% endif %}" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                        {% if t.is_featured %}
-                        <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#FF7200]/10 text-[#FF7200] border border-[#FF7200]/20 shrink-0">
-                            ★ Featured
-                        </span>
-                        {% endif %}
-                    </div>
-
-                    <!-- Service Rendered Tag -->
-                    {% if t.service_rendered %}
-                    <div class="mb-3">
-                        <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#008BC6]/10 text-[#008BC6] dark:text-[#38bdf8] border border-[#008BC6]/20">
-                            {{ t.service_rendered }}
-                        </span>
-                    </div>
-                    {% endif %}
+                    <!-- Cyan Quote Mark -->
+                    <svg class="w-8 h-8 text-[#008BC6] dark:text-[#38bdf8] mb-3 opacity-95" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                    </svg>
 
                     <!-- Quote Text -->
-                    <p class="text-slate-700 dark:text-gray-300 text-sm sm:text-[15px] font-light leading-relaxed mb-6">
+                    <p class="text-slate-700 dark:text-gray-300 text-sm sm:text-base font-light leading-relaxed mb-6">
                         "{{ t.quote }}"
                     </p>
                 </div>
 
-                <!-- Author Meta Footer -->
-                <div class="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3 min-w-0">
-                        {% if t.avatar %}
-                            <img src="{{ t.avatar.url }}" alt="{{ t.name }}" class="w-10 h-10 rounded-full object-cover border border-slate-200/80 dark:border-white/10 shadow-sm shrink-0">
-                        {% else %}
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#008BC6] to-[#FF7200] text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
-                                {{ t.name|slice:":1" }}
-                            </div>
-                        {% endif %}
-
-                        <div class="min-w-0">
-                            <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate flex items-center gap-1.5">
-                                <span>{{ t.name }}</span>
-                            </h4>
-                            <p class="text-xs text-slate-500 dark:text-gray-400 font-normal truncate mt-0.5">
-                                {{ t.role_or_title|default:"Verified Client" }}
-                            </p>
+                <!-- Author Meta -->
+                <div class="flex items-center gap-3.5 pt-1">
+                    {% if t.avatar %}
+                        <img src="{{ t.avatar.url }}" alt="{{ t.name }}" class="w-11 h-11 rounded-full object-cover border border-slate-200/80 dark:border-white/10 shadow-sm shrink-0">
+                    {% else %}
+                        <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-[#008BC6] to-[#FF7200] text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+                            {{ t.name|slice:":1" }}
+                        </div>
+                    {% endif %}
+                    <div class="min-w-0">
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate">{{ t.name }}</h4>
+                        <p class="text-xs text-slate-500 dark:text-gray-400 font-normal mt-0.5 truncate">{{ t.role_or_title|default:t.service_rendered|default:"Verified Client" }}</p>
+                        <div class="flex items-center gap-0.5 text-[#E8873D] mt-1.5">
+                            {% for i in "12345"|make_list %}
+                                <svg class="w-3.5 h-3.5 {% if forloop.counter <= t.rating %}fill-current{% else %}text-slate-300 dark:text-slate-700{% endif %}" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            {% endfor %}
                         </div>
                     </div>
-
-                    <!-- Verified Checkmark Pill -->
-                    <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full shrink-0 border border-emerald-500/20">
-                        <svg class="w-3 h-3 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                        <span>Verified</span>
-                    </span>
                 </div>
-
-            </article>
+            </div>
             {% empty %}
-            <div class="col-span-full text-center py-16 bg-white dark:bg-[#12141a] rounded-3xl border border-slate-200/80 dark:border-white/10 p-8">
-                <p class="text-slate-500 dark:text-gray-400 text-base">No client reviews published yet. Be the first to share your experience!</p>
+            <div class="col-span-full text-center py-12 bg-white dark:bg-[#12141a] rounded-2xl border border-slate-200/70 dark:border-white/10 p-6">
+                <p class="text-slate-500 dark:text-gray-400 text-sm">No reviews yet.</p>
             </div>
             {% endfor %}
-        </div>
-
-        <!-- Empty State for Search/Filter -->
-        <div id="noReviewsFound" class="hidden text-center py-16 bg-white dark:bg-[#12141a] rounded-3xl border border-slate-200/80 dark:border-white/10 p-8 mb-16">
-            <div class="w-14 h-14 rounded-2xl bg-[#008BC6]/10 text-[#008BC6] flex items-center justify-center mx-auto mb-4 text-2xl">
-                🔍
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">No reviews match your filters</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 max-w-md mx-auto mb-6 font-light">
-                Try searching for a different keyword or resetting your rating and service filters.
-            </p>
-            <button type="button"
-                    onclick="resetAllFilters()"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#008BC6] hover:bg-[#0077aa] text-white font-bold text-xs shadow-md transition-all active:scale-95">
-                <span>Reset All Filters</span>
-            </button>
-        </div>
-
-
-        <!-- ================= WRITE A REVIEW SECTION ================= -->
-        <div id="writeReviewSection" class="scroll-mt-32 max-w-4xl mx-auto bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-10 border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40 mb-16">
-            
-            <div class="text-center max-w-2xl mx-auto mb-8">
-                <span class="text-xs font-bold uppercase tracking-widest text-[#E8873D] mb-2 block">
-                    Community Feedback
-                </span>
-                <h2 class="text-2xl sm:text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">
-                    Had Your Hardware Serviced?<br>
-                    <span class="hero-script-font text-[#008BC6] dark:text-[#38bdf8] text-2xl sm:text-3xl">Share Your Experience.</span>
-                </h2>
-                <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mt-2 font-light">
-                    Your feedback helps other laptop owners, designers, and engineers find verified, transparent hardware diagnostics and micro-soldering solutions.
-                </p>
-            </div>
-
-            <!-- Review Submission Form -->
-            <form action="{% url 'submit_testimonial' %}" method="POST" class="space-y-6">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="reviews">
-                <input type="hidden" name="rating" id="reviewRatingInput" value="5">
-
-                <!-- Interactive Star Selector -->
-                <div class="flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-200/60 dark:border-white/5">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-gray-400 mb-2">Select Your Rating</span>
-                    
-                    <div id="starPickerContainer" class="flex items-center gap-2 text-3xl sm:text-4xl text-[#E8873D] cursor-pointer select-none">
-                        <button type="button" class="star-btn p-1 text-[#E8873D]" data-val="1" onclick="setRating(1)" onmouseenter="previewRating(1)" onmouseleave="resetRatingPreview()">★</button>
-                        <button type="button" class="star-btn p-1 text-[#E8873D]" data-val="2" onclick="setRating(2)" onmouseenter="previewRating(2)" onmouseleave="resetRatingPreview()">★</button>
-                        <button type="button" class="star-btn p-1 text-[#E8873D]" data-val="3" onclick="setRating(3)" onmouseenter="previewRating(3)" onmouseleave="resetRatingPreview()">★</button>
-                        <button type="button" class="star-btn p-1 text-[#E8873D]" data-val="4" onclick="setRating(4)" onmouseenter="previewRating(4)" onmouseleave="resetRatingPreview()">★</button>
-                        <button type="button" class="star-btn p-1 text-[#E8873D]" data-val="5" onclick="setRating(5)" onmouseenter="previewRating(5)" onmouseleave="resetRatingPreview()">★</button>
-                    </div>
-
-                    <span id="starRatingLabel" class="text-xs font-bold text-[#008BC6] dark:text-[#38bdf8] mt-2">
-                        5 Stars — Exceptional Lab Experience
-                    </span>
-                </div>
-
-                <!-- Input Fields Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    
-                    <!-- Customer Name -->
-                    <div>
-                        <label for="reviewName" class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
-                            Full Name <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text"
-                               name="name"
-                               id="reviewName"
-                               required
-                               placeholder="e.g. Samuel Adjei"
-                               value="{% if user.is_authenticated %}{{ user.first_name }} {{ user.last_name }}{% endif %}"
-                               class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#008BC6] dark:focus:border-[#008BC6] transition-colors">
-                    </div>
-
-                    <!-- Role or Organization -->
-                    <div>
-                        <label for="reviewRole" class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
-                            Role / Organization (Optional)
-                        </label>
-                        <input type="text"
-                               name="role_or_title"
-                               id="reviewRole"
-                               placeholder="e.g. Software Engineer, TechLab"
-                               class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#008BC6] dark:focus:border-[#008BC6] transition-colors">
-                    </div>
-
-                </div>
-
-                <!-- Service Rendered -->
-                <div>
-                    <label for="reviewService" class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
-                        Service Rendered <span class="text-slate-400 font-normal normal-case">(e.g. MacBook Logic Board, Liquid Spill Recovery, OEM Screen)</span>
-                    </label>
-                    <input type="text"
-                           name="service_rendered"
-                           id="reviewService"
-                           list="commonServicesList"
-                           placeholder="Select or type the repair service you received..."
-                           class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#008BC6] dark:focus:border-[#008BC6] transition-colors">
-                    <datalist id="commonServicesList">
-                        <option value="MacBook Logic Board Micro-soldering">
-                        <option value="Liquid Damage & Corrosion Treatment">
-                        <option value="OEM Screen & Display Replacement">
-                        <option value="Battery & Charging IC Calibration">
-                        <option value="Thermal Management & Fan Overhaul">
-                        <option value="Enterprise Workstation Fleet Maintenance">
-                    </datalist>
-                </div>
-
-                <!-- Review Textarea -->
-                <div>
-                    <label for="reviewQuote" class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
-                        Your Review & Feedback <span class="text-red-500">*</span>
-                    </label>
-                    <textarea name="quote"
-                              id="reviewQuote"
-                              rows="4"
-                              required
-                              placeholder="Describe your device symptoms, how the team communicated, the diagnostic report quality, turnaround time, and overall results..."
-                              class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#008BC6] dark:focus:border-[#008BC6] transition-colors resize-y"></textarea>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                    <p class="text-[11px] text-slate-400 dark:text-gray-500 font-light">
-                        ✓ All reviews are verified by our technical desk before public publication.
-                    </p>
-
-                    <button type="submit"
-                            class="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-[#008BC6] hover:bg-[#0077aa] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-200 active:scale-95">
-                        <svg class="w-4 h-4 fill-none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                        <span>Submit Review</span>
-                    </button>
-                </div>
-
-            </form>
-
-        </div>
-
-        <!-- ================= BOTTOM FINAL CTA ================= -->
-        <div class="bg-gradient-to-br from-slate-900 via-[#0a0a0c] to-[#005a8d] rounded-3xl p-8 sm:p-12 text-white text-center relative overflow-hidden shadow-2xl border border-white/10">
-            <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-[#008BC6]/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -left-10 -top-10 w-72 h-72 bg-[#FF7200]/20 rounded-full blur-3xl pointer-events-none"></div>
-
-            <div class="relative z-10 max-w-2xl mx-auto">
-                <span class="text-xs font-bold uppercase tracking-widest text-[#E8873D] mb-3 block">
-                    Fast Lab Turnaround
-                </span>
-                <h3 class="text-2xl sm:text-4xl font-display font-black tracking-tight mb-3">
-                    Ready to restore your device?
-                </h3>
-                <p class="text-slate-300 text-xs sm:text-sm font-light mb-8 max-w-xl mx-auto leading-relaxed">
-                    Our technical lab in Kumasi is ready. Submit a ticket online for instant tracking and real-time technician communications.
-                </p>
-
-                <div class="flex flex-wrap items-center justify-center gap-4">
-                    <a href="{% url 'book_repair' %}"
-                       class="px-8 py-3.5 rounded-full bg-[#008BC6] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/30 transition-all duration-200 active:scale-95">
-                        Create Repair Ticket
-                    </a>
-                    <a href="{% url 'track_repair_lookup' %}"
-                       class="px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/15 transition-all">
-                        Track Existing Repair
-                    </a>
-                </div>
-            </div>
         </div>
 
     </div>
 
 </div>
 
-<!-- Client-side Filtering, Searching, Sorting & Star Picker JS -->
 <script>
-let currentSelectedRating = 5;
-let activeRatingFilter = 'all';
-let activeServiceFilter = 'all';
-
-const ratingLabels = {
-    1: '1 Star — Unsatisfactory Experience',
-    2: '2 Stars — Needs Improvement',
-    3: '3 Stars — Average / Satisfactory',
-    4: '4 Stars — Very Good Lab Turnaround',
-    5: '5 Stars — Exceptional Lab Experience'
-};
-
-// ================= STAR RATING PICKER =================
-function setRating(val) {
-    currentSelectedRating = val;
-    document.getElementById('reviewRatingInput').value = val;
-    renderStarPicker(val);
-    document.getElementById('starRatingLabel').textContent = ratingLabels[val] || `${val} Stars`;
-}
-
-function previewRating(val) {
-    renderStarPicker(val);
-    document.getElementById('starRatingLabel').textContent = ratingLabels[val] || `${val} Stars`;
-}
-
-function resetRatingPreview() {
-    renderStarPicker(currentSelectedRating);
-    document.getElementById('starRatingLabel').textContent = ratingLabels[currentSelectedRating] || `${currentSelectedRating} Stars`;
-}
-
-function renderStarPicker(val) {
-    const starBtns = document.querySelectorAll('#starPickerContainer .star-btn');
-    starBtns.forEach((btn, idx) => {
-        const starNum = idx + 1;
-        if (starNum <= val) {
-            btn.classList.add('text-[#E8873D]');
-            btn.classList.remove('text-slate-300', 'dark:text-slate-700');
-        } else {
-            btn.classList.remove('text-[#E8873D]');
-            btn.classList.add('text-slate-300', 'dark:text-slate-700');
-        }
-    });
-}
-
-// ================= SEARCH & FILTERING =================
-function filterByRating(val) {
-    activeRatingFilter = val;
-
-    // Update active state on rating buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        if (btn.getAttribute('data-rating-filter') === val) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-
-    applyFilters();
-}
-
-function filterByService(val) {
-    activeServiceFilter = val.toLowerCase();
-
-    // Update active state on service pills
-    document.querySelectorAll('.service-pill').forEach(btn => {
-        const pillVal = btn.getAttribute('data-service-filter');
-        if (pillVal === activeServiceFilter) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-
-    applyFilters();
-}
-
-function clearSearch() {
-    const input = document.getElementById('reviewSearchInput');
-    input.value = '';
-    document.getElementById('clearSearchBtn').classList.add('hidden');
-    applyFilters();
-}
-
-function resetAllFilters() {
-    document.getElementById('reviewSearchInput').value = '';
-    document.getElementById('clearSearchBtn').classList.add('hidden');
-    document.getElementById('reviewSortSelect').value = 'featured';
-    filterByRating('all');
-    filterByService('all');
-}
-
-function applyFilters() {
-    const query = document.getElementById('reviewSearchInput').value.trim().toLowerCase();
-    const clearBtn = document.getElementById('clearSearchBtn');
-    
-    if (query) {
-        clearBtn.classList.remove('hidden');
-    } else {
-        clearBtn.classList.add('hidden');
-    }
-
-    const cards = document.querySelectorAll('#reviewsGrid .review-card');
-    let visibleCount = 0;
-
-    cards.forEach(card => {
-        const cardRating = parseInt(card.getAttribute('data-rating') || '0', 10);
-        const cardService = (card.getAttribute('data-service') || '').toLowerCase();
-        const cardText = (card.getAttribute('data-text') || '').toLowerCase();
-
-        let matchesRating = true;
-        if (activeRatingFilter === '5') {
-            matchesRating = (cardRating === 5);
-        } else if (activeRatingFilter === '4') {
-            matchesRating = (cardRating === 4);
-        } else if (activeRatingFilter === '3') {
-            matchesRating = (cardRating <= 3);
-        }
-
-        let matchesService = true;
-        if (activeServiceFilter !== 'all') {
-            matchesService = cardService.includes(activeServiceFilter);
-        }
-
-        let matchesQuery = true;
-        if (query) {
-            matchesQuery = cardText.includes(query);
-        }
-
-        if (matchesRating && matchesService && matchesQuery) {
-            card.classList.remove('hidden');
-            visibleCount++;
-        } else {
-            card.classList.add('hidden');
-        }
-    });
-
-    // Update Counter
-    document.getElementById('visibleReviewCount').textContent = visibleCount;
-    
-    // Toggle Empty State
-    const emptyState = document.getElementById('noReviewsFound');
-    const resetBtn = document.getElementById('resetFiltersBtn');
-
-    if (visibleCount === 0) {
-        emptyState.classList.remove('hidden');
-    } else {
-        emptyState.classList.add('hidden');
-    }
-
-    // Toggle reset filters link if filters are active
-    const isFiltered = (activeRatingFilter !== 'all' || activeServiceFilter !== 'all' || query.length > 0);
-    if (isFiltered) {
-        resetBtn.classList.remove('hidden');
-    } else {
-        resetBtn.classList.add('hidden');
+function toggleReviewForm() {
+    const form = document.getElementById('simpleReviewForm');
+    if (!form) return;
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 }
-
-// ================= SORTING =================
-function applySort(sortVal) {
-    const grid = document.getElementById('reviewsGrid');
-    const cards = Array.from(grid.querySelectorAll('.review-card'));
-
-    cards.sort((a, b) => {
-        const ratingA = parseInt(a.getAttribute('data-rating') || '0', 10);
-        const ratingB = parseInt(b.getAttribute('data-rating') || '0', 10);
-        const featA = parseInt(a.getAttribute('data-featured') || '0', 10);
-        const featB = parseInt(b.getAttribute('data-featured') || '0', 10);
-
-        if (sortVal === 'rating-high') {
-            return ratingB - ratingA;
-        } else if (sortVal === 'rating-low') {
-            return ratingA - ratingB;
-        } else {
-            // featured & default
-            return featB - featA;
-        }
-    });
-
-    cards.forEach(card => grid.appendChild(card));
-}
-
-// Live typing listener
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('reviewSearchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', applyFilters);
-    }
-    // Initialize star rating display
-    renderStarPicker(5);
-});
 </script>
 
 {% endblock %}
