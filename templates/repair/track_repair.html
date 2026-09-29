@@ -58,14 +58,8 @@
 
         <!-- Top Header & Status Banner -->
         <div class="mb-10 sm:mb-12">
-            <!-- Navigation Back Link -->
-            <a href="{% url 'track_repair_lookup' %}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-[#008BC6] dark:text-gray-400 dark:hover:text-[#38bdf8] uppercase tracking-wider mb-4 transition-colors">
-                <span>&larr;</span>
-                <span>Switch Ticket ID</span>
-            </a>
-
             <!-- Eyebrow Badge -->
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-500/10 text-[#FF7200] border border-orange-500/20 mb-3 ml-2">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-500/10 text-[#FF7200] border border-orange-500/20 mb-3">
                 <span class="w-2 h-2 rounded-full bg-[#FF7200] animate-pulse"></span>
                 Active Job Card #{{ ticket.ticket_id }}
             </div>
