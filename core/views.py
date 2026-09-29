@@ -269,21 +269,22 @@ def contact(request):
                 body_content = f"From: {name} <{email}>\n"
                 if phone:
                     body_content += f"Phone / WhatsApp: {phone}\n"
-                body_content += f"\n{message_body}"
+                body_content += f"Enquiry Topic: {subject}\n\n"
+                body_content += f"Message:\n{message_body}"
 
                 EmailMessage(
-                    subject=f"[Contact Form] {subject}",
+                    subject=f"[Customer Enquiry] {subject} - {name}",
                     body=body_content,
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     to=[settings.SERVER_EMAIL],
                     reply_to=[email],
                 ).send(fail_silently=False)
-                messages.success(request, "Your message has been sent. We'll get back to you shortly.")
+                messages.success(request, "Thank you for reaching out! Your enquiry has been received and our customer support team will get back to you shortly.")
             except Exception as e:
-                logger.error(f"Contact form email error: {str(e)}")
-                messages.error(request, "We couldn't send your message right now. Please try again later.")
+                logger.error(f"Customer enquiry email error: {str(e)}")
+                messages.error(request, "We couldn't send your enquiry right now. Please try again later or reach out via WhatsApp.")
             return redirect("contact")
 
-        messages.error(request, "Please fill in all fields.")
+        messages.error(request, "Please fill in all required fields.")
 
     return render(request, "core/contact.html")

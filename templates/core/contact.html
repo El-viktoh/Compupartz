@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Contact Us & Technical Support Desk | Compupartz{% endblock %}
+{% block title %}Contact Us & Customer Support | Compupartz{% endblock %}
 
 {% block content %}
 
@@ -12,7 +12,6 @@
 .hero-script-font {
     font-family: 'Caveat', cursive, -apple-system, sans-serif;
 }
-
 
 /* Subtle Card Glow Transitions */
 .contact-interactive-card {
@@ -57,7 +56,7 @@
     <div class="max-w-7xl mx-auto px-6 relative z-10">
 
         <!-- Top Header Banner (Aligning with Homepage & Repair Page Design Language) -->
-        <div class="mb-10 sm:mb-12 text-center max-w-3xl mx-auto">
+        <div class="mb-8 sm:mb-10 text-center max-w-3xl mx-auto">
             <!-- Script Accent Tagline -->
             <span class="hero-script-font text-3xl sm:text-4xl text-[#008BC6] dark:text-[#38bdf8] font-bold block mb-1 transform -rotate-1">
                 We're Here To Help
@@ -65,12 +64,37 @@
 
             <!-- Main Bold Headline -->
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.12] mb-3 transition-colors duration-300">
-                Connect With <span class="text-[#FF7200]">Us.</span>
+                Customer <span class="text-[#FF7200]">Enquiries & Support.</span>
             </h1>
 
             <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base font-light max-w-2xl mx-auto leading-relaxed">
-                Have questions regarding laptop micro-soldering, component availability, or need a preliminary diagnostic estimate? Reach out through our direct hotline, visit our KNUST tech workshop, or submit an inquiry below.
+                Have a question about our services, business partnerships, billing, or general feedback? Send our customer support team an enquiry below or reach out directly.
             </p>
+        </div>
+
+        <!-- Dedicated Fast-Track Notice for Repairs & Parts -->
+        <div class="mb-10 max-w-4xl mx-auto p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5 text-left">
+                <div class="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 text-[#FF7200] flex items-center justify-center text-lg shrink-0">
+                    💡
+                </div>
+                <div>
+                    <p class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                        Looking to Book a Repair or Order Spare Parts?
+                    </p>
+                    <p class="text-[11px] sm:text-xs text-slate-500 dark:text-gray-400">
+                        Please use our dedicated service desks for instant intake, lab routing, and live tracking.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
+                <a href="{% url 'book_repair' %}" class="flex-1 sm:flex-none text-center px-4 py-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-[#008BC6] dark:text-[#38bdf8] text-xs font-bold transition-colors">
+                    🔧 Book a Repair
+                </a>
+                <a href="{% url 'request_part' %}" class="flex-1 sm:flex-none text-center px-4 py-2.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-[#FF7200] text-xs font-bold transition-colors">
+                    📦 Request Parts
+                </a>
+            </div>
         </div>
 
 
@@ -80,48 +104,47 @@
             <!-- ================= LEFT COLUMN: CONTACT CHANNELS (5 COLS) ================= -->
             <div class="lg:col-span-5 space-y-6">
 
-
-                <!-- Channel 2: Workshop & Walk-In Diagnostics -->
+                <!-- Channel 1: Office & Support Hub -->
                 <div class="contact-interactive-card bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative overflow-hidden group">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-[#008BC6] flex items-center justify-center text-xl shadow-inner">
-                            📍
+                            🏢
                         </div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">Workshop & Intake</span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">Office & Support Hub</span>
                     </div>
 
                     <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                        Central Repair Workshop
+                        Compupartz Office & Tech Lab
                     </h2>
                     <p class="text-sm font-semibold text-[#008BC6] dark:text-[#38bdf8] mb-2">
                         KNUST Campus, Commercial Area, Kumasi, Ghana
                     </p>
                     <p class="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
-                        Walk-in device intake, board-level micro-soldering labs, and safe hardware pickup counter. Located near Tech Junction with dedicated client parking.
+                        Drop by for in-person customer service, partnership discussions, corporate consultations, or general assistance. Located near Tech Junction.
                     </p>
                 </div>
 
-                <!-- Channel 3: Email Support Desk -->
+                <!-- Channel 2: Email Support Desk -->
                 <div class="contact-interactive-card bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative overflow-hidden group">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 flex items-center justify-center text-xl shadow-inner">
                             ✉️
                         </div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">Written Requests</span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">Written Enquiries</span>
                     </div>
 
                     <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                        Official Support Email
+                        Customer Support Email
                     </h2>
                     <a href="mailto:support@compupartz.com" class="text-sm font-black text-slate-800 dark:text-white hover:text-[#FF7200] dark:hover:text-[#FF7200] transition-colors block mb-2">
                         support@compupartz.com
                     </a>
                     <p class="text-xs text-slate-500 dark:text-gray-400 leading-relaxed mb-4">
-                        Ideal for corporate repair quotes, institutional service agreements, and parts catalog invoicing.
+                        Ideal for corporate inquiries, institutional service agreements, billing questions, and general customer feedback.
                     </p>
 
                     <div class="pt-3 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-                        <span class="text-xs text-slate-500 dark:text-gray-400">Invoicing & Inquiries</span>
+                        <span class="text-xs text-slate-500 dark:text-gray-400">Fast Email Response</span>
                         <a href="mailto:support@compupartz.com" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#008BC6] hover:text-blue-600 transition-colors">
                             <span>Draft Email</span>
                             <span>&rarr;</span>
@@ -129,11 +152,11 @@
                     </div>
                 </div>
 
-                <!-- Channel 4: Operating Hours -->
+                <!-- Channel 3: Customer Support Hours -->
                 <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)]">
                     <div class="flex items-center gap-3 mb-5">
                         <span class="w-8 h-8 rounded-lg bg-orange-500/10 text-[#FF7200] flex items-center justify-center text-sm font-bold">⏱️</span>
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">Workshop & Intake Hours</h3>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">Customer Support Hours</h3>
                     </div>
 
                     <ul class="space-y-3 text-xs sm:text-sm">
@@ -147,7 +170,7 @@
                         </li>
                         <li class="flex items-center justify-between pt-1">
                             <span class="text-slate-600 dark:text-gray-300 font-medium">Sunday</span>
-                            <span class="font-bold text-[#FF7200] bg-orange-500/10 px-2.5 py-0.5 rounded-full text-xs">Emergency WhatsApp Only</span>
+                            <span class="font-bold text-[#FF7200] bg-orange-500/10 px-2.5 py-0.5 rounded-full text-xs">Closed / WhatsApp Monitored</span>
                         </li>
                     </ul>
                 </div>
@@ -160,11 +183,15 @@
                     
                     <!-- Form Header -->
                     <div class="mb-8">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-[#FF7200] border border-orange-500/20 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#FF7200]"></span>
+                            Direct Assistance
+                        </div>
                         <h2 class="text-2xl sm:text-3xl font-display font-black tracking-tight text-black dark:text-white mb-2">
-                            Send Us an Inquiry
+                            Customer Enquiry Form
                         </h2>
                         <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-light leading-relaxed">
-                            Fill out the form below. Our technical process desk reviews every request and replies via email or WhatsApp within 2 hours during open workshop shifts.
+                            Have a question, feedback, or business proposal? Complete the form below and our customer support team will reply promptly.
                         </p>
                     </div>
 
@@ -207,7 +234,7 @@
                             </div>
                         </div>
 
-                        <!-- Phone & Subject (2 Cols on md) -->
+                        <!-- Phone & Topic (2 Cols on md) -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label for="contact_phone" class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
@@ -226,40 +253,54 @@
 
                             <div>
                                 <label for="contact_subject" class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
-                                    Inquiry Subject <span class="text-[#FF7200]">*</span>
+                                    Enquiry Topic <span class="text-[#FF7200]">*</span>
                                 </label>
                                 <div class="relative">
                                     <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🏷️</span>
-                                    <input type="text" 
-                                           id="contact_subject" 
-                                           name="subject" 
-                                           required 
-                                           placeholder="e.g. MacBook Pro repair inquiry, Part sourcing, General question" 
-                                           class="w-full bg-[#F8FAFC] dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-[#1a1d24] focus:border-[#FF7200] focus:ring-4 focus:ring-[#FF7200]/10 outline-none transition-all shadow-sm font-medium">
+                                    <select id="contact_subject" 
+                                            name="subject" 
+                                            required 
+                                            class="w-full bg-[#F8FAFC] dark:bg-[#1a1d24] border border-slate-200/80 dark:border-white/10 rounded-xl pl-10 pr-10 py-3 text-sm text-slate-800 dark:text-white focus:bg-white dark:focus:bg-[#1a1d24] focus:border-[#FF7200] focus:ring-4 focus:ring-[#FF7200]/10 outline-none transition-all shadow-sm font-medium appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Select an enquiry topic...</option>
+                                        <option value="General Customer Enquiry">General Customer Enquiry</option>
+                                        <option value="Business & Corporate Partnership">Business & Corporate Partnership</option>
+                                        <option value="Billing & Invoicing Query">Billing & Invoicing Query</option>
+                                        <option value="Customer Feedback & Suggestions">Customer Feedback & Suggestions</option>
+                                        <option value="Workshop Visit & Directions">Workshop Visit & Directions</option>
+                                        <option value="Other Customer Question">Other Customer Question</option>
+                                    </select>
+                                    <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Message Body -->
                         <div>
-                            <label for="contact_message" class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
-                                Detailed Message or Device Issue <span class="text-[#FF7200]">*</span>
-                            </label>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="contact_message" class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Your Enquiry / Message <span class="text-[#FF7200]">*</span>
+                                </label>
+                                <span class="text-[10px] text-slate-400 dark:text-gray-500">Provide any relevant details</span>
+                            </div>
                             <div class="relative">
                                 <textarea id="contact_message" 
                                           name="message" 
                                           rows="5" 
                                           required 
-                                          placeholder="Please share device model (e.g. MacBook Pro M1 2020, Dell XPS 15), symptoms observed (e.g. no power, flickering display, liquid damage), or the exact part needed..." 
+                                          placeholder="Please describe your enquiry, partnership proposal, question, or feedback in detail..." 
                                           class="w-full bg-[#F8FAFC] dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 rounded-xl p-4 text-sm text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-[#1a1d24] focus:border-[#FF7200] focus:ring-4 focus:ring-[#FF7200]/10 outline-none transition-all resize-none shadow-sm"></textarea>
                             </div>
+                            <p class="text-[11px] text-slate-400 dark:text-gray-500 mt-1.5 flex items-center gap-1.5">
+                                <span>ℹ️</span>
+                                <span>Need a repair or specific spare part? Use our <a href="{% url 'book_repair' %}" class="text-[#008BC6] dark:text-[#38bdf8] font-semibold hover:underline">Repair Booking</a> or <a href="{% url 'request_part' %}" class="text-[#FF7200] font-semibold hover:underline">Part Request</a> portals for dedicated tracking.</span>
+                            </p>
                         </div>
 
                         <!-- Submit Button -->
                         <div class="pt-2">
                             <button type="submit" 
                                     class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#FF7200] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white font-bold uppercase tracking-wider text-xs sm:text-sm shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2">
-                                <span>SUBMIT</span>
+                                <span>SUBMIT ENQUIRY</span>
                                 <span class="text-base">&rarr;</span>
                             </button>
                         </div>
@@ -267,7 +308,7 @@
                         <!-- Security & Privacy Footnote -->
                         <div class="flex items-center justify-center gap-2 text-[11px] text-slate-400 dark:text-gray-500 text-center pt-2">
                             <span>🔒</span>
-                            <span>Direct transmission. Your contact details are never shared with third parties.</span>
+                            <span>Direct transmission. Your details will only be used to respond to your customer enquiry.</span>
                         </div>
 
                     </form>
@@ -287,7 +328,7 @@
                             Interactive Facility Map
                         </div>
                         <h3 class="text-xl font-display font-black text-slate-900 dark:text-white">
-                            Visit Compupartz Workshop at KNUST
+                            Visit Compupartz Office at KNUST
                         </h3>
                     </div>
                     <div class="flex items-center gap-3">
@@ -309,15 +350,15 @@
                     <div class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white/95 dark:bg-[#12141a]/95 border border-slate-200/80 dark:border-white/10 p-5 rounded-2xl shadow-xl max-w-xs sm:max-w-sm backdrop-blur-md">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-[#FF7200]"></span>
-                            <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-outfit">Compupartz Central Lab</h4>
+                            <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-outfit">Compupartz Office & Tech Lab</h4>
                         </div>
                         <p class="text-xs text-slate-600 dark:text-gray-300 font-light leading-relaxed mb-3">
-                            Located inside KNUST Commercial Area, Kumasi. Drop by for in-person diagnostics, repair consultations, or parts pickups.
+                            Located inside KNUST Commercial Area, Kumasi. Drop by for customer consultations, corporate accounts, or general enquiries.
                         </p>
                         <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500 dark:text-gray-400">
                             <span>🅿️ Free Client Parking</span>
                             <span>•</span>
-                            <span>🚪 Walk-ins Accepted</span>
+                            <span>🚪 Walk-ins Welcome</span>
                         </div>
                     </div>
                 </div>
@@ -344,11 +385,11 @@
                         🔎
                     </div>
                     <h4 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-[#008BC6] transition-colors flex items-center justify-between">
-                        <span>Track Ongoing Repair</span>
+                        <span>Track Existing Repair</span>
                         <span class="text-xs transform group-hover:translate-x-1 transition-transform">&rarr;</span>
                     </h4>
                     <p class="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
-                        Already have a repair ticket? Enter your repair ID or phone number to check live diagnostic notes and bench milestones.
+                        Already have an active repair ticket? Enter your repair ID or phone number to check live diagnostic notes and milestones.
                     </p>
                 </a>
 
@@ -358,25 +399,25 @@
                         📦
                     </div>
                     <h4 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-[#FF7200] transition-colors flex items-center justify-between">
-                        <span>Source Rare Components</span>
+                        <span>Request OEM Parts</span>
                         <span class="text-xs transform group-hover:translate-x-1 transition-transform">&rarr;</span>
                     </h4>
                     <p class="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
-                        Looking for an OEM display panel, logic board, or BMS battery? Submit a direct part sourcing request for a 24hr quote.
+                        Looking for a replacement display panel, logic board, or battery? Submit a part request to receive pricing within 24 hours.
                     </p>
                 </a>
 
-                <!-- Action 3: Urgent WhatsApp Escalation -->
-                <a href="https://wa.me/233540322533?text=Urgent%20Process:%20I%20need%20immediate%20hardware%20assistance." target="_blank" rel="noopener noreferrer" class="contact-interactive-card bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] block group">
+                <!-- Action 3: Customer WhatsApp Support -->
+                <a href="https://wa.me/233540322533?text=Hello%20Compupartz,%20I%20have%20a%20customer%20enquiry." target="_blank" rel="noopener noreferrer" class="contact-interactive-card bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] block group">
                     <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
-                        ⚡
+                        💬
                     </div>
                     <h4 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-emerald-500 transition-colors flex items-center justify-between">
-                        <span>Urgent Fault Escalation</span>
+                        <span>Customer WhatsApp Chat</span>
                         <span class="text-xs transform group-hover:translate-x-1 transition-transform">&rarr;</span>
                     </h4>
                     <p class="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
-                        Critical emergency or liquid damage? Chat with our lead technician on WhatsApp immediately to prevent further corrosion.
+                        Prefer real-time chat? Reach our customer care representatives directly on WhatsApp for prompt assistance.
                     </p>
                 </a>
 
