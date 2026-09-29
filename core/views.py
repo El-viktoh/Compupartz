@@ -172,15 +172,54 @@ def dashboard(request):
 
 
 # =========================
+# REVIEWS & TESTIMONIALS
+# =========================
+def reviews_list(request):
+    from django.db.models import Avg
+    from .models import Testimonial
+
+    testimonials = Testimonial.objects.filter(is_approved=True).order_by('-is_featured', '-created_at')
+    total_reviews = testimonials.count()
+    avg_rating_val = testimonials.aggregate(avg=Avg('rating'))['avg'] or 5.0
+    avg_rating = round(avg_rating_val, 1)
+
+    # Star distribution counts
+    star_counts = {
+        5: testimonials.filter(rating=5).count(),
+        4: testimonials.filter(rating=4).count(),
+        3: testimonials.filter(rating=3).count(),
+        2: testimonials.filter(rating=2).count(),
+        1: testimonials.filter(rating=1).count(),
+    }
+
+    star_percentages = {}
+    for star, count in star_counts.items():
+        star_percentages[star] = round((count / total_reviews * 100), 1) if total_reviews > 0 else 0
+
+    # Distinct services for filter tags
+    raw_services = testimonials.exclude(service_rendered='').values_list('service_rendered', flat=True).distinct()
+    services = sorted(list(set(s.strip() for s in raw_services if s and s.strip())))
+
+    return render(request, "core/reviews.html", {
+        "testimonials": testimonials,
+        "total_reviews": total_reviews,
+        "avg_rating": avg_rating,
+        "star_counts": star_counts,
+        "star_percentages": star_percentages,
+        "services": services,
+    })
+
+
+# =========================
 # SUBMIT TESTIMONIAL
 # =========================
-@login_required
 def submit_testimonial(request):
     if request.method == 'POST':
         quote = request.POST.get('quote', '').strip()
         rating = request.POST.get('rating', '5')
         service_rendered = request.POST.get('service_rendered', '').strip()
         role_or_title = request.POST.get('role_or_title', '').strip()
+        client_name = request.POST.get('name', '').strip()
 
         try:
             rating_val = int(rating)
@@ -190,10 +229,18 @@ def submit_testimonial(request):
             rating_val = 5
 
         if quote:
-            customer_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
+            if request.user.is_authenticated:
+                user_obj = request.user
+                if not client_name:
+                    client_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
+            else:
+                user_obj = None
+                if not client_name:
+                    client_name = "Verified Client"
+
             Testimonial.objects.create(
-                user=request.user,
-                name=customer_name,
+                user=user_obj,
+                name=client_name,
                 role_or_title=role_or_title or "Verified Client",
                 quote=quote,
                 rating=rating_val,
@@ -201,11 +248,12 @@ def submit_testimonial(request):
                 is_approved=True,
                 is_featured=False
             )
-            messages.success(request, "Thank you! Your testimonial has been submitted successfully.")
+            messages.success(request, "Thank you! Your review has been submitted successfully.")
         else:
             messages.error(request, "Please enter your review feedback before submitting.")
 
-    return redirect('dashboard')
+    redirect_target = request.POST.get('next') or request.META.get('HTTP_REFERER') or 'reviews'
+    return redirect(redirect_target)
 
 
 # =========================

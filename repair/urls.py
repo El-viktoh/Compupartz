@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.repair_home, name='repair_home'),
+    path('reviews/', views.reviews_redirect, name='repair_reviews'),
     path('book/', views.book_repair, name='book_repair'),
 
     # Repair success page

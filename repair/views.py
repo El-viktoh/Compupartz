@@ -17,6 +17,10 @@ def repair_home(request):
     })
 
 
+def reviews_redirect(request):
+    return redirect('reviews')
+
+
 def book_repair(request):
     if request.method == "POST":
         form = RepairBookingForm(request.POST, request.FILES)
