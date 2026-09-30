@@ -55,12 +55,12 @@
                 </h1>
 
                 <p class="text-slate-500 dark:text-gray-400 text-sm sm:text-base font-light max-w-2xl leading-relaxed">
-                    Monitor diagnostic telemetry, lab bench progress, technician communications, and your complete service history in real-time.
+                    Track diagnostic monitoring, lab bench progress, technician communications, and your complete service history in real-time.
                 </p>
             </div>
         </div>
 
-        <!-- ================= TELEMETRY STATS BAR ================= -->
+        <!-- ================= MONITORING STATS BAR ================= -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             
             <!-- Metric 1: Active Tickets -->
@@ -285,7 +285,7 @@
                                 My Raised Lab Tickets
                             </h2>
                             <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5">
-                                Diagnostic telemetry and bench progress for hardware submitted under your account.
+                                Diagnostic monitoring and bench progress for hardware submitted under your account.
                             </p>
                         </div>
                         <span class="text-xs text-[#008BC6] dark:text-[#38bdf8] font-bold">
@@ -335,7 +335,7 @@
                                     {% endif %}
                                 </div>
 
-                                <!-- Telemetry Specs Grid -->
+                                <!-- Monitoring Specs Grid -->
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                                     <div class="bg-[#F8FAFC] dark:bg-white/[0.04] p-3.5 rounded-2xl border border-slate-200/60 dark:border-white/5">
                                         <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 block mb-0.5">Category</span>
@@ -437,7 +437,7 @@
 
                                     <a href="{% url 'track_repair' ticket.ticket_id %}" 
                                        class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:-translate-y-0.5">
-                                        <span>Open Diagnostic Telemetry Report</span>
+                                        <span>Open Diagnostic Monitoring Report</span>
                                         <span>&rarr;</span>
                                     </a>
                                 </div>
@@ -617,7 +617,7 @@
                                         </span>
                                         {% endif %}
                                         <a href="{% url 'track_repair' ticket.ticket_id %}" class="text-xs font-bold text-[#008BC6] hover:underline uppercase tracking-wider">
-                                            Full Telemetry &rarr;
+                                            Full Monitoring &rarr;
                                         </a>
                                     </div>
                                 </div>
