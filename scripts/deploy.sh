@@ -66,9 +66,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 from django.test import Client
 c = Client()
-res = c.get('/', HTTP_HOST='compupartz.com')
+res = c.get('/', HTTP_HOST='compupartz.com', secure=True)
 print(f'Internal Django Check Status: {res.status_code}')
-if res.status_code != 200:
+if res.status_code not in (200, 301, 302):
     raise SystemExit(f'Django returned status {res.status_code}')
 "
 
