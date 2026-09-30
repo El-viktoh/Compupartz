@@ -4,90 +4,132 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-        .container { max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
-        .header { background: #0a0a0c; padding: 36px 30px; text-align: center; border-bottom: 4px solid #008BC6; }
-        .logo-title { color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
-        .logo-subtitle { color: #008BC6; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
-        .content { padding: 36px 32px; color: #1e293b; }
-        .badge-box { display: inline-block; padding: 8px 18px; border-radius: 999px; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px; }
-        .badge-quoted { background-color: rgba(0, 139, 198, 0.12); color: #008BC6; border: 1px solid rgba(0, 139, 198, 0.25); }
-        .badge-fulfilled { background-color: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.25); }
-        .badge-declined { background-color: rgba(239, 68, 68, 0.12); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.25); }
-        .badge-pending { background-color: rgba(245, 158, 11, 0.12); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.25); }
-        .price-highlight { background: linear-gradient(135deg, rgba(0,139,198,0.08), rgba(255,114,0,0.08)); border: 2px dashed #008BC6; border-radius: 16px; padding: 20px; text-align: center; margin: 20px 0; }
-        .price-amount { font-size: 28px; font-weight: 900; color: #008BC6; margin-top: 4px; }
-        .details-card { background: #f8fafc; border-radius: 18px; padding: 22px; margin: 24px 0; border: 1px solid #e2e8f0; }
-        .button-container { margin: 28px 0 10px; text-align: center; }
-        .button { display: inline-block; background: linear-gradient(135deg, #008BC6, #0284c7); color: #ffffff !important; padding: 16px 36px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(0, 139, 198, 0.25); }
-        .button-whatsapp { display: inline-block; background: #25D366; color: #ffffff !important; padding: 14px 28px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 13px; margin-top: 8px; }
-        .footer { padding: 26px; text-align: center; color: #94a3b8; font-size: 11px; border-top: 1px solid #f1f5f9; background: #fafafa; }
-        h2 { font-size: 22px; font-weight: 900; color: #0f172a; margin: 0 0 12px; }
-        p { line-height: 1.65; color: #475569; font-size: 14px; margin: 0 0 14px; }
-    </style>
+    <title>Compupartz Part Request Update #{{ part_request.request_id }}</title>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1 class="logo-title">Compupartz</h1>
-            <div class="logo-subtitle">OEM Hardware Parts Sourcing Desk</div>
-        </div>
-        <div class="content">
-            <div class="badge-box badge-{{ part_request.status }}">
-                {{ status_display }}
-            </div>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <div style="background-color: #f8fafc; padding: 36px 16px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+            
+            <!-- Brand Top Color Stripe -->
+            <tr>
+                <td style="background: linear-gradient(90deg, #008BC6 0%, #FF7200 100%); height: 4px; line-height: 4px; font-size: 4px;">&nbsp;</td>
+            </tr>
 
-            <h2>Hardware Part Request Update</h2>
-            <p>Hello <strong>{{ part_request.customer_name }}</strong>,</p>
-            <p>{{ status_message }}</p>
+            <!-- Header -->
+            <tr>
+                <td style="padding: 28px 32px 20px; border-bottom: 1px solid #f1f5f9; text-align: left;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>
+                                <div style="font-size: 20px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #0f172a; line-height: 1;">
+                                    COMPU<span style="color: #FF7200;">PARTZ</span>
+                                </div>
+                                <div style="font-size: 11px; font-weight: 700; color: #008BC6; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">
+                                    OEM Hardware Parts Desk
+                                </div>
+                            </td>
+                            <td align="right" style="vertical-align: middle;">
+                                {% if part_request.status == 'fulfilled' %}
+                                    <span style="display: inline-block; background-color: #ECFDF5; color: #047857; border: 1px solid #6EE7B7; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        Fulfilled
+                                    </span>
+                                {% elif part_request.status == 'quoted' %}
+                                    <span style="display: inline-block; background-color: #F0F9FF; color: #0369A1; border: 1px solid #BAE6FD; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        Quote Ready
+                                    </span>
+                                {% elif part_request.status == 'declined' %}
+                                    <span style="display: inline-block; background-color: #FFF1F2; color: #BE123C; border: 1px solid #FECDD3; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        Unavailable
+                                    </span>
+                                {% else %}
+                                    <span style="display: inline-block; background-color: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        {{ status_display }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
 
-            {% if part_request.quoted_price %}
-            <div class="price-highlight">
-                <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #64748b;">Technician Quoted Price</span>
-                <div class="price-amount">GH₵ {{ part_request.quoted_price }}</div>
-                {% if part_request.admin_notes %}
-                <p style="font-size: 13px; color: #475569; margin: 8px 0 0;">{{ part_request.admin_notes }}</p>
-                {% endif %}
-            </div>
-            {% endif %}
+            <!-- Content Area -->
+            <tr>
+                <td style="padding: 32px 32px 28px;">
+                    <h1 style="margin: 0 0 12px; font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.2px;">
+                        Hardware Part Request Update
+                    </h1>
+                    <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.6; color: #475569;">
+                        Hello <strong>{{ part_request.customer_name }}</strong>,
+                    </p>
+                    <p style="margin: 0 0 24px; font-size: 14px; line-height: 1.6; color: #475569;">
+                        {{ status_message }}
+                    </p>
 
-            <div class="details-card">
-                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                    <tr style="border-bottom: 1px solid #edf2f7;">
-                        <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Request ID</td>
-                        <td style="padding: 8px 0; text-align: right; color: #008BC6; font-weight: 800; font-family: monospace;">{{ part_request.request_id }}</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #edf2f7;">
-                        <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Part Needed</td>
-                        <td style="padding: 8px 0; text-align: right; color: #0f172a; font-weight: 700;">{{ part_request.part_needed }}</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #edf2f7;">
-                        <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Target Device</td>
-                        <td style="padding: 8px 0; text-align: right; color: #0f172a; font-weight: 700;">{{ part_request.device_model }}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Condition Preference</td>
-                        <td style="padding: 8px 0; text-align: right; color: #059669; font-weight: 700; text-transform: capitalize;">{{ part_request.get_condition_preference_display }}</td>
-                    </tr>
-                </table>
-            </div>
+                    <!-- Quoted Price Box if available -->
+                    {% if part_request.quoted_price %}
+                    <div style="background-color: #F8FAFC; border: 1px solid #008BC6; border-radius: 12px; padding: 20px; text-align: center; margin: 24px 0;">
+                        <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b;">
+                            Technician Quoted Price
+                        </span>
+                        <div style="font-size: 28px; font-weight: 900; color: #008BC6; margin-top: 4px;">
+                            GH₵ {{ part_request.quoted_price }}
+                        </div>
+                        {% if part_request.admin_notes %}
+                        <p style="font-size: 13px; color: #475569; margin: 8px 0 0; line-height: 1.5;">
+                            {{ part_request.admin_notes }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
 
-            <div class="button-container">
-                <a href="{{ dashboard_url }}" class="button">View in Client Portal &rarr;</a>
-            </div>
+                    <!-- Request Details Card -->
+                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 24px 0;">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                            <tr>
+                                <td style="padding: 8px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Request ID</td>
+                                <td style="padding: 8px 0; text-align: right; color: #008BC6; font-weight: 800; font-family: monospace; font-size: 14px; border-bottom: 1px solid #f1f5f9;">#{{ part_request.request_id }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Part Needed</td>
+                                <td style="padding: 8px 0; text-align: right; color: #0f172a; font-weight: 700; border-bottom: 1px solid #f1f5f9;">{{ part_request.part_needed }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Device Model</td>
+                                <td style="padding: 8px 0; text-align: right; color: #0f172a; font-weight: 700; border-bottom: 1px solid #f1f5f9;">{{ part_request.device_model }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Condition Preference</td>
+                                <td style="padding: 8px 0; text-align: right; color: #059669; font-weight: 700; text-transform: capitalize;">{{ part_request.get_condition_preference_display }}</td>
+                            </tr>
+                        </table>
+                    </div>
 
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="https://wa.me/233540322533?text=Hi%20Compupartz,%20following%20up%20on%20Part%20Request%20{{ part_request.request_id }}" class="button-whatsapp">
-                    Chat with Lab on WhatsApp &rarr;
-                </a>
-            </div>
-        </div>
-        <div class="footer">
-            &copy; 2026 Compupartz Ghana. All rights reserved.<br>
-            Direct OEM Part Procurement &bull; +233 54 032 2533
-        </div>
+                    <!-- CTA Button -->
+                    <div style="text-align: center; margin: 28px 0 12px;">
+                        <a href="{{ dashboard_url }}" 
+                           style="background-color: #008BC6; color: #ffffff !important; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; box-shadow: 0 4px 12px rgba(0, 139, 198, 0.25);">
+                            View in Client Dashboard &rarr;
+                        </a>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 12px;">
+                        <a href="https://wa.me/233540322533?text=Hi%20Compupartz,%20following%20up%20on%20Part%20Request%20{{ part_request.request_id }}" 
+                           style="background-color: #25D366; color: #ffffff !important; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 12px; display: inline-block;">
+                            Chat with Parts Desk on WhatsApp &rarr;
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+                <td style="padding: 20px 32px; background-color: #fafbfc; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.6;">
+                    &copy; 2026 Compupartz Ghana &bull; Direct OEM Part Procurement<br>
+                    KNUST Commercial Area, Kumasi, Ghana &bull; +233 54 032 2533
+                </td>
+            </tr>
+
+        </table>
     </div>
 </body>
 </html>

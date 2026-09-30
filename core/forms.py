@@ -29,6 +29,14 @@ class RegistrationForm(UserCreationForm):
                 "class": "w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brandOrange/50 focus:border-brandOrange transition-all hover:border-brandOrange/30 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
             })
 
+    def clean_email(self):
+        email = self.cleaned_data.get("email", "").strip()
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                "An account with this email already exists. Try logging in or resetting your password instead."
+            )
+        return email
+
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
@@ -44,6 +52,12 @@ class UserUpdateForm(forms.ModelForm):
                 "class": "w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brandOrange/50 focus:border-brandOrange transition-all hover:border-brandOrange/30 text-gray-900 dark:text-white",
             }),
         }
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email", "").strip()
+        if email and User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Another account is already using this email address.")
+        return email
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:

@@ -30,7 +30,9 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-this')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+# Defaults to False (fail-closed) so a missing/blank DEBUG env var on a fresh
+# or misconfigured host never accidentally exposes stack traces and settings.
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',') if h.strip()]
 default_hosts = [
@@ -315,4 +317,18 @@ LOGGING = {
     },
 }
 SITE_ID = 1
+
+# ======================
+# PRODUCTION SECURITY HARDENING
+# ======================
+# Gated behind `not DEBUG` so local development over plain http://localhost
+# still works (a browser will silently drop Secure-flagged cookies and
+# SECURE_SSL_REDIRECT would break the local runserver otherwise).
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
