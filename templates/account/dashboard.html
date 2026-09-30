@@ -55,12 +55,12 @@
                 </h1>
 
                 <p class="text-slate-500 dark:text-gray-400 text-sm sm:text-base font-light max-w-2xl leading-relaxed">
-                    Track diagnostic monitoring, lab bench progress, technician communications, and your complete service history in real-time.
+                    Monitor diagnostic progress, lab bench workflow, technician communications, and your complete service history in real-time.
                 </p>
             </div>
         </div>
 
-        <!-- ================= MONITORING STATS BAR ================= -->
+        <!-- ================= DIAGNOSTIC STATS BAR ================= -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             
             <!-- Metric 1: Active Tickets -->
@@ -335,7 +335,7 @@
                                     {% endif %}
                                 </div>
 
-                                <!-- Monitoring Specs Grid -->
+                                <!-- Diagnostic Specs Grid -->
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                                     <div class="bg-[#F8FAFC] dark:bg-white/[0.04] p-3.5 rounded-2xl border border-slate-200/60 dark:border-white/5">
                                         <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 block mb-0.5">Category</span>
@@ -617,7 +617,7 @@
                                         </span>
                                         {% endif %}
                                         <a href="{% url 'track_repair' ticket.ticket_id %}" class="text-xs font-bold text-[#008BC6] hover:underline uppercase tracking-wider">
-                                            Full Monitoring &rarr;
+                                            Full Diagnostics &rarr;
                                         </a>
                                     </div>
                                 </div>

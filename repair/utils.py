@@ -19,7 +19,7 @@ def send_repair_email(ticket):
 
         subject = f"[Compupartz] Repair Booking Intake Confirmed — Ticket #{ticket.ticket_id}"
 
-        status_message = "Your repair booking has been registered on our intake bench. Our certified technicians are reviewing your fault monitoring and will initiate diagnostics shortly."
+        status_message = "Your repair booking has been registered on our intake bench. Our certified technicians are reviewing your fault diagnostic details and will initiate bench testing shortly."
 
         context = {
             "ticket": ticket,
