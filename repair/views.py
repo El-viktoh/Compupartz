@@ -588,4 +588,56 @@ def preview_part_quote_email(request):
     })
 
 
+def preview_repair_intake_email(request):
+    """Live preview of the initial intake confirmation email sent with tracking ID upon repair booking."""
+    ticket = RepairTicket.objects.first()
+    if not ticket:
+        ticket = RepairTicket(
+            ticket_id="R-108",
+            customer_name="Kwame Mensah",
+            customer_email="kwame@example.com",
+            customer_phone="+233 54 123 4567",
+            device="MacBook Pro 16\" M1 Pro (A2485)",
+            issue_description="Logic board power issue, device will not boot or display charge indicator.",
+            status="submitted",
+        )
+
+    tracking_url = request.build_absolute_uri(f"/repair/track/{ticket.ticket_id}/")
+    status_message = "Your repair booking has been registered on our intake bench. Our certified technicians are reviewing your fault diagnostic details and will initiate bench testing shortly."
+
+    return render(request, "emails/repair_status_update.html", {
+        "ticket": ticket,
+        "status_display": ticket.get_status_display(),
+        "status_message": status_message,
+        "tracking_url": tracking_url,
+    })
+
+
+def preview_part_intake_email(request):
+    """Live preview of the initial intake confirmation email sent with request ID upon part request."""
+    part_request = PartRequest.objects.first()
+    if not part_request:
+        part_request = PartRequest(
+            request_id="PR-042",
+            customer_name="Akosua Agyeman",
+            customer_email="akosua@example.com",
+            customer_phone="+233 20 987 6543",
+            part_needed="Original OEM 96W USB-C Power Adapter + Type-C Braided Cable",
+            device_model="Apple MacBook Pro 16-inch",
+            condition_preference="brand_new",
+            status="submitted",
+        )
+
+    dashboard_url = request.build_absolute_uri(f"/repair/track-part/{part_request.request_id}/")
+    status_message = "Your hardware part sourcing request has been received. Our parts desk is contacting verified OEM distributors to verify component availability and compute your quote."
+
+    return render(request, "emails/part_request_status_update.html", {
+        "part_request": part_request,
+        "status_display": part_request.get_status_display(),
+        "status_message": status_message,
+        "dashboard_url": dashboard_url,
+    })
+
+
+
 

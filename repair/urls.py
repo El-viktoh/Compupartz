@@ -40,6 +40,8 @@ urlpatterns = [
     path('track-part/<str:request_id>/', views.track_part, name='track_part'),
 
     # 📧 Email Previews
+    path('preview-intake/', views.preview_repair_intake_email, name='preview_repair_intake_email'),
+    path('preview-part-intake/', views.preview_part_intake_email, name='preview_part_intake_email'),
     path('preview-quote/', views.preview_repair_quote_email, name='preview_repair_quote_email'),
     path('preview-part-quote/', views.preview_part_quote_email, name='preview_part_quote_email'),
 ]
