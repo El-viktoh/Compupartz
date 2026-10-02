@@ -581,10 +581,11 @@ def preview_part_quote_email(request):
             quote_status="sent",
         )
 
-    tracking_url = request.build_absolute_uri(f"/repair/track-part/{part_request.request_id}/")
+    login_url = request.build_absolute_uri("/accounts/login/?next=/dashboard/?tab=parts")
     return render(request, "emails/formal_part_quote.html", {
         "part_request": part_request,
-        "tracking_url": tracking_url,
+        "tracking_url": login_url,
+        "login_url": login_url,
     })
 
 
@@ -628,15 +629,17 @@ def preview_part_intake_email(request):
             status="submitted",
         )
 
-    dashboard_url = request.build_absolute_uri(f"/repair/track-part/{part_request.request_id}/")
+    login_url = request.build_absolute_uri("/accounts/login/?next=/dashboard/?tab=parts")
     status_message = "Your hardware part sourcing request has been received. Our parts desk is contacting verified OEM distributors to verify component availability and compute your quote."
 
     return render(request, "emails/part_request_status_update.html", {
         "part_request": part_request,
         "status_display": part_request.get_status_display(),
         "status_message": status_message,
-        "dashboard_url": dashboard_url,
+        "login_url": login_url,
+        "dashboard_url": login_url,
     })
+
 
 
 

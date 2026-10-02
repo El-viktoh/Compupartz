@@ -181,7 +181,7 @@ def send_part_request_email(part_request):
 
     try:
         domain = get_site_domain()
-        dashboard_url = f"https://{domain}/dashboard/?tab=parts" if not settings.DEBUG else "http://127.0.0.1:8000/dashboard/?tab=parts"
+        login_url = f"https://{domain}/accounts/login/?next=/dashboard/?tab=parts" if not settings.DEBUG else "http://127.0.0.1:8000/accounts/login/?next=/dashboard/?tab=parts"
 
         subject = f"[Compupartz] Part Request Intake Confirmed — #{part_request.request_id}"
         status_message = "Your hardware part sourcing request has been received. Our parts desk is contacting verified OEM distributors to verify component availability and compute your quote."
@@ -190,7 +190,8 @@ def send_part_request_email(part_request):
             "part_request": part_request,
             "status_display": part_request.get_status_display(),
             "status_message": status_message,
-            "dashboard_url": dashboard_url,
+            "login_url": login_url,
+            "dashboard_url": login_url,
         }
 
         html_content = render_to_string("emails/part_request_status_update.html", context)
@@ -217,13 +218,14 @@ def send_formal_part_quote_email(part_request):
 
     try:
         domain = get_site_domain()
-        tracking_url = f"https://{domain}/repair/track-part/{part_request.request_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/repair/track-part/{part_request.request_id}/"
+        login_url = f"https://{domain}/accounts/login/?next=/dashboard/?tab=parts" if not settings.DEBUG else "http://127.0.0.1:8000/accounts/login/?next=/dashboard/?tab=parts"
 
         subject = f"[Compupartz] Formal Part Sourcing Quotation #{part_request.request_id} — {part_request.part_needed}"
 
         context = {
             "part_request": part_request,
-            "tracking_url": tracking_url,
+            "tracking_url": login_url,
+            "login_url": login_url,
         }
 
         html_content = render_to_string("emails/formal_part_quote.html", context)
@@ -255,10 +257,7 @@ def send_part_request_status_email(part_request, old_status, new_status):
 
     try:
         domain = get_site_domain()
-        if part_request.user:
-            dashboard_url = f"https://{domain}/dashboard/?tab=parts" if not settings.DEBUG else "http://127.0.0.1:8000/dashboard/?tab=parts"
-        else:
-            dashboard_url = f"https://{domain}/repair/track-part/{part_request.request_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/repair/track-part/{part_request.request_id}/"
+        login_url = f"https://{domain}/accounts/login/?next=/dashboard/?tab=parts" if not settings.DEBUG else "http://127.0.0.1:8000/accounts/login/?next=/dashboard/?tab=parts"
 
         status_display = part_request.get_status_display()
         if new_status == 'fulfilled':
@@ -280,7 +279,8 @@ def send_part_request_status_email(part_request, old_status, new_status):
             "part_request": part_request,
             "status_display": status_display,
             "status_message": status_message,
-            "dashboard_url": dashboard_url,
+            "login_url": login_url,
+            "dashboard_url": login_url,
         }
 
         html_content = render_to_string("emails/part_request_status_update.html", context)
