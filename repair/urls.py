@@ -26,6 +26,10 @@ urlpatterns = [
     path('staff/quote/repair/<str:ticket_id>/', views.staff_create_repair_quote, name='staff_create_repair_quote'),
     path('staff/quote/part/<str:request_id>/', views.staff_create_part_quote, name='staff_create_part_quote'),
 
+    # 🛠️ Status Update Desk (Staff Only)
+    path('staff/status/repair/<str:ticket_id>/', views.staff_update_repair_status, name='staff_update_repair_status'),
+    path('staff/status/part/<str:request_id>/', views.staff_update_part_status, name='staff_update_part_status'),
+
     # 🎯 Customer Quote Approvals
     path('quote/repair/<str:ticket_id>/approve/', views.customer_approve_repair_quote, name='customer_approve_repair_quote'),
     path('quote/repair/<str:ticket_id>/decline/', views.customer_decline_repair_quote, name='customer_decline_repair_quote'),

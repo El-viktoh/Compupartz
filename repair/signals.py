@@ -28,6 +28,12 @@ def notify_repair_ticket_status_change(sender, instance, created, **kwargs):
                 f"{instance._original_status} to {instance.status}. Sending email notification..."
             )
             send_repair_status_email(instance, instance._original_status, instance.status)
+            if instance.status != 'quoted':
+                RepairMessage.objects.create(
+                    ticket=instance,
+                    sender_is_admin=True,
+                    message=f"🔧 Repair Status Updated to: {instance.get_status_display()}."
+                )
             instance._original_status = instance.status
 
 
@@ -57,6 +63,9 @@ def notify_part_request_status_change(sender, instance, created, **kwargs):
 @receiver(post_save, sender=RepairMessage)
 def notify_technician_message_sent(sender, instance, created, **kwargs):
     if created and instance.sender_is_admin:
+        # Don't send double email if this is an automated system note
+        if any(instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌")):
+            return
         logger.info(
             f"Technician sent note on Ticket {instance.ticket.ticket_id}. "
             "Dispatching email notification to client..."

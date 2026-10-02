@@ -29,11 +29,12 @@ class RepairTicketAdmin(admin.ModelAdmin):
         'customer_name',
         'customer_phone',
         'device',
-        'status_badge',
+        'status',
         'quote_badge',
         'quoted_price_display',
         'created_at',
     )
+    list_editable = ('status',)
     list_filter = ('status', 'quote_status', 'device_category', 'logistics_preference', 'created_at')
     search_fields = (
         'ticket_id',
@@ -46,7 +47,13 @@ class RepairTicketAdmin(admin.ModelAdmin):
     )
     readonly_fields = ('ticket_id', 'created_at', 'quote_sent_at')
     inlines = [RepairMessageInline]
-    actions = ['send_formal_quote', 'mark_in_progress', 'mark_completed']
+    actions = [
+        'mark_pending',
+        'mark_in_progress',
+        'mark_completed',
+        'mark_cancelled',
+        'send_formal_quote',
+    ]
 
     fieldsets = (
         ("Client Identification", {
@@ -179,6 +186,17 @@ class RepairTicketAdmin(admin.ModelAdmin):
                 messages.WARNING
             )
 
+    @admin.action(description="Mark selected tickets as Pending Intake")
+    def mark_pending(self, request, queryset):
+        for ticket in queryset:
+            ticket.status = 'pending'
+            ticket.save()
+        self.message_user(
+            request,
+            f"{queryset.count()} ticket(s) set to Pending Intake. Customer notifications dispatched.",
+            messages.SUCCESS
+        )
+
     @admin.action(description="Mark selected tickets as In Progress (Diagnostic / Restoration)")
     def mark_in_progress(self, request, queryset):
         for ticket in queryset:
@@ -199,6 +217,17 @@ class RepairTicketAdmin(admin.ModelAdmin):
             request,
             f"{queryset.count()} ticket(s) marked Completed. Customer email notifications sent.",
             messages.SUCCESS
+        )
+
+    @admin.action(description="Mark selected tickets as Cancelled")
+    def mark_cancelled(self, request, queryset):
+        for ticket in queryset:
+            ticket.status = 'cancelled'
+            ticket.save()
+        self.message_user(
+            request,
+            f"{queryset.count()} ticket(s) marked Cancelled. Customer notifications dispatched.",
+            messages.WARNING
         )
 
 
@@ -254,11 +283,12 @@ class PartRequestAdmin(admin.ModelAdmin):
         'customer_phone',
         'part_needed',
         'device_model',
-        'status_badge',
+        'status',
         'quote_badge',
         'quoted_price_display',
         'created_at',
     )
+    list_editable = ('status',)
     list_filter = ('status', 'quote_status', 'condition_preference', 'created_at')
     search_fields = (
         'request_id',
@@ -270,7 +300,12 @@ class PartRequestAdmin(admin.ModelAdmin):
         'admin_notes',
     )
     readonly_fields = ('request_id', 'created_at', 'quote_sent_at')
-    actions = ['send_formal_part_quote', 'mark_fulfilled', 'mark_declined']
+    actions = [
+        'mark_pending',
+        'mark_fulfilled',
+        'mark_declined',
+        'send_formal_part_quote',
+    ]
 
     fieldsets = (
         ("Client Identification", {
@@ -379,6 +414,17 @@ class PartRequestAdmin(admin.ModelAdmin):
                 "Please enter a Quoted Price on the selected request(s) before sending quotes.",
                 messages.WARNING
             )
+
+    @admin.action(description="Mark selected requests as Pending Intake")
+    def mark_pending(self, request, queryset):
+        for req in queryset:
+            req.status = 'pending'
+            req.save()
+        self.message_user(
+            request,
+            f"{queryset.count()} part request(s) set to Pending Intake. Customer notifications dispatched.",
+            messages.SUCCESS
+        )
 
     @admin.action(description="Mark selected requests as Fulfilled (Ready)")
     def mark_fulfilled(self, request, queryset):

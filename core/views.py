@@ -145,12 +145,12 @@ def dashboard(request):
     # User's submitted testimonials
     user_testimonials = Testimonial.objects.filter(user=request.user).order_by('-created_at')
 
-    # For staff users: separate workshop queue for process so personal tickets remain clean
+    # For staff users: workshop queue for tickets and hardware part requests
     staff_bench_repairs = None
+    staff_part_requests = None
     if request.user.is_staff:
-        staff_bench_repairs = RepairTicket.objects.filter(
-            status__in=['pending', 'in_progress']
-        ).exclude(user=request.user).prefetch_related('messages').order_by('-created_at')
+        staff_bench_repairs = RepairTicket.objects.all().prefetch_related('messages').order_by('-created_at')[:40]
+        staff_part_requests = PartRequest.objects.all().order_by('-created_at')[:40]
 
     # ✅ GET FORMS FOR MODAL
     u_form = UserUpdateForm(instance=request.user)
@@ -166,6 +166,7 @@ def dashboard(request):
         "total_parts_and_orders": total_parts_and_orders,
         "user_testimonials": user_testimonials,
         "staff_bench_repairs": staff_bench_repairs,
+        "staff_part_requests": staff_part_requests,
         "u_form": u_form,
         "p_form": p_form,
     })

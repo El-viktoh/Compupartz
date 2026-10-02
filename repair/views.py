@@ -252,6 +252,45 @@ def staff_create_repair_quote(request, ticket_id):
     return redirect("track_repair", ticket_id=ticket.ticket_id)
 
 
+# ===========================
+# 🛠️ STAFF STATUS UPDATE: REPAIRS (STAFF ONLY)
+# ===========================
+@login_required
+def staff_update_repair_status(request, ticket_id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
+    ticket = get_object_or_404(RepairTicket, ticket_id=ticket_id)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status", "").strip()
+        status_note = request.POST.get("status_note", "").strip()
+
+        valid_statuses = dict(RepairTicket.STATUS_CHOICES)
+        if new_status in valid_statuses:
+            ticket.status = new_status
+            ticket.save()
+
+            if status_note:
+                RepairMessage.objects.create(
+                    ticket=ticket,
+                    sender_is_admin=True,
+                    message=f"🔧 Bench Note ({ticket.get_status_display()}): {status_note}"
+                )
+
+            messages.success(
+                request,
+                f"Ticket #{ticket.ticket_id} status updated to '{ticket.get_status_display()}'. Real-time email dispatched to {ticket.customer_email}."
+            )
+        else:
+            messages.error(request, "Invalid status choice selected.")
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'dashboard' in referer:
+        return redirect('/dashboard/?tab=staff-workshop')
+    return redirect("track_repair", ticket_id=ticket.ticket_id)
+
+
 def customer_approve_repair_quote(request, ticket_id):
     ticket = get_object_or_404(RepairTicket, ticket_id=ticket_id)
 
@@ -341,6 +380,40 @@ def staff_create_part_quote(request, request_id):
             f"Hardware sourcing quote of GH₵ {part_request.quoted_price} generated and emailed to {part_request.customer_email}."
         )
 
+    return redirect("track_part", request_id=part_request.request_id)
+
+
+# ===========================
+# 🛠️ STAFF STATUS UPDATE: PARTS (STAFF ONLY)
+# ===========================
+@login_required
+def staff_update_part_status(request, request_id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
+    part_request = get_object_or_404(PartRequest, request_id=request_id)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status", "").strip()
+        admin_notes = request.POST.get("admin_notes", "").strip()
+
+        valid_statuses = dict(PartRequest.STATUS_CHOICES)
+        if new_status in valid_statuses:
+            part_request.status = new_status
+            if admin_notes:
+                part_request.admin_notes = admin_notes
+            part_request.save()
+
+            messages.success(
+                request,
+                f"Part Request #{part_request.request_id} status updated to '{part_request.get_status_display()}'. Real-time email dispatched to {part_request.customer_email}."
+            )
+        else:
+            messages.error(request, "Invalid status choice selected.")
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'dashboard' in referer:
+        return redirect('/dashboard/?tab=staff-workshop')
     return redirect("track_part", request_id=part_request.request_id)
 
 

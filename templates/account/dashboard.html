@@ -254,16 +254,16 @@
                             {% endif %}
                         </button>
 
-                        {% if user.is_staff and staff_bench_repairs %}
+                        {% if user.is_staff %}
                         <!-- Tab 4: Lab Process Queue (Staff/Admin Only) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('staff-workshop')" 
                                 id="tab-btn-staff-workshop"
                                 class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
                             <span>⚙️</span>
-                            <span>Lab Process Queue</span>
+                            <span>Lab & Parts Queue</span>
                             <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 font-mono font-bold">
-                                {{ staff_bench_repairs.count }}
+                                {{ staff_bench_repairs.count|default:0 }}
                             </span>
                         </button>
                         {% endif %}
@@ -753,52 +753,145 @@
                 </div>
 
                 <!-- ================= TAB PANEL 4: STAFF WORKSHOP QUEUE (STAFF ONLY) ================= -->
-                {% if user.is_staff and staff_bench_repairs %}
-                <div id="section-staff-workshop" class="dash-section-panel hidden space-y-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80 dark:border-white/10">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400">
-                                    Workshop Bench Oversight
-                                </span>
-                            </div>
-                            <h2 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white">
-                                Lab Process Queue
-                            </h2>
-                            <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5">
-                                Overview of other client devices currently undergoing diagnostics on the bench.
-                            </p>
-                        </div>
-                        <a href="/admin/repair/repairticket/" target="_blank" class="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline uppercase tracking-wider">
-                            Open Django Admin &rarr;
-                        </a>
-                    </div>
-
+                {% if user.is_staff %}
+                <div id="section-staff-workshop" class="dash-section-panel hidden space-y-8">
+                    <!-- 1. Lab Process Queue (Repairs) -->
                     <div class="space-y-4">
-                        {% for ticket in staff_bench_repairs %}
-                        <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-mono text-xs font-bold bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded text-slate-700 dark:text-white">{{ ticket.ticket_id }}</span>
-                                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ ticket.device }}</h3>
-                                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full {% if ticket.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% else %}bg-amber-500/10 text-amber-600{% endif %}">
-                                        {{ ticket.get_status_display }}
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80 dark:border-white/10">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400">
+                                        Workshop Bench Oversight
                                     </span>
                                 </div>
-                                <p class="text-xs text-slate-500 dark:text-gray-400">
-                                    Client: <strong>{{ ticket.customer_name }}</strong> ({{ ticket.customer_phone }}) &bull; Intake: {{ ticket.created_at|date:"M d, Y" }}
-                                </p>
-                                <p class="text-xs text-slate-600 dark:text-gray-300 font-light line-clamp-1">
-                                    Issue: {{ ticket.issue_description }}
+                                <h2 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white">
+                                    Lab Process Queue
+                                </h2>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5">
+                                    Client hardware tickets undergoing diagnostic testing, quoting, or bench restoration.
                                 </p>
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <a href="{% url 'track_repair' ticket.ticket_id %}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
-                                    Process &bull; Comms &rarr;
-                                </a>
-                            </div>
+                            <a href="/admin/repair/repairticket/" target="_blank" class="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline uppercase tracking-wider">
+                                Open Django Admin Repairs &rarr;
+                            </a>
                         </div>
-                        {% endfor %}
+
+                        {% if staff_bench_repairs %}
+                        <div class="space-y-4">
+                            {% for ticket in staff_bench_repairs %}
+                            <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-mono text-xs font-bold bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded text-slate-700 dark:text-white">{{ ticket.ticket_id }}</span>
+                                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ ticket.device }}</h3>
+                                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full {% if ticket.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% elif ticket.status == 'completed' %}bg-emerald-500/10 text-emerald-600{% elif ticket.status == 'cancelled' %}bg-red-500/10 text-red-600{% elif ticket.status == 'quoted' %}bg-sky-500/10 text-sky-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                            {{ ticket.get_status_display }}
+                                        </span>
+                                        {% if ticket.quoted_price %}
+                                        <span class="text-[11px] font-mono font-bold text-orange-600 dark:text-orange-400">GH₵ {{ ticket.quoted_price }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-xs text-slate-500 dark:text-gray-400">
+                                        Client: <strong>{{ ticket.customer_name }}</strong> ({{ ticket.customer_phone }}) &bull; Intake: {{ ticket.created_at|date:"M d, Y" }}
+                                    </p>
+                                    <p class="text-xs text-slate-600 dark:text-gray-300 font-light line-clamp-1">
+                                        Issue: {{ ticket.issue_description }}
+                                    </p>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                                    <form method="POST" action="{% url 'staff_update_repair_status' ticket.ticket_id %}" class="flex items-center gap-1.5">
+                                        {% csrf_token %}
+                                        <select name="status" class="text-xs font-bold bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl px-2.5 py-2 text-slate-800 dark:text-white outline-none">
+                                            <option value="pending" {% if ticket.status == 'pending' %}selected{% endif %}>Pending</option>
+                                            <option value="quoted" {% if ticket.status == 'quoted' %}selected{% endif %}>Quoted</option>
+                                            <option value="in_progress" {% if ticket.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                            <option value="completed" {% if ticket.status == 'completed' %}selected{% endif %}>Completed</option>
+                                            <option value="cancelled" {% if ticket.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                        </select>
+                                        <button type="submit" class="px-3 py-2 rounded-xl bg-[#008BC6] hover:bg-sky-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95">
+                                            Save
+                                        </button>
+                                    </form>
+                                    <a href="{% url 'track_repair' ticket.ticket_id %}" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
+                                        Desk &bull; Comms &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-xs text-slate-400 py-4">No repair tickets in process.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- 2. Hardware Parts Sourcing Queue -->
+                    <div class="pt-6 border-t border-slate-200/80 dark:border-white/10 space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8]">
+                                        OEM Procurement Desk
+                                    </span>
+                                </div>
+                                <h3 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white">
+                                    Hardware Parts Sourcing Queue
+                                </h3>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5">
+                                    Component sourcing requests awaiting distributor quotes, fulfillment, or courier delivery.
+                                </p>
+                            </div>
+                            <a href="/admin/repair/partrequest/" target="_blank" class="text-xs font-bold text-[#008BC6] dark:text-[#38bdf8] hover:underline uppercase tracking-wider">
+                                Open Django Admin Parts &rarr;
+                            </a>
+                        </div>
+
+                        {% if staff_part_requests %}
+                        <div class="space-y-4">
+                            {% for req in staff_part_requests %}
+                            <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-mono text-xs font-bold bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded text-slate-700 dark:text-white">{{ req.request_id }}</span>
+                                        <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ req.part_needed }}</h4>
+                                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'declined' %}bg-red-500/10 text-red-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                            {{ req.get_status_display }}
+                                        </span>
+                                        {% if req.quoted_price %}
+                                        <span class="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400">GH₵ {{ req.quoted_price }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-xs text-slate-500 dark:text-gray-400">
+                                        Device: <strong>{{ req.device_model }}</strong> &bull; Client: <strong>{{ req.customer_name }}</strong> ({{ req.customer_phone }}) &bull; {{ req.created_at|date:"M d, Y" }}
+                                    </p>
+                                    {% if req.additional_details %}
+                                    <p class="text-xs text-slate-600 dark:text-gray-300 font-light line-clamp-1">
+                                        Specs: {{ req.additional_details }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                                    <form method="POST" action="{% url 'staff_update_part_status' req.request_id %}" class="flex items-center gap-1.5">
+                                        {% csrf_token %}
+                                        <select name="status" class="text-xs font-bold bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl px-2.5 py-2 text-slate-800 dark:text-white outline-none">
+                                            <option value="pending" {% if req.status == 'pending' %}selected{% endif %}>Pending</option>
+                                            <option value="quoted" {% if req.status == 'quoted' %}selected{% endif %}>Quoted</option>
+                                            <option value="fulfilled" {% if req.status == 'fulfilled' %}selected{% endif %}>Fulfilled</option>
+                                            <option value="declined" {% if req.status == 'declined' %}selected{% endif %}>Declined</option>
+                                        </select>
+                                        <button type="submit" class="px-3 py-2 rounded-xl bg-[#008BC6] hover:bg-sky-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95">
+                                            Save
+                                        </button>
+                                    </form>
+                                    <a href="{% url 'track_part' req.request_id %}" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
+                                        Quote &bull; View &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-xs text-slate-400 py-4">No active hardware part sourcing requests.</p>
+                        {% endif %}
                     </div>
                 </div>
                 {% endif %}

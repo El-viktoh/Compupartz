@@ -84,7 +84,9 @@ def send_repair_status_email(ticket, old_status, new_status):
         return False
 
     if new_status == 'quoted':
-        return send_formal_repair_quote_email(ticket)
+        if ticket.quoted_price:
+            return send_formal_repair_quote_email(ticket)
+        return False
 
     try:
         domain = get_site_domain()
@@ -102,6 +104,12 @@ def send_repair_status_email(ticket, old_status, new_status):
             status_message = (
                 f"All bench repairs and 4-stage quality stress tests are complete! Your {ticket.device} has been verified, "
                 f"packaged with your 90-day Compupartz warranty seal, and is now ready for pickup or dispatch."
+            )
+        elif new_status == 'cancelled':
+            subject = f"[Compupartz] Repair Ticket Cancelled — Ticket #{ticket.ticket_id}"
+            status_message = (
+                f"Your repair ticket #{ticket.ticket_id} ({ticket.device}) has been marked as cancelled. "
+                f"If you did not request this or have questions, please reach out to our service desk."
             )
         else:
             subject = f"[Compupartz] Repair Ticket Status Updated — Ticket #{ticket.ticket_id}"
@@ -241,11 +249,16 @@ def send_part_request_status_email(part_request, old_status, new_status):
         return False
 
     if new_status == 'quoted':
-        return send_formal_part_quote_email(part_request)
+        if part_request.quoted_price:
+            return send_formal_part_quote_email(part_request)
+        return False
 
     try:
         domain = get_site_domain()
-        dashboard_url = f"https://{domain}/dashboard/?tab=parts" if not settings.DEBUG else "http://127.0.0.1:8000/dashboard/?tab=parts"
+        if part_request.user:
+            dashboard_url = f"https://{domain}/dashboard/?tab=parts" if not settings.DEBUG else "http://127.0.0.1:8000/dashboard/?tab=parts"
+        else:
+            dashboard_url = f"https://{domain}/repair/track-part/{part_request.request_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/repair/track-part/{part_request.request_id}/"
 
         status_display = part_request.get_status_display()
         if new_status == 'fulfilled':
