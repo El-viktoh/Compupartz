@@ -29,12 +29,11 @@ class RepairTicketAdmin(admin.ModelAdmin):
         'customer_name',
         'customer_phone',
         'device',
-        'status',
+        'status_badge',
         'quote_badge',
         'quoted_price_display',
         'created_at',
     )
-    list_editable = ('status',)
     list_filter = ('status', 'quote_status', 'device_category', 'logistics_preference', 'created_at')
     search_fields = (
         'ticket_id',
@@ -283,12 +282,11 @@ class PartRequestAdmin(admin.ModelAdmin):
         'customer_phone',
         'part_needed',
         'device_model',
-        'status',
+        'status_badge',
         'quote_badge',
         'quoted_price_display',
         'created_at',
     )
-    list_editable = ('status',)
     list_filter = ('status', 'quote_status', 'condition_preference', 'created_at')
     search_fields = (
         'request_id',
