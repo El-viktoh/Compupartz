@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.contrib import messages
+from django.utils import timezone
 from .models import RepairTicket, RepairMessage, PartRequest
+from .utils import send_formal_repair_quote_email, send_formal_part_quote_email
 
 
 # ==========================================
@@ -26,12 +28,12 @@ class RepairTicketAdmin(admin.ModelAdmin):
         'customer_name',
         'customer_phone',
         'device',
-        'device_category',
-        'logistics_preference',
         'status_badge',
+        'quote_badge',
+        'quoted_price_display',
         'created_at',
     )
-    list_filter = ('status', 'device_category', 'logistics_preference', 'created_at')
+    list_filter = ('status', 'quote_status', 'device_category', 'logistics_preference', 'created_at')
     search_fields = (
         'ticket_id',
         'customer_name',
@@ -39,17 +41,51 @@ class RepairTicketAdmin(admin.ModelAdmin):
         'customer_phone',
         'device',
         'issue_description',
+        'diagnostic_notes',
     )
-    list_editable = ()
-    readonly_fields = ('ticket_id', 'created_at')
+    readonly_fields = ('ticket_id', 'created_at', 'quote_sent_at')
     inlines = [RepairMessageInline]
-    actions = ['mark_in_progress', 'mark_completed']
+    actions = ['send_formal_quote', 'mark_in_progress', 'mark_completed']
+
+    fieldsets = (
+        ("Client Identification", {
+            "fields": ("user", "customer_name", "customer_email", "customer_phone")
+        }),
+        ("Hardware Intake & Diagnostics", {
+            "fields": (
+                "device_category",
+                "manufacturer",
+                "device",
+                "issue_description",
+                "diagnostic_image",
+                "logistics_preference",
+                "status",
+            )
+        }),
+        ("🎯 Formal Repair Quotation Desk (Staff Only)", {
+            "description": "Set diagnostic findings and repair pricing. Dispatches a formal quote email with approval buttons to the client.",
+            "fields": (
+                "quoted_price",
+                "diagnostic_notes",
+                "estimated_turnaround",
+                "warranty_period",
+                "quote_status",
+                "quote_sent_at",
+            )
+        }),
+        ("System Audit", {
+            "classes": ("collapse",),
+            "fields": ("ticket_id", "created_at")
+        }),
+    )
 
     def status_badge(self, obj):
         colors = {
             'pending': '#f59e0b',
+            'quoted': '#008BC6',
             'in_progress': '#ff7200',
             'completed': '#10b981',
+            'cancelled': '#ef4444',
         }
         color = colors.get(obj.status, '#64748b')
         return format_html(
@@ -58,16 +94,88 @@ class RepairTicketAdmin(admin.ModelAdmin):
             color,
             obj.get_status_display()
         )
-    status_badge.short_description = "Status"
+    status_badge.short_description = "Repair Status"
+
+    def quote_badge(self, obj):
+        if obj.quote_status == 'sent':
+            return format_html(
+                '<span style="background-color: #008BC6; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Quote Sent</span>'
+            )
+        elif obj.quote_status == 'approved':
+            return format_html(
+                '<span style="background-color: #10b981; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Client Approved ✓</span>'
+            )
+        elif obj.quote_status == 'declined':
+            return format_html(
+                '<span style="background-color: #ef4444; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Declined ✗</span>'
+            )
+        elif obj.quoted_price:
+            return format_html(
+                '<span style="background-color: #f59e0b; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Draft Quote</span>'
+            )
+        return format_html(
+            '<span style="color: #94a3b8; font-size: 11px;">No Quote</span>'
+        )
+    quote_badge.short_description = "Quote Status"
+
+    def quoted_price_display(self, obj):
+        if obj.quoted_price:
+            return format_html('<strong>GH₵ {}</strong>', obj.quoted_price)
+        return "—"
+    quoted_price_display.short_description = "Quoted (GH₵)"
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
         for instance in instances:
             if isinstance(instance, RepairMessage) and not instance.pk:
-                # Automatic flag as sent by lab technician when entered from admin
                 instance.sender_is_admin = True
             instance.save()
         formset.save_m2m()
+
+    def save_model(self, request, obj, form, change):
+        # Automatically mark quote as sent and dispatch email when admin sets a quoted price & changes status
+        if obj.quoted_price and (obj.status == 'quoted' or obj.quote_status == 'sent'):
+            if obj.quote_status != 'approved':
+                obj.quote_status = 'sent'
+            if not obj.quote_sent_at or 'quoted_price' in form.changed_data:
+                obj.quote_sent_at = timezone.now()
+                send_formal_repair_quote_email(obj)
+                # Auto record on communication thread
+                RepairMessage.objects.create(
+                    ticket=obj,
+                    sender_is_admin=True,
+                    message=f"📋 Formal Repair Quotation Dispatched: GH₵ {obj.quoted_price}. Diagnostic Scope: {obj.diagnostic_notes or 'Bench hardware restoration'}. Estimated Turnaround: {obj.estimated_turnaround}. Warranty: {obj.warranty_period}."
+                )
+        super().save_model(request, obj, form, change)
+
+    @admin.action(description="🎯 Send / Resend Formal Quote Email to Selected Tickets")
+    def send_formal_quote(self, request, queryset):
+        count = 0
+        for ticket in queryset:
+            if ticket.quoted_price:
+                ticket.status = 'quoted'
+                ticket.quote_status = 'sent'
+                ticket.quote_sent_at = timezone.now()
+                ticket.save()
+                send_formal_repair_quote_email(ticket)
+                RepairMessage.objects.create(
+                    ticket=ticket,
+                    sender_is_admin=True,
+                    message=f"📋 Formal Repair Quotation Dispatched: GH₵ {ticket.quoted_price}. Turnaround: {ticket.estimated_turnaround}. Warranty: {ticket.warranty_period}."
+                )
+                count += 1
+        if count:
+            self.message_user(
+                request,
+                f"Formal repair quote emails sent for {count} ticket(s).",
+                messages.SUCCESS
+            )
+        else:
+            self.message_user(
+                request,
+                "Please set a Quoted Price on the selected ticket(s) before sending quotes.",
+                messages.WARNING
+            )
 
     @admin.action(description="Mark selected tickets as In Progress (Diagnostic / Restoration)")
     def mark_in_progress(self, request, queryset):
@@ -143,12 +251,12 @@ class PartRequestAdmin(admin.ModelAdmin):
         'customer_phone',
         'part_needed',
         'device_model',
-        'condition_preference',
         'status_badge',
-        'quoted_price',
+        'quote_badge',
+        'quoted_price_display',
         'created_at',
     )
-    list_filter = ('status', 'condition_preference', 'created_at')
+    list_filter = ('status', 'quote_status', 'condition_preference', 'created_at')
     search_fields = (
         'request_id',
         'customer_name',
@@ -156,9 +264,40 @@ class PartRequestAdmin(admin.ModelAdmin):
         'customer_email',
         'part_needed',
         'device_model',
+        'admin_notes',
     )
-    readonly_fields = ('request_id', 'created_at')
-    actions = ['mark_quoted', 'mark_fulfilled', 'mark_declined']
+    readonly_fields = ('request_id', 'created_at', 'quote_sent_at')
+    actions = ['send_formal_part_quote', 'mark_fulfilled', 'mark_declined']
+
+    fieldsets = (
+        ("Client Identification", {
+            "fields": ("user", "customer_name", "customer_phone", "customer_email")
+        }),
+        ("Hardware Component Requested", {
+            "fields": (
+                "part_needed",
+                "device_model",
+                "condition_preference",
+                "additional_details",
+                "status",
+            )
+        }),
+        ("🎯 Formal Hardware Sourcing Quote Desk (Staff Only)", {
+            "description": "Set component price and availability notes. Dispatches a formal price quote email to the client.",
+            "fields": (
+                "quoted_price",
+                "admin_notes",
+                "estimated_delivery",
+                "warranty_period",
+                "quote_status",
+                "quote_sent_at",
+            )
+        }),
+        ("System Audit", {
+            "classes": ("collapse",),
+            "fields": ("request_id", "created_at")
+        }),
+    )
 
     def status_badge(self, obj):
         colors = {
@@ -174,18 +313,68 @@ class PartRequestAdmin(admin.ModelAdmin):
             color,
             obj.get_status_display()
         )
-    status_badge.short_description = "Status"
+    status_badge.short_description = "Request Status"
 
-    @admin.action(description="Mark selected requests as Quoted")
-    def mark_quoted(self, request, queryset):
-        for req in queryset:
-            req.status = 'quoted'
-            req.save()
-        self.message_user(
-            request,
-            f"{queryset.count()} part request(s) set to Quoted. Customer email notifications sent.",
-            messages.SUCCESS
+    def quote_badge(self, obj):
+        if obj.quote_status == 'sent':
+            return format_html(
+                '<span style="background-color: #008BC6; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Quote Sent</span>'
+            )
+        elif obj.quote_status == 'approved':
+            return format_html(
+                '<span style="background-color: #10b981; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Client Approved ✓</span>'
+            )
+        elif obj.quote_status == 'declined':
+            return format_html(
+                '<span style="background-color: #ef4444; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Declined ✗</span>'
+            )
+        elif obj.quoted_price:
+            return format_html(
+                '<span style="background-color: #f59e0b; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Draft Quote</span>'
+            )
+        return format_html(
+            '<span style="color: #94a3b8; font-size: 11px;">No Quote</span>'
         )
+    quote_badge.short_description = "Quote Status"
+
+    def quoted_price_display(self, obj):
+        if obj.quoted_price:
+            return format_html('<strong>GH₵ {}</strong>', obj.quoted_price)
+        return "—"
+    quoted_price_display.short_description = "Quoted (GH₵)"
+
+    def save_model(self, request, obj, form, change):
+        if obj.quoted_price and (obj.status == 'quoted' or obj.quote_status == 'sent'):
+            if obj.quote_status != 'approved':
+                obj.quote_status = 'sent'
+            if not obj.quote_sent_at or 'quoted_price' in form.changed_data:
+                obj.quote_sent_at = timezone.now()
+                send_formal_part_quote_email(obj)
+        super().save_model(request, obj, form, change)
+
+    @admin.action(description="🎯 Send / Resend Formal Quote Email to Selected Part Requests")
+    def send_formal_part_quote(self, request, queryset):
+        count = 0
+        for req in queryset:
+            if req.quoted_price:
+                req.status = 'quoted'
+                req.quote_status = 'sent'
+                req.quote_sent_at = timezone.now()
+                req.save()
+                send_formal_part_quote_email(req)
+                count += 1
+        if count:
+            self.message_user(
+                request,
+                f"Formal part quotes sent for {count} request(s).",
+                messages.SUCCESS
+            )
+        else:
+            self.message_user(
+                request,
+                "Please enter a Quoted Price on the selected request(s) before sending quotes.",
+                messages.WARNING
+            )
 
     @admin.action(description="Mark selected requests as Fulfilled (Ready)")
     def mark_fulfilled(self, request, queryset):
@@ -208,3 +397,4 @@ class PartRequestAdmin(admin.ModelAdmin):
             f"{queryset.count()} part request(s) set to Declined. Customer email notifications sent.",
             messages.WARNING
         )
+

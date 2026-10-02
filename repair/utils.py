@@ -45,10 +45,46 @@ def send_repair_email(ticket):
         return False
 
 
+def send_formal_repair_quote_email(ticket):
+    """Dedicated formal quotation email dispatched when an admin creates a repair quote."""
+    if not ticket.customer_email:
+        return False
+
+    try:
+        domain = get_site_domain()
+        tracking_url = f"https://{domain}/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/repair/track/{ticket.ticket_id}/"
+
+        subject = f"[Compupartz] Formal Repair Quotation #{ticket.ticket_id} — {ticket.device}"
+
+        context = {
+            "ticket": ticket,
+            "tracking_url": tracking_url,
+        }
+
+        html_content = render_to_string("emails/formal_repair_quote.html", context)
+        text_content = strip_tags(html_content)
+
+        send_mail(
+            subject=subject,
+            message=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[ticket.customer_email],
+            html_message=html_content,
+            fail_silently=True,
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Error sending formal repair quotation email for {ticket.ticket_id}: {e}")
+        return False
+
+
 def send_repair_status_email(ticket, old_status, new_status):
     """Email sent to customer whenever technician updates repair status in admin."""
     if not ticket.customer_email:
         return False
+
+    if new_status == 'quoted':
+        return send_formal_repair_quote_email(ticket)
 
     try:
         domain = get_site_domain()
@@ -166,23 +202,53 @@ def send_part_request_email(part_request):
         return False
 
 
+def send_formal_part_quote_email(part_request):
+    """Dedicated formal quotation email dispatched when an admin creates a part sourcing quote."""
+    if not part_request.customer_email:
+        return False
+
+    try:
+        domain = get_site_domain()
+        tracking_url = f"https://{domain}/repair/track-part/{part_request.request_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/repair/track-part/{part_request.request_id}/"
+
+        subject = f"[Compupartz] Formal Part Sourcing Quotation #{part_request.request_id} — {part_request.part_needed}"
+
+        context = {
+            "part_request": part_request,
+            "tracking_url": tracking_url,
+        }
+
+        html_content = render_to_string("emails/formal_part_quote.html", context)
+        text_content = strip_tags(html_content)
+
+        send_mail(
+            subject=subject,
+            message=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[part_request.customer_email],
+            html_message=html_content,
+            fail_silently=True,
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Error sending formal part quote email for {part_request.request_id}: {e}")
+        return False
+
+
 def send_part_request_status_email(part_request, old_status, new_status):
     """Email sent to customer whenever technician updates a part request status or quotes a price."""
     if not part_request.customer_email:
         return False
+
+    if new_status == 'quoted':
+        return send_formal_part_quote_email(part_request)
 
     try:
         domain = get_site_domain()
         dashboard_url = f"https://{domain}/dashboard/?tab=parts" if not settings.DEBUG else "http://127.0.0.1:8000/dashboard/?tab=parts"
 
         status_display = part_request.get_status_display()
-        if new_status == 'quoted':
-            subject = f"[Compupartz] Quote Available for Part Request #{part_request.request_id}"
-            status_message = (
-                f"We have located the component you requested ({part_request.part_needed} for {part_request.device_model}). "
-                f"Our technicians have generated a formal price quote. Review details below to confirm your order."
-            )
-        elif new_status == 'fulfilled':
+        if new_status == 'fulfilled':
             subject = f"[Compupartz] Hardware Part Procured & Ready — #{part_request.request_id}"
             status_message = (
                 f"Your requested hardware part ({part_request.part_needed}) has arrived at our lab and is tested and ready for collection or courier dispatch!"

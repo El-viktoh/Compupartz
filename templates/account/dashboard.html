@@ -355,6 +355,37 @@
                                     </div>
                                 </div>
 
+                                {% if ticket.quoted_price %}
+                                <!-- Formal Quote Highlight Banner -->
+                                <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-orange-500/10 border border-[#008BC6]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-10 h-10 rounded-xl bg-[#008BC6]/10 text-[#008BC6] flex items-center justify-center font-bold text-lg">📄</span>
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs font-bold text-slate-800 dark:text-white">Formal Repair Quote:</span>
+                                                <span class="text-sm font-black text-[#FF7200] font-mono">GH₵ {{ ticket.quoted_price }}</span>
+                                            </div>
+                                            <p class="text-[11px] text-slate-500 dark:text-gray-400 font-light truncate max-w-md">
+                                                {{ ticket.diagnostic_notes|default:"Diagnostic bench testing completed. Turnaround: 24 - 48 Hours." }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="self-end sm:self-auto shrink-0">
+                                        {% if ticket.quote_status == 'sent' %}
+                                            <a href="{% url 'track_repair' ticket.ticket_id %}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95">
+                                                <span>Review & Authorize &rarr;</span>
+                                            </a>
+                                        {% elif ticket.quote_status == 'approved' %}
+                                            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                                <span>✓ Authorized by You</span>
+                                            </span>
+                                        {% else %}
+                                            <span class="text-xs font-bold text-slate-400 capitalize">{{ ticket.get_quote_status_display }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
                                 <!-- Reported Issue Quote -->
                                 <div class="mb-8 p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 relative">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-[#FF7200] block mb-1.5 flex items-center gap-1.5">

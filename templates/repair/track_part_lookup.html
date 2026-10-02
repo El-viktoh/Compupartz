@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Track Part Request & Live Sourcing Status | Compupartz{% endblock %}
+
+{% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
+.hero-script-font {
+    font-family: 'Caveat', cursive, -apple-system, sans-serif;
+}
+</style>
+
+<!-- ================= FULL-BLEED PART TRACKING LOOKUP PAGE ================= -->
+<div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] -mt-24 pt-32 sm:pt-36 md:pt-40 -mb-12 pb-24 sm:pb-32 bg-[#F5F8FA] dark:bg-[#0a0a0c] text-slate-800 dark:text-white font-outfit overflow-hidden transition-colors duration-300 relative min-h-screen">
+
+    <!-- Ambient Glow Spots -->
+    <div class="absolute top-10 left-1/4 w-96 h-96 bg-[#008BC6]/8 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-44 right-10 w-96 h-96 bg-[#10b981]/8 dark:bg-[#10b981]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+        <!-- Top Header Banner -->
+        <div class="mb-10 sm:mb-12 text-center max-w-2xl mx-auto">
+            <span class="hero-script-font text-3xl sm:text-4xl text-[#008BC6] dark:text-[#38bdf8] font-bold block mb-1 transform -rotate-1">
+                OEM Hardware Procurement
+            </span>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+                Track Your Part <span class="text-[#008BC6]">Request.</span>
+            </h1>
+        </div>
+
+        <!-- Lookup Verification Form -->
+        <div class="max-w-xl mx-auto mb-16">
+            <div class="bg-white dark:bg-[#12141a] rounded-3xl p-7 sm:p-10 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative overflow-hidden">
+                <div class="mb-8 text-center">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-[#008BC6] border border-blue-500/20 mb-3">
+                        <span>🔐</span> Sourcing Status Verification
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-display font-black tracking-tight text-black dark:text-white mb-2">
+                        Locate Your Part Request
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-light leading-relaxed max-w-md mx-auto">
+                        Enter your unique Request ID and phone number to view supplier stock quotes and order confirmation.
+                    </p>
+                </div>
+
+                <form method="POST" action="{% url 'track_part_lookup' %}" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="request_id_input" class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">
+                                Part Request ID <span class="text-[#FF7200]">*</span>
+                            </label>
+                            <span class="text-[10px] font-semibold text-[#008BC6] dark:text-[#38bdf8]">
+                                Format: P-XXXX
+                            </span>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">📦</span>
+                            <input type="text"
+                                   id="request_id_input"
+                                   name="request_id"
+                                   required
+                                   placeholder="e.g. P-1002"
+                                   class="w-full bg-[#F8FAFC] dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-500 font-mono focus:bg-white dark:focus:bg-[#1a1d24] focus:border-[#008BC6] focus:ring-4 focus:ring-[#008BC6]/10 outline-none transition-all shadow-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="phone_input" class="block text-[10px] font-bold text-slate-500 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
+                            Registered Contact Phone <span class="text-[#FF7200]">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">📱</span>
+                            <input type="tel"
+                                   id="phone_input"
+                                   name="phone"
+                                   required
+                                   placeholder="e.g. 0540 322 533"
+                                   class="w-full bg-[#F8FAFC] dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-500 font-medium focus:bg-white dark:focus:bg-[#1a1d24] focus:border-[#008BC6] focus:ring-4 focus:ring-[#008BC6]/10 outline-none transition-all shadow-sm">
+                        </div>
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#008BC6] to-sky-600 hover:from-sky-600 hover:to-[#008BC6] text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-blue-500/25 active:scale-95 transition-all">
+                        Track Part Request &rarr;
+                    </button>
+                </form>
+
+                <div class="mt-6 pt-6 border-t border-slate-100 dark:border-white/5 text-center text-xs text-slate-500">
+                    Need a laptop repair instead? 
+                    <a href="{% url 'track_repair_lookup' %}" class="text-[#FF7200] font-bold hover:underline">Track Repair Ticket &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -73,8 +73,8 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h1 class="text-3xl sm:text-4xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
                     Repair Status: 
-                    <span class="{% if ticket.status == 'completed' %}text-emerald-500{% elif ticket.status == 'in_progress' %}text-[#FF7200]{% else %}text-[#008BC6]{% endif %}">
-                        {{ ticket.status|title }}
+                    <span class="{% if ticket.status == 'completed' %}text-emerald-500{% elif ticket.status == 'in_progress' %}text-[#FF7200]{% elif ticket.status == 'quoted' %}text-[#008BC6]{% else %}text-amber-500{% endif %}">
+                        {{ ticket.get_status_display }}
                     </span>
                 </h1>
 
@@ -88,6 +88,144 @@
                 </a>
             </div>
         </div>
+
+        <!-- ================= SIMPLE STAFF QUOTE FORM (STAFF ONLY) ================= -->
+        {% if user.is_authenticated and user.is_staff %}
+        <div class="mb-8 p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-sm">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-white/5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-[#FF7200]/10 text-[#FF7200] flex items-center justify-center text-xs font-bold">⚡</span>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Admin Quote Desk</h3>
+                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-gray-400">Staff Only</span>
+                </div>
+                {% if ticket.quote_status != 'none' %}
+                <span class="text-xs font-semibold {% if ticket.quote_status == 'approved' %}text-emerald-600{% elif ticket.quote_status == 'declined' %}text-red-500{% else %}text-amber-500{% endif %}">
+                    Status: {{ ticket.get_quote_status_display }}
+                </span>
+                {% endif %}
+            </div>
+
+            <form method="POST" action="{% url 'staff_create_repair_quote' ticket.ticket_id %}" class="space-y-4">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                            Price (GH₵) <span class="text-[#FF7200]">*</span>
+                        </label>
+                        <input type="number" step="0.01" name="quoted_price" value="{{ ticket.quoted_price|default:'' }}" required placeholder="0.00" class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white text-sm font-bold font-mono focus:border-[#FF7200] focus:ring-1 focus:ring-[#FF7200] outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                            Turnaround
+                        </label>
+                        <input type="text" name="estimated_turnaround" value="{{ ticket.estimated_turnaround|default:'24 - 48 Hours' }}" placeholder="24 - 48 Hours" class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white text-sm focus:border-[#FF7200] focus:ring-1 focus:ring-[#FF7200] outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                            Warranty
+                        </label>
+                        <input type="text" name="warranty_period" value="{{ ticket.warranty_period|default:'90-Day Compupartz Warranty' }}" placeholder="90-Day Warranty" class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white text-sm focus:border-[#FF7200] focus:ring-1 focus:ring-[#FF7200] outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                        Diagnostic Findings / Scope of Work
+                    </label>
+                    <input type="text" name="diagnostic_notes" value="{{ ticket.diagnostic_notes|default:'' }}" placeholder="Brief summary of diagnostic findings or work to be done..." class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white text-xs focus:border-[#FF7200] focus:ring-1 focus:ring-[#FF7200] outline-none">
+                </div>
+
+                <div class="flex items-center justify-between pt-1">
+                    <span class="text-[11px] text-slate-400">Emails quote & approval link to customer</span>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#FF7200] hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95">
+                        Send Quote &rarr;
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- ================= SIMPLE REPAIR QUOTATION CARD ================= -->
+        {% if ticket.quoted_price %}
+        <div class="mb-8 p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-white/5">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Repair Quote</span>
+                    <div class="flex items-baseline gap-2 mt-0.5">
+                        <span class="text-2xl sm:text-3xl font-black text-[#FF7200] font-mono">GH₵ {{ ticket.quoted_price }}</span>
+                        <span class="text-xs text-slate-500 dark:text-gray-400">total estimated cost</span>
+                    </div>
+                </div>
+
+                <div>
+                    {% if ticket.quote_status == 'sent' %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            Awaiting Authorization
+                        </span>
+                    {% elif ticket.quote_status == 'approved' %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Authorized ✓
+                        </span>
+                    {% elif ticket.quote_status == 'declined' %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                            Declined ✗
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quote Details -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 py-4 text-xs border-b border-slate-100 dark:border-white/5">
+                <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-semibold">Scope of Work</span>
+                    <span class="text-slate-800 dark:text-white font-medium">{{ ticket.diagnostic_notes|default:'Component-level restoration and diagnostic testing' }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-semibold">Turnaround</span>
+                    <span class="text-slate-800 dark:text-white font-medium">{{ ticket.estimated_turnaround|default:'24 - 48 Hours' }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-semibold">Warranty</span>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-semibold">{{ ticket.warranty_period|default:'90-Day Compupartz Warranty' }}</span>
+                </div>
+            </div>
+
+            <!-- Approval Action -->
+            {% if ticket.quote_status == 'sent' %}
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
+                <p class="text-xs text-slate-500 dark:text-gray-400">
+                    Authorize this repair to begin lab bench work immediately.
+                </p>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <form method="POST" action="{% url 'customer_approve_repair_quote' ticket.ticket_id %}" class="w-full sm:w-auto m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95">
+                            Authorize (GH₵ {{ ticket.quoted_price }})
+                        </button>
+                    </form>
+                    <form method="POST" action="{% url 'customer_decline_repair_quote' ticket.ticket_id %}" class="m-0" onsubmit="return confirm('Decline this repair quotation?');">
+                        {% csrf_token %}
+                        <button type="submit" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-700 dark:text-gray-300 text-xs font-semibold uppercase tracking-wider transition-all">
+                            Decline
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% elif ticket.quote_status == 'approved' %}
+            <div class="pt-4 flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                <span>✓</span>
+                <span>You authorized this repair. Our technicians are actively working on your device.</span>
+            </div>
+            {% elif ticket.quote_status == 'declined' %}
+            <div class="pt-4 flex items-center gap-2 text-xs text-red-500 font-medium">
+                <span>✗</span>
+                <span>You declined this quote. Our team has paused work on this ticket.</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
 
         <!-- Main Grid: Device Info & Milestone Pipeline -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
@@ -158,42 +296,57 @@
 
                         <!-- Step 1: Request Submitted -->
                         <div class="relative group">
-                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if ticket.status in 'pending in_progress completed' %}bg-[#008BC6] text-white shadow-md shadow-blue-500/30{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full bg-[#008BC6] text-white shadow-md shadow-blue-500/30 flex items-center justify-center text-xs font-bold transition-all">
                                 ✓
                             </div>
                             <div class="pl-3">
-                                <h4 class="text-xs font-bold uppercase tracking-wider {% if ticket.status in 'pending in_progress completed' %}text-[#008BC6] dark:text-[#38bdf8]{% else %}text-slate-400 dark:text-gray-500{% endif %}">
-                                    01. Request Submitted & Device Received
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-[#008BC6] dark:text-[#38bdf8]">
+                                    01. Physical Intake & Registration
                                 </h4>
                                 <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
-                                    Order registered in our system, physical intake verified, and diagnostic bench path assigned.
+                                    Device received at our laboratory, serial verified, and assigned to bench technician.
                                 </p>
                             </div>
                         </div>
 
-                        <!-- Step 2: Active Restoration -->
+                        <!-- Step 2: Diagnostic & Formal Quote -->
                         <div class="relative group">
-                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if ticket.status in 'in_progress completed' %}bg-[#FF7200] text-white shadow-md shadow-orange-500/30 animate-pulse{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
-                                {% if ticket.status == 'in_progress' %}⚙️{% elif ticket.status == 'completed' %}✓{% else %}2{% endif %}
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if ticket.status in 'quoted in_progress completed' %}bg-[#008BC6] text-white shadow-md shadow-blue-500/30 {% if ticket.status == 'quoted' %}animate-pulse ring-4 ring-blue-500/20{% endif %}{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
+                                {% if ticket.status in 'in_progress completed' %}✓{% elif ticket.status == 'quoted' %}📄{% else %}2{% endif %}
+                            </div>
+                            <div class="pl-3">
+                                <h4 class="text-xs font-bold uppercase tracking-wider {% if ticket.status in 'quoted in_progress completed' %}text-[#008BC6] dark:text-[#38bdf8]{% else %}text-slate-400 dark:text-gray-500{% endif %}">
+                                    02. Diagnostic Findings & Formal Quotation
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
+                                    Circuit-level diagnostics completed and transparent formal price quote generated for client review.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Active Restoration -->
+                        <div class="relative group">
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if ticket.status in 'in_progress completed' %}bg-[#FF7200] text-white shadow-md shadow-orange-500/30 {% if ticket.status == 'in_progress' %}animate-pulse ring-4 ring-orange-500/20{% endif %}{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
+                                {% if ticket.status == 'in_progress' %}⚙️{% elif ticket.status == 'completed' %}✓{% else %}3{% endif %}
                             </div>
                             <div class="pl-3">
                                 <h4 class="text-xs font-bold uppercase tracking-wider {% if ticket.status in 'in_progress completed' %}text-[#FF7200]{% else %}text-slate-400 dark:text-gray-500{% endif %}">
-                                    02. Active Bench Restoration & Diagnostics
+                                    03. Active Bench Restoration & Diagnostics
                                 </h4>
                                 <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
-                                    Hardware specialists are actively executing component micro-soldering, board rework, or OEM part replacement.
+                                    Hardware specialists executing component micro-soldering, board rework, or OEM part installation.
                                 </p>
                             </div>
                         </div>
 
-                        <!-- Step 3: Quality Testing & Ready -->
+                        <!-- Step 4: Quality Testing & Ready -->
                         <div class="relative group">
                             <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if ticket.status == 'completed' %}bg-emerald-500 text-white shadow-md shadow-emerald-500/30{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
-                                {% if ticket.status == 'completed' %}✓{% else %}3{% endif %}
+                                {% if ticket.status == 'completed' %}✓{% else %}4{% endif %}
                             </div>
                             <div class="pl-3">
                                 <h4 class="text-xs font-bold uppercase tracking-wider {% if ticket.status == 'completed' %}text-emerald-500{% else %}text-slate-400 dark:text-gray-500{% endif %}">
-                                    03. System Deployed & Ready for Collection
+                                    04. System Deployed & Ready for Collection
                                 </h4>
                                 <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
                                     Final thermal stress loops and 3DMark benchmarks cleared. Machine sealed and ready for collection or courier dispatch.

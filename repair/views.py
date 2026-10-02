@@ -1,12 +1,19 @@
+from decimal import Decimal, InvalidOperation
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 
 from .forms import RepairBookingForm, PartRequestForm
 from .models import RepairTicket, RepairMessage, PartRequest
-from .utils import send_repair_email, send_part_request_email
+from .utils import (
+    send_repair_email,
+    send_part_request_email,
+    send_formal_repair_quote_email,
+    send_formal_part_quote_email,
+)
 
 
 def repair_home(request):
@@ -94,10 +101,8 @@ def part_request_success(request, request_id):
 
 
 # ===========================
-# ✅ ACCESS CONTROL
+# ✅ ACCESS CONTROL: REPAIRS
 # ===========================
-# A ticket is visible to: its owner, staff, matching registered email,
-# or a browser session verified via track_repair_lookup.
 def _can_access_ticket(request, ticket):
     if request.user.is_authenticated:
         if request.user.is_staff or ticket.user_id == request.user.id:
@@ -117,15 +122,34 @@ def _grant_ticket_access(request, ticket):
 
 
 # ===========================
+# ✅ ACCESS CONTROL: PARTS
+# ===========================
+def _can_access_part_request(request, part_request):
+    if request.user.is_authenticated:
+        if request.user.is_staff or part_request.user_id == request.user.id:
+            return True
+        if part_request.user_id is None and request.user.email and part_request.customer_email and part_request.customer_email.strip().lower() == request.user.email.strip().lower():
+            return True
+
+    verified_part_requests = request.session.get("verified_part_requests", [])
+    return part_request.request_id in verified_part_requests
+
+
+def _grant_part_request_access(request, part_request):
+    verified_part_requests = request.session.setdefault("verified_part_requests", [])
+    if part_request.request_id not in verified_part_requests:
+        verified_part_requests.append(part_request.request_id)
+        request.session.modified = True
+
+
+# ===========================
 # ✅ TRACK REPAIR (LOOKUP)
 # ===========================
-
 def track_repair_lookup(request):
     if request.method == "POST":
         ticket_id = request.POST.get("ticket_id")
         phone = request.POST.get("phone")
 
-        # ✅ FIX: USE ticket_id FIELD (NOT id)
         ticket = RepairTicket.objects.filter(
             ticket_id=ticket_id,
             customer_phone=phone
@@ -135,7 +159,6 @@ def track_repair_lookup(request):
             _grant_ticket_access(request, ticket)
             return redirect("track_repair", ticket_id=ticket.ticket_id)
 
-        # ❌ SHOW ERROR MESSAGE
         messages.error(
             request,
             "Ticket not found. Check your Ticket ID and phone number."
@@ -147,7 +170,6 @@ def track_repair_lookup(request):
 # ===========================
 # ✅ TRACK REPAIR (RESULT)
 # ===========================
-
 def track_repair(request, ticket_id):
     ticket = get_object_or_404(RepairTicket, ticket_id=ticket_id)
 
@@ -172,6 +194,208 @@ def track_repair(request, ticket_id):
 
     return render(request, "repair/track_repair.html", {
         "ticket": ticket
+    })
+
+
+# ===========================
+# 🎯 STAFF QUOTE CREATION: REPAIRS (STAFF ONLY)
+# ===========================
+@login_required
+def staff_create_repair_quote(request, ticket_id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
+    ticket = get_object_or_404(RepairTicket, ticket_id=ticket_id)
+
+    if request.method == "POST":
+        price_raw = request.POST.get("quoted_price", "").strip()
+        diagnostic_notes = request.POST.get("diagnostic_notes", "").strip()
+        estimated_turnaround = request.POST.get("estimated_turnaround", "24 - 48 Hours").strip()
+        warranty_period = request.POST.get("warranty_period", "90-Day Compupartz Warranty").strip()
+
+        try:
+            price = Decimal(price_raw)
+            if price <= 0:
+                raise ValueError
+        except (InvalidOperation, ValueError):
+            messages.error(request, "Please provide a valid quote price greater than zero.")
+            return redirect("track_repair", ticket_id=ticket.ticket_id)
+
+        ticket.quoted_price = price
+        ticket.diagnostic_notes = diagnostic_notes
+        ticket.estimated_turnaround = estimated_turnaround
+        ticket.warranty_period = warranty_period
+        ticket.status = "quoted"
+        ticket.quote_status = "sent"
+        ticket.quote_sent_at = timezone.now()
+        ticket.save()
+
+        # Send formal quotation email
+        send_formal_repair_quote_email(ticket)
+
+        # Record in message thread
+        RepairMessage.objects.create(
+            ticket=ticket,
+            sender_is_admin=True,
+            message=(
+                f"📋 Formal Repair Quote Dispatched: GH₵ {ticket.quoted_price}. "
+                f"Diagnostic Scope: {ticket.diagnostic_notes or 'Comprehensive board-level restoration'}. "
+                f"Turnaround: {ticket.estimated_turnaround}. Warranty: {ticket.warranty_period}."
+            )
+        )
+
+        messages.success(
+            request,
+            f"Formal repair quote of GH₵ {ticket.quoted_price} generated and emailed to {ticket.customer_email}."
+        )
+
+    return redirect("track_repair", ticket_id=ticket.ticket_id)
+
+
+def customer_approve_repair_quote(request, ticket_id):
+    ticket = get_object_or_404(RepairTicket, ticket_id=ticket_id)
+
+    if not _can_access_ticket(request, ticket):
+        raise PermissionDenied
+
+    if request.method == "POST":
+        ticket.quote_status = "approved"
+        ticket.status = "in_progress"
+        ticket.save()
+
+        RepairMessage.objects.create(
+            ticket=ticket,
+            sender_is_admin=False,
+            message=(
+                f"✅ Quote Approved: Client {ticket.customer_name} approved the repair estimate "
+                f"of GH₵ {ticket.quoted_price}. Bench restoration is authorized."
+            )
+        )
+
+        messages.success(
+            request,
+            "Quote approved! Our certified technicians have been authorized and are initiating bench restoration."
+        )
+
+    return redirect("track_repair", ticket_id=ticket.ticket_id)
+
+
+def customer_decline_repair_quote(request, ticket_id):
+    ticket = get_object_or_404(RepairTicket, ticket_id=ticket_id)
+
+    if not _can_access_ticket(request, ticket):
+        raise PermissionDenied
+
+    if request.method == "POST":
+        ticket.quote_status = "declined"
+        ticket.save()
+
+        RepairMessage.objects.create(
+            ticket=ticket,
+            sender_is_admin=False,
+            message=f"❌ Client {ticket.customer_name} declined the current repair quote."
+        )
+
+        messages.info(request, "Quote declined. Our technicians have been notified.")
+
+    return redirect("track_repair", ticket_id=ticket.ticket_id)
+
+
+# ===========================
+# 🎯 STAFF QUOTE CREATION: PARTS (STAFF ONLY)
+# ===========================
+@login_required
+def staff_create_part_quote(request, request_id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
+    part_request = get_object_or_404(PartRequest, request_id=request_id)
+
+    if request.method == "POST":
+        price_raw = request.POST.get("quoted_price", "").strip()
+        admin_notes = request.POST.get("admin_notes", "").strip()
+        estimated_delivery = request.POST.get("estimated_delivery", "24 - 48 Hours").strip()
+        warranty_period = request.POST.get("warranty_period", "90-Day OEM Replacement Warranty").strip()
+
+        try:
+            price = Decimal(price_raw)
+            if price <= 0:
+                raise ValueError
+        except (InvalidOperation, ValueError):
+            messages.error(request, "Please enter a valid price greater than zero.")
+            return redirect("track_part", request_id=part_request.request_id)
+
+        part_request.quoted_price = price
+        part_request.admin_notes = admin_notes
+        part_request.estimated_delivery = estimated_delivery
+        part_request.warranty_period = warranty_period
+        part_request.status = "quoted"
+        part_request.quote_status = "sent"
+        part_request.quote_sent_at = timezone.now()
+        part_request.save()
+
+        send_formal_part_quote_email(part_request)
+
+        messages.success(
+            request,
+            f"Hardware sourcing quote of GH₵ {part_request.quoted_price} generated and emailed to {part_request.customer_email}."
+        )
+
+    return redirect("track_part", request_id=part_request.request_id)
+
+
+def customer_approve_part_quote(request, request_id):
+    part_request = get_object_or_404(PartRequest, request_id=request_id)
+
+    if not _can_access_part_request(request, part_request):
+        raise PermissionDenied
+
+    if request.method == "POST":
+        part_request.quote_status = "approved"
+        part_request.save()
+
+        messages.success(
+            request,
+            "Part quote confirmed! Our procurement desk is securing your component."
+        )
+
+    return redirect("track_part", request_id=part_request.request_id)
+
+
+# ===========================
+# ✅ TRACK PART REQUEST
+# ===========================
+def track_part_lookup(request):
+    if request.method == "POST":
+        request_id = request.POST.get("request_id", "").strip()
+        phone = request.POST.get("phone", "").strip()
+
+        part_request = PartRequest.objects.filter(
+            request_id__iexact=request_id,
+            customer_phone=phone
+        ).first()
+
+        if part_request:
+            _grant_part_request_access(request, part_request)
+            return redirect("track_part", request_id=part_request.request_id)
+
+        messages.error(
+            request,
+            "Part request not found. Check your Request ID (e.g. P-1) and phone number."
+        )
+
+    return render(request, "repair/track_part_lookup.html")
+
+
+def track_part(request, request_id):
+    part_request = get_object_or_404(PartRequest, request_id=request_id)
+
+    if not _can_access_part_request(request, part_request):
+        messages.error(request, "Please verify your Request ID and phone number to view this request.")
+        return redirect("track_part_lookup")
+
+    return render(request, "repair/track_part.html", {
+        "part_request": part_request
     })
 
 
@@ -235,3 +459,59 @@ def delete_repair_message(request, message_id):
     if referer and 'dashboard' in referer:
         return redirect(f"/dashboard/?tab=communications&ticket={ticket_pk}#comms-ticket-{ticket_pk}")
     return redirect("track_repair", ticket_id=ticket_id)
+
+
+# ===========================
+# 📧 LIVE EMAIL PREVIEWS (DEV / DEMO)
+# ===========================
+def preview_repair_quote_email(request):
+    """Live preview of the formal repair quotation email sent to customers."""
+    ticket = RepairTicket.objects.filter(quoted_price__isnull=False).first()
+    if not ticket:
+        ticket = RepairTicket(
+            ticket_id="R-108",
+            customer_name="Kwame Mensah",
+            customer_email="kwame@example.com",
+            customer_phone="+233 54 123 4567",
+            device="MacBook Pro 16\" M1 Pro (A2485)",
+            quoted_price=Decimal("850.00"),
+            diagnostic_notes="Shorted 3.3V power management rail restored, micro-soldered replacement capacitors, renewed thermal paste, and passed benchmark testing.",
+            estimated_turnaround="24 - 48 Hours",
+            warranty_period="90-Day Compupartz Warranty",
+            status="quoted",
+            quote_status="sent",
+        )
+
+    tracking_url = request.build_absolute_uri(f"/repair/track/{ticket.ticket_id}/")
+    return render(request, "emails/formal_repair_quote.html", {
+        "ticket": ticket,
+        "tracking_url": tracking_url,
+    })
+
+
+def preview_part_quote_email(request):
+    """Live preview of the formal part request quotation email sent to customers."""
+    part_request = PartRequest.objects.filter(quoted_price__isnull=False).first()
+    if not part_request:
+        part_request = PartRequest(
+            request_id="P-42",
+            customer_name="Akosua Agyeman",
+            customer_email="akosua@example.com",
+            customer_phone="+233 20 987 6543",
+            part_needed="Original OEM 96W USB-C Power Adapter + Type-C Braided Cable",
+            device_model="Apple MacBook Pro 16-inch",
+            quoted_price=Decimal("480.00"),
+            admin_notes="Verified original OEM inventory in stock with authorized distributor. Grade-A certified with Compupartz warranty seal.",
+            estimated_delivery="Same Day / 24 Hours",
+            warranty_period="90-Day OEM Replacement Warranty",
+            status="quoted",
+            quote_status="sent",
+        )
+
+    tracking_url = request.build_absolute_uri(f"/repair/track-part/{part_request.request_id}/")
+    return render(request, "emails/formal_part_quote.html", {
+        "part_request": part_request,
+        "tracking_url": tracking_url,
+    })
+
+

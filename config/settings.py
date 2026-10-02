@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.microsoft',
     'allauth.socialaccount.providers.apple',
     'allauth.socialaccount.providers.twitter_oauth2',
 ]
@@ -242,11 +243,28 @@ AUTHENTICATION_BACKENDS = [
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
+        'APP': {
+            'client_id': os.getenv('GOOGLE_CLIENT_ID', ''),
+            'secret': os.getenv('GOOGLE_SECRET', ''),
+        },
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
         'OAUTH_PKCE_ENABLED': True,
     },
+    'microsoft': {
+        'APP': {
+            'client_id': os.getenv('MICROSOFT_CLIENT_ID', ''),
+            'secret': os.getenv('MICROSOFT_SECRET', ''),
+        },
+        # 'common' accepts both personal Microsoft accounts (Outlook.com,
+        # Hotmail, Live) and work/school (Microsoft 365 / Azure AD) accounts.
+        'tenant': os.getenv('MICROSOFT_TENANT', 'common'),
+    },
     'twitter_oauth2': {
+        'APP': {
+            'client_id': os.getenv('TWITTER_CLIENT_ID', ''),
+            'secret': os.getenv('TWITTER_SECRET', ''),
+        },
         'SCOPE': ['tweet.read', 'users.read', 'offline.access'],
     },
     'apple': {

@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Part Request #{{ part_request.request_id }} | Compupartz{% endblock %}
+
+{% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
+.hero-script-font {
+    font-family: 'Caveat', cursive, -apple-system, sans-serif;
+}
+</style>
+
+<div class="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] -mt-24 pt-32 sm:pt-36 md:pt-40 -mb-12 pb-24 sm:pb-32 bg-[#F5F8FA] dark:bg-[#0a0a0c] text-slate-800 dark:text-white font-outfit overflow-hidden transition-colors duration-300 relative min-h-screen">
+
+    <!-- Ambient Glow Spots -->
+    <div class="absolute top-10 left-1/4 w-96 h-96 bg-[#008BC6]/8 dark:bg-[#008BC6]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-44 right-10 w-96 h-96 bg-[#10b981]/8 dark:bg-[#10b981]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-5xl mx-auto px-6 relative z-10">
+
+        <!-- Top Header & Status Banner -->
+        <div class="mb-10 sm:mb-12">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-500/10 text-[#008BC6] border border-blue-500/20 mb-3">
+                <span class="w-2 h-2 rounded-full bg-[#008BC6] animate-pulse"></span>
+                Part Request #{{ part_request.request_id }}
+            </div>
+
+            <span class="hero-script-font text-3xl sm:text-4xl text-[#008BC6] dark:text-[#38bdf8] font-bold block mb-1 transform -rotate-1">
+                Hardware Procurement Desk
+            </span>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h1 class="text-3xl sm:text-4xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+                    Status: 
+                    <span class="{% if part_request.status == 'fulfilled' %}text-emerald-500{% elif part_request.status == 'quoted' %}text-[#008BC6]{% elif part_request.status == 'declined' %}text-red-500{% else %}text-amber-500{% endif %}">
+                        {{ part_request.get_status_display }}
+                    </span>
+                </h1>
+
+                <!-- Direct WhatsApp Hotline -->
+                <a href="https://wa.me/233540322533?text=Inquiry%20regarding%20Part%20Request%20{{ part_request.request_id }}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-all self-start sm:self-auto">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    <span>Parts WhatsApp</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- ================= SIMPLE STAFF PART QUOTE FORM (STAFF ONLY) ================= -->
+        {% if user.is_authenticated and user.is_staff %}
+        <div class="mb-8 p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-sm">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-white/5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-[#008BC6]/10 text-[#008BC6] flex items-center justify-center text-xs font-bold">📦</span>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Admin Parts Quote Desk</h3>
+                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-gray-400">Staff Only</span>
+                </div>
+                {% if part_request.quote_status != 'none' %}
+                <span class="text-xs font-semibold {% if part_request.quote_status == 'approved' %}text-emerald-600{% else %}text-amber-500{% endif %}">
+                    Status: {{ part_request.get_quote_status_display }}
+                </span>
+                {% endif %}
+            </div>
+
+            <form method="POST" action="{% url 'staff_create_part_quote' part_request.request_id %}" class="space-y-4">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                            Price (GH₵) <span class="text-[#FF7200]">*</span>
+                        </label>
+                        <input type="number" step="0.01" name="quoted_price" value="{{ part_request.quoted_price|default:'' }}" required placeholder="0.00" class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white text-sm font-bold font-mono focus:border-[#008BC6] focus:ring-1 focus:ring-[#008BC6] outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                            Estimated Arrival
+                        </label>
+                        <input type="text" name="estimated_delivery" value="{{ part_request.estimated_delivery|default:'24 - 48 Hours' }}" placeholder="24 - 48 Hours" class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white text-sm focus:border-[#008BC6] focus:ring-1 focus:ring-[#008BC6] outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                            Warranty
+                        </label>
+                        <input type="text" name="warranty_period" value="{{ part_request.warranty_period|default:'90-Day OEM Replacement Warranty' }}" placeholder="90-Day Warranty" class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white text-sm focus:border-[#008BC6] focus:ring-1 focus:ring-[#008BC6] outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                        Supplier / Component Notes
+                    </label>
+                    <input type="text" name="admin_notes" value="{{ part_request.admin_notes|default:'' }}" placeholder="e.g. OEM stock verified with distributor, pre-tested..." class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white text-xs focus:border-[#008BC6] focus:ring-1 focus:ring-[#008BC6] outline-none">
+                </div>
+
+                <div class="flex items-center justify-between pt-1">
+                    <span class="text-[11px] text-slate-400">Emails quote & confirmation link to customer</span>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#008BC6] hover:bg-sky-600 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95">
+                        Send Part Quote &rarr;
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- ================= SIMPLE PART SOURCING QUOTATION CARD ================= -->
+        {% if part_request.quoted_price %}
+        <div class="mb-8 p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-white/5">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Component Price Quote</span>
+                    <div class="flex items-baseline gap-2 mt-0.5">
+                        <span class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">GH₵ {{ part_request.quoted_price }}</span>
+                        <span class="text-xs text-slate-500 dark:text-gray-400">OEM verified stock</span>
+                    </div>
+                </div>
+
+                <div>
+                    {% if part_request.quote_status == 'sent' %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            Quote Ready for Confirmation
+                        </span>
+                    {% elif part_request.quote_status == 'approved' %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Order Confirmed ✓
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quote Details -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 py-4 text-xs border-b border-slate-100 dark:border-white/5">
+                <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-semibold">Technician Note</span>
+                    <span class="text-slate-800 dark:text-white font-medium">{{ part_request.admin_notes|default:'Component verified with OEM distributor' }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-semibold">Estimated Arrival</span>
+                    <span class="text-slate-800 dark:text-white font-medium">{{ part_request.estimated_delivery|default:'24 - 48 Hours' }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-semibold">Warranty</span>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-semibold">{{ part_request.warranty_period|default:'90-Day OEM Replacement Warranty' }}</span>
+                </div>
+            </div>
+
+            <!-- Confirmation Action -->
+            {% if part_request.quote_status == 'sent' %}
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
+                <p class="text-xs text-slate-500 dark:text-gray-400">
+                    Confirm this quote to dispatch procurement from our verified distributors.
+                </p>
+                <form method="POST" action="{% url 'customer_approve_part_quote' part_request.request_id %}" class="w-full sm:w-auto m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95">
+                        Confirm Order (GH₵ {{ part_request.quoted_price }})
+                    </button>
+                </form>
+            </div>
+            {% elif part_request.quote_status == 'approved' %}
+            <div class="pt-4 flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                <span>✓</span>
+                <span>You confirmed this quote. Our sourcing desk is actively procuring your component.</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Main Grid: Part Info & Pipeline -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+
+            <!-- Left Panel: Request Info (4 cols) -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative overflow-hidden">
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="w-8 h-8 rounded-xl bg-blue-500/10 text-[#008BC6] flex items-center justify-center text-sm font-bold">📦</span>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8]">
+                            Request Specifications
+                        </h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Customer</span>
+                            <p class="text-sm font-bold text-slate-800 dark:text-white">{{ part_request.customer_name }}</p>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Part Needed</span>
+                            <p class="text-sm font-bold text-slate-800 dark:text-white">{{ part_request.part_needed }}</p>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Device / Model</span>
+                            <p class="text-sm font-bold text-slate-800 dark:text-white">{{ part_request.device_model }}</p>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Condition Preference</span>
+                            <span class="inline-block px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-gray-300 capitalize">
+                                {{ part_request.get_condition_preference_display }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Request Date</span>
+                            <p class="text-xs text-slate-600 dark:text-gray-300 font-medium">{{ part_request.created_at|date:"M d, Y • g:i A" }}</p>
+                        </div>
+                        {% if part_request.additional_details %}
+                        <div class="pt-3 border-t border-slate-100 dark:border-white/5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 block mb-1">Additional Notes</span>
+                            <p class="text-xs text-slate-600 dark:text-gray-300 leading-relaxed font-light">{{ part_request.additional_details }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] text-xs space-y-3">
+                    <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
+                        <span>🛡️</span>
+                        <span>Compupartz OEM Guarantee</span>
+                    </div>
+                    <p class="text-slate-500 dark:text-gray-400 font-light leading-relaxed">
+                        All hardware parts sourced undergo pinout verification, capacitance testing, and are covered by our 90-day replacement warranty.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Panel: Sourcing Milestone Pipeline (8 cols) -->
+            <div class="lg:col-span-8">
+                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-7 sm:p-10 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8] block mb-1">Procurement Track</span>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Sourcing Milestone Pipeline</h3>
+                        </div>
+                        <span class="w-10 h-10 rounded-2xl bg-blue-500/10 text-[#008BC6] flex items-center justify-center text-lg">
+                            📦
+                        </span>
+                    </div>
+
+                    <div class="relative pl-8 space-y-8 before:content-[''] before:absolute before:left-3.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200 dark:before:bg-white/10">
+
+                        <!-- Step 1: Request Submitted -->
+                        <div class="relative group">
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full bg-[#008BC6] text-white shadow-md shadow-blue-500/30 flex items-center justify-center text-xs font-bold transition-all">
+                                ✓
+                            </div>
+                            <div class="pl-3">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-[#008BC6] dark:text-[#38bdf8]">
+                                    01. Part Request Registered
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
+                                    Component specifications logged and assigned to sourcing specialists.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Sourcing & Quote -->
+                        <div class="relative group">
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if part_request.status in 'quoted fulfilled' %}bg-[#008BC6] text-white shadow-md shadow-blue-500/30 {% if part_request.status == 'quoted' %}animate-pulse ring-4 ring-blue-500/20{% endif %}{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
+                                {% if part_request.status == 'fulfilled' %}✓{% elif part_request.status == 'quoted' %}📄{% else %}2{% endif %}
+                            </div>
+                            <div class="pl-3">
+                                <h4 class="text-xs font-bold uppercase tracking-wider {% if part_request.status in 'quoted fulfilled' %}text-[#008BC6] dark:text-[#38bdf8]{% else %}text-slate-400 dark:text-gray-500{% endif %}">
+                                    02. Stock Verification & Formal Quote
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
+                                    Distributor inventory matched, compatibility verified, and formal price quote calculated.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Procured & Tested -->
+                        <div class="relative group">
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if part_request.status == 'fulfilled' %}bg-emerald-500 text-white shadow-md shadow-emerald-500/30{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
+                                {% if part_request.status == 'fulfilled' %}✓{% else %}3{% endif %}
+                            </div>
+                            <div class="pl-3">
+                                <h4 class="text-xs font-bold uppercase tracking-wider {% if part_request.status == 'fulfilled' %}text-emerald-500{% else %}text-slate-400 dark:text-gray-500{% endif %}">
+                                    03. Hardware Procured & Ready for Collection / Dispatch
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">
+                                    Component received at our laboratory, bench-tested for OEM tolerances, and packaged with warranty seal.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

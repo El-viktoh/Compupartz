@@ -10,9 +10,11 @@ class RepairTicket(models.Model):
     ]
 
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
+        ('pending', 'Pending Intake'),
+        ('quoted', 'Quoted / Awaiting Approval'),
         ('in_progress', 'In Progress'),
         ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
     ]
 
     LOGISTICS_CHOICES = [
@@ -77,6 +79,49 @@ class RepairTicket(models.Model):
         default='pending'
     )
 
+    # ==========================================
+    # 🎯 FORMAL REPAIR QUOTATION (STAFF ONLY)
+    # ==========================================
+    quoted_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Quoted Price (GH₵)"
+    )
+    diagnostic_notes = models.TextField(
+        blank=True,
+        verbose_name="Diagnostic Findings / Work Scope"
+    )
+    estimated_turnaround = models.CharField(
+        max_length=100,
+        blank=True,
+        default="24 - 48 Hours",
+        verbose_name="Estimated Turnaround"
+    )
+    warranty_period = models.CharField(
+        max_length=100,
+        blank=True,
+        default="90-Day Compupartz Warranty",
+        verbose_name="Warranty Period"
+    )
+    quote_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('none', 'No Quote Created'),
+            ('sent', 'Quote Sent / Pending Approval'),
+            ('approved', 'Approved by Customer'),
+            ('declined', 'Declined by Customer'),
+        ],
+        default='none',
+        verbose_name="Quote Status"
+    )
+    quote_sent_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Quote Sent At"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     # ✅ AUTO GENERATE SIMPLE ID
@@ -95,12 +140,12 @@ class RepairTicket(models.Model):
             super().save(update_fields=["ticket_id"])
 
     def __str__(self):
-        return self.ticket_id
+        return self.ticket_id or f"Ticket #{self.pk}"
 
 class PartRequest(models.Model):
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('quoted', 'Quoted'),
+        ('pending', 'Pending Intake'),
+        ('quoted', 'Quoted / Awaiting Approval'),
         ('fulfilled', 'Fulfilled'),
         ('declined', 'Declined'),
     ]
@@ -128,7 +173,7 @@ class PartRequest(models.Model):
     )
 
     customer_name = models.CharField(max_length=255)
-    customer_email = models.EmailField(blank=True)
+    customer_email = models.EmailField()
     customer_phone = models.CharField(max_length=20)
 
     part_needed = models.CharField(max_length=255, verbose_name="Part Needed")
@@ -145,6 +190,10 @@ class PartRequest(models.Model):
         choices=STATUS_CHOICES,
         default='pending'
     )
+
+    # ==========================================
+    # 🎯 FORMAL PART SOURCING QUOTATION (STAFF ONLY)
+    # ==========================================
     quoted_price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -154,7 +203,35 @@ class PartRequest(models.Model):
     )
     admin_notes = models.TextField(
         blank=True,
-        verbose_name="Technician / Bench Notes"
+        verbose_name="Technician / Sourcing Notes"
+    )
+    estimated_delivery = models.CharField(
+        max_length=100,
+        blank=True,
+        default="24 - 48 Hours",
+        verbose_name="Estimated Sourcing / Arrival"
+    )
+    warranty_period = models.CharField(
+        max_length=100,
+        blank=True,
+        default="90-Day OEM Replacement Warranty",
+        verbose_name="Warranty Period"
+    )
+    quote_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('none', 'No Quote Created'),
+            ('sent', 'Quote Sent / Pending Approval'),
+            ('approved', 'Approved by Customer'),
+            ('declined', 'Declined by Customer'),
+        ],
+        default='none',
+        verbose_name="Quote Status"
+    )
+    quote_sent_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Quote Sent At"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

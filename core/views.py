@@ -235,7 +235,7 @@ def submit_testimonial(request):
 def update_profile(request):
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
-        
+
         # ✅ ENSURE PROFILE EXISTS
         profile, created = Profile.objects.get_or_create(user=request.user)
         p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
@@ -243,7 +243,12 @@ def update_profile(request):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
-            return redirect('dashboard')
+            messages.success(request, "Your profile was updated successfully.")
+        else:
+            for form in (u_form, p_form):
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
 
     return redirect('dashboard')
 

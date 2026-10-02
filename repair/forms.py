@@ -45,10 +45,12 @@ class RepairBookingForm(forms.ModelForm):
             "customer_email": forms.EmailInput(attrs={
                 "class": "w-full bg-[#F8FAFC] dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 rounded-xl px-4 sm:px-5 py-3.5 focus:bg-white dark:focus:bg-[#1a1d24] focus:outline-none focus:ring-4 focus:ring-[#FF7200]/10 focus:border-[#FF7200] transition-all text-slate-800 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-gray-500 shadow-sm",
                 "placeholder": "kwame@example.com",
+                "required": "required",
             }),
             "customer_phone": forms.TextInput(attrs={
                 "class": "w-full bg-[#F8FAFC] dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 rounded-xl px-4 sm:px-5 py-3.5 focus:bg-white dark:focus:bg-[#1a1d24] focus:outline-none focus:ring-4 focus:ring-[#FF7200]/10 focus:border-[#FF7200] transition-all text-slate-800 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-gray-500 shadow-sm",
                 "placeholder": "+233 54 000 0000",
+                "required": "required",
             }),
             "logistics_preference": forms.RadioSelect(attrs={
                 "class": "hidden",
@@ -73,14 +75,17 @@ class PartRequestForm(forms.ModelForm):
             "customer_name": forms.TextInput(attrs={
                 "class": "w-full bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 rounded-xl px-4 sm:px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#FF7200]/40 focus:border-[#FF7200] transition-all text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-gray-500 shadow-sm",
                 "placeholder": "e.g. John Doe",
+                "required": "required",
             }),
             "customer_phone": forms.TextInput(attrs={
                 "class": "w-full bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 rounded-xl px-4 sm:px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#FF7200]/40 focus:border-[#FF7200] transition-all text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-gray-500 shadow-sm",
                 "placeholder": "+233 54 000 0000",
+                "required": "required",
             }),
             "customer_email": forms.EmailInput(attrs={
                 "class": "w-full bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 rounded-xl px-4 sm:px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#FF7200]/40 focus:border-[#FF7200] transition-all text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-gray-500 shadow-sm",
-                "placeholder": "john@example.com (optional)",
+                "placeholder": "e.g. kwame@example.com",
+                "required": "required",
             }),
             "part_needed": forms.TextInput(attrs={
                 "class": "w-full bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 rounded-xl px-4 sm:px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#FF7200]/40 focus:border-[#FF7200] transition-all text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-gray-500 shadow-sm",
