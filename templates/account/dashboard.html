@@ -261,7 +261,7 @@
                                 id="tab-btn-staff-workshop"
                                 class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
                             <span>⚙️</span>
-                            <span>Lab & Parts Queue</span>
+                            <span>Lab Process Queue</span>
                             <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 font-mono font-bold">
                                 {{ staff_bench_repairs.count|default:0 }}
                             </span>
@@ -798,22 +798,9 @@
                                         Issue: {{ ticket.issue_description }}
                                     </p>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-2 shrink-0">
-                                    <form method="POST" action="{% url 'staff_update_repair_status' ticket.ticket_id %}" class="flex items-center gap-1.5">
-                                        {% csrf_token %}
-                                        <select name="status" class="text-xs font-bold bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl px-2.5 py-2 text-slate-800 dark:text-white outline-none">
-                                            <option value="pending" {% if ticket.status == 'pending' %}selected{% endif %}>Pending</option>
-                                            <option value="quoted" {% if ticket.status == 'quoted' %}selected{% endif %}>Quoted</option>
-                                            <option value="in_progress" {% if ticket.status == 'in_progress' %}selected{% endif %}>In Progress</option>
-                                            <option value="completed" {% if ticket.status == 'completed' %}selected{% endif %}>Completed</option>
-                                            <option value="cancelled" {% if ticket.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
-                                        </select>
-                                        <button type="submit" class="px-3 py-2 rounded-xl bg-[#008BC6] hover:bg-sky-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95">
-                                            Save
-                                        </button>
-                                    </form>
-                                    <a href="{% url 'track_repair' ticket.ticket_id %}" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
-                                        Desk &bull; Comms &rarr;
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <a href="{% url 'track_repair' ticket.ticket_id %}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
+                                        Process &bull; Comms &rarr;
                                     </a>
                                 </div>
                             </div>
@@ -869,20 +856,8 @@
                                     </p>
                                     {% endif %}
                                 </div>
-                                <div class="flex flex-wrap items-center gap-2 shrink-0">
-                                    <form method="POST" action="{% url 'staff_update_part_status' req.request_id %}" class="flex items-center gap-1.5">
-                                        {% csrf_token %}
-                                        <select name="status" class="text-xs font-bold bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl px-2.5 py-2 text-slate-800 dark:text-white outline-none">
-                                            <option value="pending" {% if req.status == 'pending' %}selected{% endif %}>Pending</option>
-                                            <option value="quoted" {% if req.status == 'quoted' %}selected{% endif %}>Quoted</option>
-                                            <option value="fulfilled" {% if req.status == 'fulfilled' %}selected{% endif %}>Fulfilled</option>
-                                            <option value="declined" {% if req.status == 'declined' %}selected{% endif %}>Declined</option>
-                                        </select>
-                                        <button type="submit" class="px-3 py-2 rounded-xl bg-[#008BC6] hover:bg-sky-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95">
-                                            Save
-                                        </button>
-                                    </form>
-                                    <a href="{% url 'track_part' req.request_id %}" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <a href="{% url 'track_part' req.request_id %}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
                                         Quote &bull; View &rarr;
                                     </a>
                                 </div>
