@@ -38,5 +38,9 @@ urlpatterns = [
     # 📧 Email Previews
     path('preview-quote/', views.preview_repair_quote_email, name='preview_repair_quote_email'),
     path('preview-part-quote/', views.preview_part_quote_email, name='preview_part_quote_email'),
+
+    # 🩺 Diagnostic Check
+    path('diagnostic-check/', views.diagnostic_check, name='diagnostic_check'),
 ]
+
 
