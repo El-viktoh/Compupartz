@@ -515,48 +515,4 @@ def preview_part_quote_email(request):
     })
 
 
-def diagnostic_check(request):
-    """Temporary diagnostic endpoint to identify production error root cause."""
-    import os
-    import traceback
-    from django.conf import settings
-    from django.http import HttpResponse
-
-    output = []
-    log_file = os.path.join(settings.BASE_DIR, 'django_errors.log')
-    output.append(f"=== DJANGO_ERRORS.LOG (exists: {os.path.exists(log_file)}) ===")
-    if os.path.exists(log_file):
-        try:
-            with open(log_file, 'r', encoding='utf-8', errors='replace') as f:
-                output.append("".join(f.readlines()[-80:]))
-        except Exception as e:
-            output.append(f"Error reading log: {e}")
-
-    output.append("\n=== REPAIR TICKET CHANGELIST DIRECT TEST ===")
-    try:
-        from django.contrib.admin.sites import site
-        from django.contrib.sessions.middleware import SessionMiddleware
-        from django.contrib.messages.middleware import MessageMiddleware
-        from django.test import RequestFactory
-        from django.contrib.auth import get_user_model
-
-        User = get_user_model()
-        admin_user = User.objects.filter(is_superuser=True).first()
-        rf = RequestFactory()
-        req = rf.get('/admin/repair/repairticket/', HTTP_HOST='compupartz.com')
-        req.user = admin_user
-        SessionMiddleware(lambda r: None).process_request(req)
-        MessageMiddleware(lambda r: None).process_request(req)
-
-        ma = site._registry[RepairTicket]
-        res = ma.changelist_view(req)
-        if hasattr(res, 'render'):
-            res.render()
-        output.append(f"SUCCESS: Rendered with status {res.status_code}")
-    except Exception:
-        output.append(f"EXCEPTION:\n{traceback.format_exc()}")
-
-    return HttpResponse("\n".join(output), content_type="text/plain; charset=utf-8")
-
-
 

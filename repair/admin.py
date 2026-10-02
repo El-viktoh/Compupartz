@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.contrib import messages
 from django.utils import timezone
 from .models import RepairTicket, RepairMessage, PartRequest
@@ -98,25 +99,26 @@ class RepairTicketAdmin(admin.ModelAdmin):
 
     def quote_badge(self, obj):
         if obj.quote_status == 'sent':
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #008BC6; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Quote Sent</span>'
             )
         elif obj.quote_status == 'approved':
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #10b981; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Client Approved ✓</span>'
             )
         elif obj.quote_status == 'declined':
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #ef4444; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Declined ✗</span>'
             )
         elif obj.quoted_price:
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #f59e0b; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Draft Quote</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="color: #94a3b8; font-size: 11px;">No Quote</span>'
         )
     quote_badge.short_description = "Quote Status"
+
 
     def quoted_price_display(self, obj):
         if obj.quoted_price:
@@ -222,12 +224,13 @@ class RepairMessageAdmin(admin.ModelAdmin):
 
     def sender_role(self, obj):
         if obj.sender_is_admin:
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #008BC6; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Lab Technician</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="background-color: #64748b; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Client</span>'
         )
+
     sender_role.short_description = "Sender"
 
     def message_snippet(self, obj):
@@ -317,25 +320,26 @@ class PartRequestAdmin(admin.ModelAdmin):
 
     def quote_badge(self, obj):
         if obj.quote_status == 'sent':
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #008BC6; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Quote Sent</span>'
             )
         elif obj.quote_status == 'approved':
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #10b981; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Client Approved ✓</span>'
             )
         elif obj.quote_status == 'declined':
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #ef4444; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Declined ✗</span>'
             )
         elif obj.quoted_price:
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #f59e0b; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Draft Quote</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="color: #94a3b8; font-size: 11px;">No Quote</span>'
         )
     quote_badge.short_description = "Quote Status"
+
 
     def quoted_price_display(self, obj):
         if obj.quoted_price:
