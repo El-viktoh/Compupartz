@@ -15,7 +15,7 @@ def send_repair_email(ticket):
     """Initial email sent when client books a repair."""
     try:
         domain = get_site_domain()
-        tracking_url = f"https://{domain}/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/repair/track/{ticket.ticket_id}/"
+        tracking_url = f"https://{domain}/accounts/login/?next=/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/accounts/login/?next=/repair/track/{ticket.ticket_id}/"
 
         subject = f"[Compupartz] Repair Booking Intake Confirmed — Ticket #{ticket.ticket_id}"
 
@@ -52,7 +52,7 @@ def send_formal_repair_quote_email(ticket):
 
     try:
         domain = get_site_domain()
-        tracking_url = f"https://{domain}/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/repair/track/{ticket.ticket_id}/"
+        tracking_url = f"https://{domain}/accounts/login/?next=/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/accounts/login/?next=/repair/track/{ticket.ticket_id}/"
 
         subject = f"[Compupartz] Formal Repair Quotation #{ticket.ticket_id} — {ticket.device}"
 
@@ -90,7 +90,7 @@ def send_repair_status_email(ticket, old_status, new_status):
 
     try:
         domain = get_site_domain()
-        tracking_url = f"https://{domain}/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/repair/track/{ticket.ticket_id}/"
+        tracking_url = f"https://{domain}/accounts/login/?next=/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/accounts/login/?next=/repair/track/{ticket.ticket_id}/"
 
         status_display = ticket.get_status_display()
         if new_status == 'in_progress':
@@ -147,7 +147,7 @@ def send_technician_message_email(message):
 
     try:
         domain = get_site_domain()
-        tracking_url = f"https://{domain}/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/repair/track/{ticket.ticket_id}/"
+        tracking_url = f"https://{domain}/accounts/login/?next=/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/accounts/login/?next=/repair/track/{ticket.ticket_id}/"
 
         subject = f"[Compupartz] Lab Bench Update on Ticket #{ticket.ticket_id}"
 

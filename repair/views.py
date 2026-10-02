@@ -41,6 +41,8 @@ def book_repair(request):
 
             ticket.save()
 
+            _grant_ticket_access(request, ticket)
+
             # ✅ SEND EMAIL
             send_repair_email(ticket)
 
@@ -555,7 +557,7 @@ def preview_repair_quote_email(request):
             quote_status="sent",
         )
 
-    tracking_url = request.build_absolute_uri(f"/repair/track/{ticket.ticket_id}/")
+    tracking_url = request.build_absolute_uri(f"/accounts/login/?next=/repair/track/{ticket.ticket_id}/")
     return render(request, "emails/formal_repair_quote.html", {
         "ticket": ticket,
         "tracking_url": tracking_url,
@@ -603,7 +605,7 @@ def preview_repair_intake_email(request):
             status="submitted",
         )
 
-    tracking_url = request.build_absolute_uri(f"/repair/track/{ticket.ticket_id}/")
+    tracking_url = request.build_absolute_uri(f"/accounts/login/?next=/repair/track/{ticket.ticket_id}/")
     status_message = "Your repair booking has been registered on our intake bench. Our certified technicians are reviewing your fault diagnostic details and will initiate bench testing shortly."
 
     return render(request, "emails/repair_status_update.html", {
