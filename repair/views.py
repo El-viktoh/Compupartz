@@ -13,6 +13,8 @@ from .utils import (
     send_part_request_email,
     send_formal_repair_quote_email,
     send_formal_part_quote_email,
+    send_admin_repair_notification,
+    send_admin_part_request_notification,
 )
 
 
@@ -45,6 +47,7 @@ def book_repair(request):
 
             # ✅ SEND EMAIL
             send_repair_email(ticket)
+            send_admin_repair_notification(ticket)
 
             return redirect("repair_success", ticket_id=ticket.id)
 
@@ -80,6 +83,7 @@ def request_part(request):
             part_request.save()
 
             send_part_request_email(part_request)
+            send_admin_part_request_notification(part_request)
 
             return redirect("part_request_success", request_id=part_request.id)
 
@@ -641,6 +645,84 @@ def preview_part_intake_email(request):
         "login_url": login_url,
         "dashboard_url": login_url,
     })
+
+
+def preview_admin_repair_email(request):
+    """Live preview of staff notification email for new repair ticket."""
+    ticket = RepairTicket.objects.first()
+    if not ticket:
+        ticket = RepairTicket(
+            ticket_id="R-108",
+            customer_name="Kwame Mensah",
+            customer_email="kwame@example.com",
+            customer_phone="+233 54 123 4567",
+            device_category="laptop",
+            manufacturer="Apple",
+            device="MacBook Pro 16\" M1 Pro (A2485)",
+            issue_description="Liquid spill on keyboard, logic board power rail shorted, no display and won't turn on.",
+            contact_method="whatsapp",
+            logistics_preference="drop_off",
+            status="pending",
+        )
+    admin_url = request.build_absolute_uri(f"/admin/repair/repairticket/{ticket.id or 1}/change/")
+    whatsapp_url = "https://wa.me/233541234567"
+    return render(request, "emails/admin_notification.html", {
+        "notification_type": "repair_ticket",
+        "ticket": ticket,
+        "admin_url": admin_url,
+        "whatsapp_url": whatsapp_url,
+        "domain": "compupartz.com",
+    })
+
+
+def preview_admin_part_email(request):
+    """Live preview of staff notification email for new part sourcing request."""
+    part_request = PartRequest.objects.first()
+    if not part_request:
+        part_request = PartRequest(
+            request_id="P-042",
+            customer_name="Akosua Agyeman",
+            customer_email="akosua@example.com",
+            customer_phone="+233 20 987 6543",
+            part_needed="Original OEM 96W USB-C Power Adapter + Type-C Braided Cable",
+            device_model="Apple MacBook Pro 16-inch (A2485)",
+            condition_preference="new",
+            additional_details="Need genuine OEM brick with GH 3-pin plug adapter if available.",
+            status="pending",
+        )
+    admin_url = request.build_absolute_uri(f"/admin/repair/partrequest/{part_request.id or 1}/change/")
+    whatsapp_url = "https://wa.me/233209876543"
+    return render(request, "emails/admin_notification.html", {
+        "notification_type": "part_request",
+        "part_request": part_request,
+        "admin_url": admin_url,
+        "whatsapp_url": whatsapp_url,
+        "domain": "compupartz.com",
+    })
+
+
+def preview_admin_testimonial_email(request):
+    """Live preview of staff notification email for new testimonial review."""
+    from core.models import Testimonial
+    testimonial = Testimonial.objects.first()
+    if not testimonial:
+        testimonial = Testimonial(
+            name="Emmanuel Osei",
+            role_or_title="Software Developer",
+            service_rendered="MacBook Logic Board Micro-Soldering",
+            rating=5,
+            quote="Compupartz revived my MacBook Pro logic board in less than 24 hours when other shops told me to buy a new machine! Incredible craftsmanship and transparency.",
+            is_approved=True,
+            is_featured=False,
+        )
+    admin_url = request.build_absolute_uri(f"/admin/core/testimonial/{testimonial.id or 1}/change/")
+    return render(request, "emails/admin_notification.html", {
+        "notification_type": "testimonial",
+        "testimonial": testimonial,
+        "admin_url": admin_url,
+        "domain": "compupartz.com",
+    })
+
 
 
 

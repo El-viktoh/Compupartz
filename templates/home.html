@@ -727,14 +727,13 @@
                         <div class="faq-gradient-bar" id="faqScrollThumb"></div>
                     </div>
 
-                    <!-- Accordion Item List (Limited to 5 visible items with smooth scroll) -->
+                    <!-- Accordion Item List (Populated dynamically from Django Admin FAQs) -->
                     <div class="faq-container" id="faqScrollContainer">
-                        
-                        <!-- Item 1 -->
+                        {% for faq in faqs %}
                         <div class="faq-row group">
-                            <button class="faq-btn focus:outline-none">
+                            <button class="faq-btn focus:outline-none" type="button" aria-expanded="false">
                                 <span class="faq-title pr-4">
-                                    WHAT HAPPENS IF I DON'T COLLECT MY REPAIRED DEVICE?
+                                    {{ faq.question }}
                                 </span>
                                 <span class="faq-icon-wrapper">
                                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -744,136 +743,14 @@
                                 </span>
                             </button>
                             <div class="faq-body hidden">
-                                We notify you through multiple SMS, phone calls, and email alerts as soon as your device is ready. Devices are safely held in our secure technician storage for up to 60 days. After 60 days of unresponsiveness, uncollected equipment may incur daily storage fees or be recycled in accordance with our repair service agreement.
+                                {{ faq.answer|linebreaksbr }}
                             </div>
                         </div>
-
-                        <!-- Item 2 -->
-                        <div class="faq-row group">
-                            <button class="faq-btn focus:outline-none">
-                                <span class="faq-title pr-4">
-                                    CAN I CANCEL A REPAIR AFTER APPROVAL?
-                                </span>
-                                <span class="faq-icon-wrapper">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="faq-body hidden">
-                                Yes. You can cancel your repair at any stage before dedicated replacement parts have been permanently installed or micro-soldering has commenced. If diagnostic disassembly and bench testing have already been completed, only the nominal diagnostic fee applies.
-                            </div>
+                        {% empty %}
+                        <div class="py-12 text-center text-slate-500 dark:text-gray-400 text-sm font-light">
+                            No frequently asked questions published at this time.
                         </div>
-
-                        <!-- Item 3 -->
-                        <div class="faq-row group">
-                            <button class="faq-btn focus:outline-none">
-                                <span class="faq-title pr-4">
-                                    WHAT IF REPLACEMENT PARTS ARE UNAVAILABLE?
-                                </span>
-                                <span class="faq-icon-wrapper">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="faq-body hidden">
-                                We maintain a comprehensive in-house inventory of original displays, battery modules, keyboards, and power ICs. In cases where a rare or vintage component is needed, we source directly from certified global distributors within 3 to 7 business days, keeping you updated in real-time via ticket tracking.
-                            </div>
-                        </div>
-
-                        <!-- Item 4 -->
-                        <div class="faq-row group">
-                            <button class="faq-btn focus:outline-none">
-                                <span class="faq-title pr-4">
-                                    ARE REPAIRED DEVICES COVERED BY A WARRANTY?
-                                </span>
-                                <span class="faq-icon-wrapper">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="faq-body hidden">
-                                Yes! All hardware repairs completed by Compupartz include our signature 90-day technical assurance warranty covering both replacement components and technician labor. If the repaired hardware malfunctions within this timeframe, we fix it promptly at zero cost.
-                            </div>
-                        </div>
-
-                        <!-- Item 5 -->
-                        <div class="faq-row group">
-                            <button class="faq-btn focus:outline-none">
-                                <span class="faq-title pr-4">
-                                    HOW DO I TRACK MY REPAIR STATUS IN REAL-TIME?
-                                </span>
-                                <span class="faq-icon-wrapper">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="faq-body hidden">
-                                Whenever a repair is initiated, you are assigned a dedicated Ticket ID (e.g. R-1024). Simply visit our <a href="{% url 'track_repair_lookup' %}" class="text-[#008BC6] font-semibold underline hover:text-[#0076a8] dark:text-[#38bdf8]">Track Repair</a> portal to see active bench status, technician notes, test results, and collection readiness.
-                            </div>
-                        </div>
-
-                        <!-- Item 6 -->
-                        <div class="faq-row group">
-                            <button class="faq-btn focus:outline-none">
-                                <span class="faq-title pr-4">
-                                    DO YOU SHIP REPAIRED DEVICES & LAPTOP PARTS NATIONWIDE?
-                                </span>
-                                <span class="faq-icon-wrapper">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="faq-body hidden">
-                                Yes, we offer fast and insured nationwide shipping across Ghana. Each device and component is securely packed in anti-static, shock-absorbing materials with direct door-to-door tracking for complete peace of mind.
-                            </div>
-                        </div>
-
-                        <!-- Item 7 -->
-                        <div class="faq-row group">
-                            <button class="faq-btn focus:outline-none">
-                                <span class="faq-title pr-4">
-                                    HOW LONG DOES A STANDARD DIAGNOSTIC BENCH TEST TAKE?
-                                </span>
-                                <span class="faq-icon-wrapper">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="faq-body hidden">
-                                Our certified technician bench tests and initial diagnostic assessment are typically completed within 24 hours of device drop-off or courier reception. You will receive an itemized diagnostic report and quotation before any repair work commences.
-                            </div>
-                        </div>
-
-                        <!-- Item 8 -->
-                        <div class="faq-row group">
-                            <button class="faq-btn focus:outline-none">
-                                <span class="faq-title pr-4">
-                                    WHAT HAPPENS TO MY PERSONAL DATA AND FILES DURING SERVICE?
-                                </span>
-                                <span class="faq-icon-wrapper">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="faq-body hidden">
-                                We practice strict data confidentiality protocols. Internal solid-state and hard drives remain untouched during hardware repairs, and technicians do not access your files. If an OS recovery or drive migration is necessary, we contact you for explicit authorization first.
-                            </div>
-                        </div>
-
+                        {% endfor %}
                     </div>
                 </div>
 

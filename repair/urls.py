@@ -44,6 +44,9 @@ urlpatterns = [
     path('preview-part-intake/', views.preview_part_intake_email, name='preview_part_intake_email'),
     path('preview-quote/', views.preview_repair_quote_email, name='preview_repair_quote_email'),
     path('preview-part-quote/', views.preview_part_quote_email, name='preview_part_quote_email'),
+    path('preview-admin-repair/', views.preview_admin_repair_email, name='preview_admin_repair_email'),
+    path('preview-admin-part/', views.preview_admin_part_email, name='preview_admin_part_email'),
+    path('preview-admin-testimonial/', views.preview_admin_testimonial_email, name='preview_admin_testimonial_email'),
 ]
 
 

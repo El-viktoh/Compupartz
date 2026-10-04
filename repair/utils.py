@@ -298,3 +298,13 @@ def send_part_request_status_email(part_request, old_status, new_status):
     except Exception as e:
         logger.error(f"Error sending part request status email for {part_request.request_id}: {e}")
         return False
+
+
+# ==========================================
+# 🔔 STAFF OPERATIONAL NOTIFICATIONS (support@compupartz.com)
+# ==========================================
+from core.notifications import (
+    send_admin_repair_notification,
+    send_admin_part_request_notification,
+)
+

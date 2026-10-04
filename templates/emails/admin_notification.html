@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if notification_type == 'repair_ticket' or ticket %}
+            [New Repair Ticket] #{{ ticket.ticket_id }} — {{ ticket.customer_name }}
+        {% elif notification_type == 'part_request' or part_request %}
+            [New Part Request] #{{ part_request.request_id }} — {{ part_request.customer_name }}
+        {% elif notification_type == 'testimonial' or testimonial %}
+            [New Review] {{ testimonial.rating }}★ from {{ testimonial.name }}
+        {% else %}
+            [Compupartz] New Operational Notification
+        {% endif %}
+    </title>
+    <style>
+        @media only screen and (max-width: 620px) {
+            .email-container { width: 100% !important; }
+            .stack-column { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+            .mobile-padding { padding-left: 20px !important; padding-right: 20px !important; }
+            .mobile-btn { display: block !important; width: 100% !important; margin-bottom: 10px !important; text-align: center !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b; line-height: 1.5;">
+
+    <div style="background-color: #f1f5f9; padding: 32px 12px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" class="email-container" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+            
+            <!-- Brand Gradient Stripe -->
+            <tr>
+                <td style="background: linear-gradient(90deg, #FF7200 0%, #008BC6 100%); height: 5px; line-height: 5px; font-size: 5px;">&nbsp;</td>
+            </tr>
+
+            <!-- Header Row -->
+            <tr>
+                <td class="mobile-padding" style="padding: 26px 32px 20px; border-bottom: 1px solid #f1f5f9; background-color: #ffffff;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="stack-column" style="vertical-align: middle;">
+                                <div style="font-size: 21px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #0f172a; line-height: 1;">
+                                    COMPU<span style="color: #FF7200;">PARTZ</span>
+                                </div>
+                                <div style="font-size: 11px; font-weight: 700; color: #008BC6; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">
+                                    Staff &amp; Operations Alert Desk
+                                </div>
+                            </td>
+                            <td class="stack-column" align="right" style="vertical-align: middle; padding-top: 8px;">
+                                {% if notification_type == 'repair_ticket' or ticket %}
+                                    <span style="display: inline-block; background-color: #FFF7ED; color: #C2410C; border: 1px solid #FDBA74; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        🔧 Repair Ticket Intake
+                                    </span>
+                                {% elif notification_type == 'part_request' or part_request %}
+                                    <span style="display: inline-block; background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #93C5FD; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        📦 Part Sourcing Request
+                                    </span>
+                                {% elif notification_type == 'testimonial' or testimonial %}
+                                    <span style="display: inline-block; background-color: #ECFDF5; color: #047857; border: 1px solid #6EE7B7; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        ⭐ Client Testimonial
+                                    </span>
+                                {% else %}
+                                    <span style="display: inline-block; background-color: #F8FAFC; color: #475569; border: 1px solid #CBD5E1; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        🔔 Intake Notification
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <!-- Main Body Content -->
+            <tr>
+                <td class="mobile-padding" style="padding: 28px 32px 32px;">
+
+                    <!-- ============================================================= -->
+                    <!-- 1. REPAIR TICKET NOTIFICATION -->
+                    <!-- ============================================================= -->
+                    {% if notification_type == 'repair_ticket' or ticket %}
+                        
+                        <!-- Alert Banner -->
+                        <div style="background-color: #FFFBF5; border-left: 4px solid #FF7200; border-radius: 10px; padding: 16px 18px; margin-bottom: 24px; border-top: 1px solid #fed7aa; border-right: 1px solid #fed7aa; border-bottom: 1px solid #fed7aa;">
+                            <div style="font-size: 15px; font-weight: 800; color: #9A3412; margin-bottom: 4px;">
+                                🚀 New Repair Ticket #{{ ticket.ticket_id }} Registered
+                            </div>
+                            <div style="font-size: 13px; color: #7C2D12; line-height: 1.5;">
+                                A new hardware repair intake form was just submitted online. Please review diagnostic symptoms, assign bench priority, and follow up with the client.
+                            </div>
+                        </div>
+
+                        <!-- Highlight Card: Device & Client -->
+                        <div style="background-color: #0f172a; color: #ffffff; border-radius: 12px; padding: 20px 22px; margin-bottom: 24px;">
+                            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; margin-bottom: 4px;">
+                                Device Intake
+                            </div>
+                            <div style="font-size: 19px; font-weight: 800; color: #ffffff; line-height: 1.3;">
+                                {{ ticket.device }}
+                            </div>
+                            <div style="font-size: 13px; color: #94a3b8; margin-top: 6px;">
+                                Category: <strong style="color: #f1f5f9;">{{ ticket.get_device_category_display }}</strong> 
+                                {% if ticket.manufacturer %} &bull; Brand: <strong style="color: #f1f5f9;">{{ ticket.manufacturer }}</strong>{% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Key Details Table -->
+                        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7; width: 40%;">Ticket ID</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #FF7200; font-weight: 800; font-family: monospace; font-size: 14px; border-bottom: 1px solid #edf2f7;">#{{ ticket.ticket_id }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Client Name</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #0f172a; font-weight: 700; border-bottom: 1px solid #edf2f7;">{{ ticket.customer_name }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Email Address</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;">
+                                        <a href="mailto:{{ ticket.customer_email }}" style="color: #008BC6; font-weight: 700; text-decoration: none;">{{ ticket.customer_email }}</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Phone Number</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;">
+                                        <a href="tel:{{ ticket.customer_phone }}" style="color: #0f172a; font-weight: 700; text-decoration: none;">{{ ticket.customer_phone }}</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Preferred Contact</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #0f172a; font-weight: 600; border-bottom: 1px solid #edf2f7;">{{ ticket.get_contact_method_display }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Logistics Method</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #0f172a; font-weight: 600; border-bottom: 1px solid #edf2f7;">{{ ticket.get_logistics_preference_display }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600;">Intake Status</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #FF7200; font-weight: 700;">{{ ticket.get_status_display }}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Reported Issue Box -->
+                        <div style="margin-bottom: 26px;">
+                            <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; margin-bottom: 8px;">
+                                Reported Fault / Symptoms:
+                            </div>
+                            <div style="background-color: #ffffff; border: 1px solid #cbd5e1; border-left: 4px solid #008BC6; border-radius: 8px; padding: 14px 16px; font-size: 13.5px; line-height: 1.6; color: #1e293b; white-space: pre-line;">
+                                {{ ticket.issue_description }}
+                            </div>
+                            {% if ticket.diagnostic_image %}
+                                <div style="margin-top: 10px; font-size: 12px;">
+                                    📎 <strong>Diagnostic Media Attached:</strong> 
+                                    <a href="{{ ticket.diagnostic_image.url }}" target="_blank" style="color: #008BC6; font-weight: 700;">View Uploaded Photo</a>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    <!-- ============================================================= -->
+                    <!-- 2. PART REQUEST NOTIFICATION -->
+                    <!-- ============================================================= -->
+                    {% elif notification_type == 'part_request' or part_request %}
+                        
+                        <!-- Alert Banner -->
+                        <div style="background-color: #F0F9FF; border-left: 4px solid #008BC6; border-radius: 10px; padding: 16px 18px; margin-bottom: 24px; border-top: 1px solid #bae6fd; border-right: 1px solid #bae6fd; border-bottom: 1px solid #bae6fd;">
+                            <div style="font-size: 15px; font-weight: 800; color: #075985; margin-bottom: 4px;">
+                                📦 New Part Request #{{ part_request.request_id }} Submitted
+                            </div>
+                            <div style="font-size: 13px; color: #0c4a6e; line-height: 1.5;">
+                                A customer has submitted an inquiry to source a hardware replacement component. Please check distributor inventory and calculate a formal quotation.
+                            </div>
+                        </div>
+
+                        <!-- Highlight Card: Component & Device -->
+                        <div style="background-color: #0f172a; color: #ffffff; border-radius: 12px; padding: 20px 22px; margin-bottom: 24px;">
+                            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; margin-bottom: 4px;">
+                                Requested Component
+                            </div>
+                            <div style="font-size: 19px; font-weight: 800; color: #ffffff; line-height: 1.3;">
+                                {{ part_request.part_needed }}
+                            </div>
+                            <div style="font-size: 13px; color: #94a3b8; margin-top: 6px;">
+                                Device Target: <strong style="color: #f1f5f9;">{{ part_request.device_model }}</strong> 
+                                &bull; Condition: <strong style="color: #38bdf8;">{{ part_request.get_condition_preference_display }}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Key Details Table -->
+                        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7; width: 40%;">Request ID</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #008BC6; font-weight: 800; font-family: monospace; font-size: 14px; border-bottom: 1px solid #edf2f7;">#{{ part_request.request_id }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Customer Name</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #0f172a; font-weight: 700; border-bottom: 1px solid #edf2f7;">{{ part_request.customer_name }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Email Address</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;">
+                                        <a href="mailto:{{ part_request.customer_email }}" style="color: #008BC6; font-weight: 700; text-decoration: none;">{{ part_request.customer_email }}</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Phone Number</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;">
+                                        <a href="tel:{{ part_request.customer_phone }}" style="color: #0f172a; font-weight: 700; text-decoration: none;">{{ part_request.customer_phone }}</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Part Needed</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #0f172a; font-weight: 700; border-bottom: 1px solid #edf2f7;">{{ part_request.part_needed }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Device / Model</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #0f172a; font-weight: 600; border-bottom: 1px solid #edf2f7;">{{ part_request.device_model }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Condition</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #0f172a; font-weight: 600; border-bottom: 1px solid #edf2f7;">{{ part_request.get_condition_preference_display }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600;">Current Status</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #008BC6; font-weight: 700;">{{ part_request.get_status_display }}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Additional Details -->
+                        {% if part_request.additional_details %}
+                            <div style="margin-bottom: 26px;">
+                                <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; margin-bottom: 8px;">
+                                    Customer Specifications / Part Serial Notes:
+                                </div>
+                                <div style="background-color: #ffffff; border: 1px solid #cbd5e1; border-left: 4px solid #008BC6; border-radius: 8px; padding: 14px 16px; font-size: 13.5px; line-height: 1.6; color: #1e293b; white-space: pre-line;">
+                                    {{ part_request.additional_details }}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    <!-- ============================================================= -->
+                    <!-- 3. TESTIMONIAL REVIEW NOTIFICATION -->
+                    <!-- ============================================================= -->
+                    {% elif notification_type == 'testimonial' or testimonial %}
+                        
+                        <!-- Alert Banner -->
+                        <div style="background-color: #F0FDF4; border-left: 4px solid #10B981; border-radius: 10px; padding: 16px 18px; margin-bottom: 24px; border-top: 1px solid #bbf7d0; border-right: 1px solid #bbf7d0; border-bottom: 1px solid #bbf7d0;">
+                            <div style="font-size: 15px; font-weight: 800; color: #166534; margin-bottom: 4px;">
+                                ⭐ New Client Testimonial Received
+                            </div>
+                            <div style="font-size: 13px; color: #14532d; line-height: 1.5;">
+                                A client has posted a new review on the website. Review their feedback below and confirm feature/moderation status in Django Admin.
+                            </div>
+                        </div>
+
+                        <!-- Highlight Card: Stars & Client -->
+                        <div style="background-color: #0f172a; color: #ffffff; border-radius: 12px; padding: 20px 22px; margin-bottom: 24px; text-align: center;">
+                            <div style="font-size: 26px; color: #F59E0B; letter-spacing: 4px; margin-bottom: 6px;">
+                                {% if testimonial.rating == 5 %}★★★★★
+                                {% elif testimonial.rating == 4 %}★★★★☆
+                                {% elif testimonial.rating == 3 %}★★★☆☆
+                                {% elif testimonial.rating == 2 %}★★☆☆☆
+                                {% else %}★☆☆☆☆
+                                {% endif %}
+                            </div>
+                            <div style="font-size: 19px; font-weight: 800; color: #ffffff; line-height: 1.3;">
+                                {{ testimonial.name }}
+                            </div>
+                            {% if testimonial.role_or_title %}
+                                <div style="font-size: 13px; color: #38bdf8; font-weight: 600; margin-top: 4px;">
+                                    {{ testimonial.role_or_title }}
+                                </div>
+                            {% endif %}
+                            {% if testimonial.service_rendered %}
+                                <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">
+                                    Service: <span style="color: #f1f5f9;">{{ testimonial.service_rendered }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Quote Blockquote Card -->
+                        <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #F59E0B; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px;">
+                            <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 8px;">
+                                Testimonial Quote:
+                            </div>
+                            <div style="font-size: 14.5px; font-style: italic; line-height: 1.7; color: #1e293b;">
+                                &ldquo;{{ testimonial.quote }}&rdquo;
+                            </div>
+                        </div>
+
+                        <!-- Key Details Table -->
+                        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7; width: 40%;">Client Name</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #0f172a; font-weight: 700; border-bottom: 1px solid #edf2f7;">{{ testimonial.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Rating</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #D97706; font-weight: 800; border-bottom: 1px solid #edf2f7;">{{ testimonial.rating }} / 5 Stars</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Account Status</td>
+                                    <td style="padding: 9px 0; text-align: right; color: #0f172a; border-bottom: 1px solid #edf2f7;">
+                                        {% if testimonial.user %}
+                                            <span style="color: #047857; font-weight: 700;">Registered User</span> ({{ testimonial.user.username }})
+                                        {% else %}
+                                            <span style="color: #64748b;">Guest Submission</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600;">Display Approval</td>
+                                    <td style="padding: 9px 0; text-align: right;">
+                                        {% if testimonial.is_approved %}
+                                            <span style="color: #059669; font-weight: 700;">✅ Approved &amp; Published</span>
+                                        {% else %}
+                                            <span style="color: #D97706; font-weight: 700;">⏳ Awaiting Approval</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    {% endif %}
+
+                    <!-- ============================================================= -->
+                    <!-- ACTION BUTTONS -->
+                    <!-- ============================================================= -->
+                    <div style="text-align: center; margin: 30px 0 10px;">
+                        {% if admin_url %}
+                            <a href="{{ admin_url }}" 
+                               class="mobile-btn"
+                               style="background-color: #0f172a; color: #ffffff !important; padding: 13px 26px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-right: 8px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);">
+                                ⚙️ Open in Admin Desk &rarr;
+                            </a>
+                        {% endif %}
+
+                        {% if whatsapp_url %}
+                            <a href="{{ whatsapp_url }}" 
+                               target="_blank"
+                               class="mobile-btn"
+                               style="background-color: #25D366; color: #ffffff !important; padding: 13px 24px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);">
+                                💬 WhatsApp Customer
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </td>
+            </tr>
+
+            <!-- Footer Section -->
+            <tr>
+                <td class="mobile-padding" style="padding: 24px 32px; background-color: #0f172a; color: #94a3b8; font-size: 12px; line-height: 1.6; text-align: center; border-top: 1px solid #1e293b;">
+                    <div style="font-weight: 800; color: #f1f5f9; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
+                        COMPUPARTZ TECHNICAL OPERATIONS DESK
+                    </div>
+                    <div style="color: #cbd5e1; margin-bottom: 12px;">
+                        Kotei-Deduako road, Adom junction, Kumasi, Ghana &bull; 
+                        <a href="tel:0540322533" style="color: #38bdf8; text-decoration: none; font-weight: 600;">0540 322 533</a> &bull; 
+                        <a href="mailto:support@compupartz.com" style="color: #38bdf8; text-decoration: none; font-weight: 600;">support@compupartz.com</a>
+                    </div>
+                    <div style="font-size: 11px; color: #64748b; border-top: 1px solid #1e293b; padding-top: 12px;">
+                        🔒 This is an automated operational notification dispatched to <strong>support@compupartz.com</strong>.
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+
+</body>
+</html>

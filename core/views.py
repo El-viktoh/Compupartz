@@ -35,6 +35,7 @@ from .forms import RegistrationForm
 
 from django.db import transaction
 from .utils import send_activation_email
+from .notifications import send_admin_testimonial_notification
 import logging
 
 logger = logging.getLogger(__name__)
@@ -211,7 +212,7 @@ def submit_testimonial(request):
                 if not client_name:
                     client_name = "Verified Client"
 
-            Testimonial.objects.create(
+            testimonial = Testimonial.objects.create(
                 user=user_obj,
                 name=client_name,
                 role_or_title=role_or_title or "Verified Client",
@@ -221,6 +222,7 @@ def submit_testimonial(request):
                 is_approved=True,
                 is_featured=False
             )
+            send_admin_testimonial_notification(testimonial)
             messages.success(request, "Thank you! Your review has been submitted successfully.")
         else:
             messages.error(request, "Please enter your review feedback before submitting.")

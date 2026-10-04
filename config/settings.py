@@ -220,6 +220,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 # Default Emails
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Compupartz <support@compupartz.com>')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'support@compupartz.com')
+SUPPORT_EMAIL = os.getenv('SUPPORT_EMAIL', 'support@compupartz.com')
 EMAIL_SUBJECT_PREFIX = '[Compupartz] '
 
 
