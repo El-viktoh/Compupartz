@@ -105,11 +105,13 @@ def send_repair_status_email(ticket, old_status, new_status):
                 f"All bench repairs and 4-stage quality stress tests are complete! Your {ticket.device} has been verified, "
                 f"packaged with your 90-day Compupartz warranty seal, and is now ready for pickup or dispatch."
             )
-        elif new_status == 'cancelled':
-            subject = f"[Compupartz] Repair Ticket Cancelled — Ticket #{ticket.ticket_id}"
+        elif new_status in ('no_fix', 'cancelled'):
+            subject = f"[Compupartz] Diagnostic Result — No-Fix Notice — Ticket #{ticket.ticket_id}"
             status_message = (
-                f"Your repair ticket #{ticket.ticket_id} ({ticket.device}) has been marked as cancelled. "
-                f"If you did not request this or have questions, please reach out to our service desk."
+                f"Following thorough diagnostics and component-level bench testing, your repair ticket #{ticket.ticket_id} "
+                f"({ticket.device}) has been concluded as No-Fix. "
+                f"Under our Free Evaluation (No Fix = No Fee) policy, no repair service fee is charged. "
+                f"Your device is safely packaged and ready for collection at our workshop."
             )
         else:
             subject = f"[Compupartz] Repair Ticket Status Updated — Ticket #{ticket.ticket_id}"

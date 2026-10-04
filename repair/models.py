@@ -14,7 +14,7 @@ class RepairTicket(models.Model):
         ('quoted', 'Quoted / Awaiting Approval'),
         ('in_progress', 'In Progress'),
         ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
+        ('no_fix', 'No-Fix'),
     ]
 
     LOGISTICS_CHOICES = [
@@ -129,6 +129,10 @@ class RepairTicket(models.Model):
     # insert) instead of "last id + 1", so concurrent bookings can't compute
     # the same ticket_id and collide on the unique constraint.
     def save(self, *args, **kwargs):
+        # Normalize legacy 'cancelled' to 'no_fix'
+        if self.status == 'cancelled':
+            self.status = 'no_fix'
+
         creating = self.pk is None
         if creating:
             self.ticket_id = None

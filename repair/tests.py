@@ -179,3 +179,84 @@ class AdminNotificationTests(TestCase):
         self.assertIn("OEM Battery for Dell XPS 13 9310", admin_email.subject)
         self.assertIn("52Wh 4-cell genuine battery", admin_email.body)
 
+
+class NoFixStatusTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.staff_user = User.objects.create_user(
+            username='staffadmin',
+            email='staff@compupartz.com',
+            password='StaffPassword123!',
+            is_staff=True
+        )
+        self.ticket = RepairTicket.objects.create(
+            customer_name="Kwabena Asante",
+            customer_email="kwabena@example.com",
+            customer_phone="0540112233",
+            device_category="laptop",
+            manufacturer="Apple",
+            device="MacBook Pro 16 A2141",
+            issue_description="Severe liquid ingress corrosion on CPU power rails.",
+            status="pending"
+        )
+
+    def test_status_choice_no_fix_display(self):
+        self.ticket.status = "no_fix"
+        self.ticket.save()
+        self.assertEqual(self.ticket.status, "no_fix")
+        self.assertEqual(self.ticket.get_status_display(), "No-Fix")
+
+    def test_legacy_cancelled_normalizes_to_no_fix(self):
+        self.ticket.status = "cancelled"
+        self.ticket.save()
+        self.assertEqual(self.ticket.status, "no_fix")
+        self.assertEqual(self.ticket.get_status_display(), "No-Fix")
+
+    def test_staff_update_repair_status_to_no_fix(self):
+        self.client.login(username='staffadmin', password='StaffPassword123!')
+        mail.outbox = []
+
+        response = self.client.post(
+            reverse('staff_update_repair_status', kwargs={'ticket_id': self.ticket.ticket_id}),
+            {
+                'status': 'no_fix',
+                'status_note': 'Corrosion penetrated inner layers of PCB; non-recoverable on bench.'
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.status, 'no_fix')
+        self.assertEqual(self.ticket.get_status_display(), 'No-Fix')
+
+        # Verify No-Fix customer notification email dispatched
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, ['kwabena@example.com'])
+        self.assertIn("No-Fix Notice", email.subject)
+        self.assertIn("No Fix = No Fee", email.body)
+
+    def test_admin_mark_no_fix_action(self):
+        from django.contrib.admin.sites import AdminSite
+        from repair.admin import RepairTicketAdmin
+
+        site = AdminSite()
+        admin_obj = RepairTicketAdmin(RepairTicket, site)
+
+        queryset = RepairTicket.objects.filter(id=self.ticket.id)
+        from django.test import RequestFactory
+        factory = RequestFactory()
+        request = factory.get('/admin/repair/repairticket/')
+        request.user = self.staff_user
+        from django.contrib.messages.storage.base import BaseStorage
+        class DummyStorage(BaseStorage):
+            def _get(self, *args, **kwargs):
+                return [], True
+            def _store(self, *args, **kwargs):
+                return []
+        setattr(request, '_messages', DummyStorage(request))
+
+        admin_obj.mark_no_fix(request, queryset)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.status, 'no_fix')
+
+

@@ -36,6 +36,10 @@
                                     <span style="display: inline-block; background-color: #FFF7ED; color: #C2410C; border: 1px solid #FDBA74; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
                                         In Progress
                                     </span>
+                                {% elif ticket.status == 'no_fix' or ticket.status == 'cancelled' %}
+                                    <span style="display: inline-block; background-color: #FFF1F2; color: #E11D48; border: 1px solid #FECDD3; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        No-Fix
+                                    </span>
                                 {% else %}
                                     <span style="display: inline-block; background-color: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
                                         {{ status_display }}

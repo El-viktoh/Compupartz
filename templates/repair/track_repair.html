@@ -73,7 +73,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h1 class="text-3xl sm:text-4xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
                     Repair Status: 
-                    <span class="{% if ticket.status == 'completed' %}text-emerald-500{% elif ticket.status == 'in_progress' %}text-[#FF7200]{% elif ticket.status == 'quoted' %}text-[#008BC6]{% else %}text-amber-500{% endif %}">
+                    <span class="{% if ticket.status == 'completed' %}text-emerald-500{% elif ticket.status == 'in_progress' %}text-[#FF7200]{% elif ticket.status == 'quoted' %}text-[#008BC6]{% elif ticket.status in 'no_fix cancelled' %}text-rose-500{% else %}text-amber-500{% endif %}">
                         {{ ticket.get_status_display }}
                     </span>
                 </h1>
@@ -118,7 +118,7 @@
                                 <option value="quoted" {% if ticket.status == 'quoted' %}selected{% endif %}>Quoted / Awaiting Approval</option>
                                 <option value="in_progress" {% if ticket.status == 'in_progress' %}selected{% endif %}>In Progress (Diagnostic / Restoration)</option>
                                 <option value="completed" {% if ticket.status == 'completed' %}selected{% endif %}>Completed (Ready for Collection)</option>
-                                <option value="cancelled" {% if ticket.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                <option value="no_fix" {% if ticket.status == 'no_fix' or ticket.status == 'cancelled' %}selected{% endif %}>No-Fix</option>
                             </select>
                         </div>
                         <div class="sm:col-span-2">

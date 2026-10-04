@@ -50,7 +50,7 @@ class RepairTicketAdmin(admin.ModelAdmin):
         'mark_pending',
         'mark_in_progress',
         'mark_completed',
-        'mark_cancelled',
+        'mark_no_fix',
         'send_formal_quote',
     ]
 
@@ -92,6 +92,7 @@ class RepairTicketAdmin(admin.ModelAdmin):
             'quoted': '#008BC6',
             'in_progress': '#ff7200',
             'completed': '#10b981',
+            'no_fix': '#ef4444',
             'cancelled': '#ef4444',
         }
         color = colors.get(obj.status, '#64748b')
@@ -218,16 +219,17 @@ class RepairTicketAdmin(admin.ModelAdmin):
             messages.SUCCESS
         )
 
-    @admin.action(description="Mark selected tickets as Cancelled")
-    def mark_cancelled(self, request, queryset):
+    @admin.action(description="Mark selected tickets as No-Fix")
+    def mark_no_fix(self, request, queryset):
         for ticket in queryset:
-            ticket.status = 'cancelled'
+            ticket.status = 'no_fix'
             ticket.save()
         self.message_user(
             request,
-            f"{queryset.count()} ticket(s) marked Cancelled. Customer notifications dispatched.",
+            f"{queryset.count()} ticket(s) marked No-Fix. Customer notifications dispatched.",
             messages.WARNING
         )
+    mark_cancelled = mark_no_fix
 
 
 # ==========================================

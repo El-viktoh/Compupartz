@@ -784,7 +784,7 @@
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <span class="font-mono text-xs font-bold bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded text-slate-700 dark:text-white">{{ ticket.ticket_id }}</span>
                                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ ticket.device }}</h3>
-                                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full {% if ticket.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% elif ticket.status == 'completed' %}bg-emerald-500/10 text-emerald-600{% elif ticket.status == 'cancelled' %}bg-red-500/10 text-red-600{% elif ticket.status == 'quoted' %}bg-sky-500/10 text-sky-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full {% if ticket.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% elif ticket.status == 'completed' %}bg-emerald-500/10 text-emerald-600{% elif ticket.status == 'cancelled' or ticket.status == 'no_fix' %}bg-rose-500/10 text-rose-600{% elif ticket.status == 'quoted' %}bg-sky-500/10 text-sky-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
                                             {{ ticket.get_status_display }}
                                         </span>
                                         {% if ticket.quoted_price %}

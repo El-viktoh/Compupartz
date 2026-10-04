@@ -270,6 +270,8 @@ def staff_update_repair_status(request, ticket_id):
 
     if request.method == "POST":
         new_status = request.POST.get("status", "").strip()
+        if new_status == 'cancelled':
+            new_status = 'no_fix'
         status_note = request.POST.get("status_note", "").strip()
 
         valid_statuses = dict(RepairTicket.STATUS_CHOICES)
