@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load blog_extras %}
 
 {% block title %}{{ post.title }} | How We Work | Compupartz{% endblock %}
 
@@ -70,8 +71,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             
             <!-- Main Content Area -->
-            <article class="lg:col-span-8 bg-white dark:bg-[#12141a] rounded-3xl p-7 sm:p-10 border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40 text-slate-800 dark:text-gray-200 text-sm sm:text-base leading-relaxed space-y-6">
-                {{ post.content|linebreaks }}
+            <article class="lg:col-span-8 bg-white dark:bg-[#12141a] rounded-3xl p-7 sm:p-10 border border-slate-200/80 dark:border-white/10 shadow-xl shadow-slate-900/5 dark:shadow-black/40 text-slate-800 dark:text-gray-200 text-sm sm:text-base leading-relaxed space-y-4">
+                {{ post.content|render_markdown }}
             </article>
 
             <!-- Sidebar Info -->
@@ -89,7 +90,7 @@
                         </div>
                     </div>
                     <p class="text-xs text-slate-500 dark:text-gray-400 font-light leading-relaxed">
-                        Authored by certified board-level technicians at our KNUST repair facility.
+                        Authored by certified board-level technicians at our central workshop (Kotei-Deduako road, Adom junction).
                     </p>
                 </div>
 

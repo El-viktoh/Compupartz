@@ -61,7 +61,7 @@
             </h1>
 
             <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base font-light max-w-2xl mx-auto leading-relaxed">
-                Inside our KNUST micro-soldering workbench. Transparent diagnostic monitoring, component-level engineering teardowns, and verified hardware intelligence.
+                Inside our central micro-soldering workbench at Kotei-Deduako road, Adom junction. Transparent diagnostic monitoring, component-level engineering teardowns, and verified hardware intelligence.
             </p>
         </div>
 
@@ -203,6 +203,15 @@
             </article>
             {% endfor %}
         </div>
+
+        <!-- Dynamic Category Empty Message (Shown when filter has 0 matches) -->
+        <div id="noCategoryArticles" style="display: none;" class="py-16 text-center bg-white dark:bg-[#12141a] rounded-3xl border border-slate-200/80 dark:border-white/10 p-8 mb-16">
+            <span class="text-3xl mb-2 block">🔬</span>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-1">No Briefings In This Category Yet</h4>
+            <p class="text-xs text-slate-500 dark:text-gray-400 font-light">
+                Our technicians are drafting new teardowns for this topic. Select "All Briefings" to explore other case studies.
+            </p>
+        </div>
         {% else %}
         <!-- Empty State (Fallback) -->
         <div class="py-20 text-center bg-white dark:bg-[#12141a] rounded-3xl border border-slate-200/80 dark:border-white/10 p-10 mb-16">
@@ -315,7 +324,7 @@
                         Have a Faulty Board Requiring Component Process?
                     </h2>
                     <p class="text-xs sm:text-sm text-gray-300 font-light leading-relaxed">
-                        Book a diagnostic ticket online, visit our KNUST laboratory, or request dedicated component sourcing directly from our inventory desk.
+                        Book a diagnostic ticket online, visit our central workshop at Kotei-Deduako road, Adom junction, or request dedicated component sourcing directly from our inventory desk.
                     </p>
                 </div>
 
@@ -343,6 +352,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const pills = document.querySelectorAll('.hub-category-pill');
     const articles = document.querySelectorAll('.hub-article-card');
+    const noArticles = document.getElementById('noCategoryArticles');
 
     pills.forEach(pill => {
         pill.addEventListener('click', function() {
@@ -350,15 +360,21 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
 
             const selectedCat = this.getAttribute('data-category');
+            let visibleCount = 0;
 
             articles.forEach(card => {
                 const cardCat = card.getAttribute('data-category');
                 if (selectedCat === 'all' || cardCat === selectedCat) {
                     card.style.display = '';
+                    visibleCount++;
                 } else {
                     card.style.display = 'none';
                 }
             });
+
+            if (noArticles) {
+                noArticles.style.display = (visibleCount === 0) ? 'block' : 'none';
+            }
         });
     });
 });
