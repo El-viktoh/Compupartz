@@ -3,6 +3,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
+from django.conf import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,6 +14,7 @@ def send_activation_email(user, domain):
         message = render_to_string('registration/account_activation_email.html', {
             'user': user,
             'domain': domain,
+            'protocol': 'http' if settings.DEBUG else 'https',
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
             'token': default_token_generator.make_token(user),
         })

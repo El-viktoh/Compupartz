@@ -59,6 +59,15 @@ CSRF_TRUSTED_ORIGINS = [
     'http://187.124.221.97',
 ]
 
+# Local origins are only trusted during development; never on the live server.
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS += [
+        'http://127.0.0.1:8000',
+        'http://localhost:8000',
+        'http://127.0.0.1',
+        'http://localhost',
+    ]
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 

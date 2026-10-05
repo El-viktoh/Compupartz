@@ -191,3 +191,97 @@ class TestimonialModerationTests(TestCase):
         self._submit()
         body = ''.join(m.body for m in mail.outbox)
         self.assertIn('Awaiting Approval', body)
+
+
+class EmailLinkSchemeTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('linkuser', 'link@example.com', 'x')
+
+    def test_password_reset_link_uses_https_for_secure_requests(self):
+        self.client.post(reverse('password_reset'), {'email': 'link@example.com'}, secure=True)
+        from django.contrib.sites.models import Site
+        domain = Site.objects.get_current().domain
+        html = mail.outbox[0].alternatives[0][0]
+        self.assertIn(f'https://{domain}/accounts/reset/', mail.outbox[0].body)
+        self.assertIn('href="https://', html)
+        self.assertNotIn('href="http://', html)
+        self.assertNotIn(f'http://{domain}', mail.outbox[0].body)
+
+    def test_activation_link_uses_https_in_production(self):
+        from django.test import override_settings
+        from core.utils import send_activation_email
+        with override_settings(DEBUG=False):
+            send_activation_email(self.user, 'compupartz.com')
+        self.assertIn('href="https://compupartz.com/activate/', mail.outbox[0].body)
+        self.assertNotIn('href="http://', mail.outbox[0].body)
+
+
+import re
+
+
+class PasswordResetFlowTests(TestCase):
+    OLD, NEW = 'Old-Passw0rd-4471!', 'Brand-New-Pass-2290!'
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.user = User.objects.create_user('resetter', 'resetter@example.com', self.OLD)
+
+    def _request_reset(self, email='resetter@example.com'):
+        return self.client.post(reverse('password_reset'), {'email': email}, secure=True)
+
+    def _link(self):
+        import re
+        return re.search(r'(https://\S+/accounts/reset/\S+?/)\s', mail.outbox[0].body + ' ').group(1)
+
+    def test_email_is_multipart_with_readable_text_and_html(self):
+        self._request_reset()
+        msg = mail.outbox[0]
+        self.assertEqual(msg.alternatives[0][1], 'text/html')
+        self.assertNotIn('<', msg.body)
+        self.assertIn('href="https://', msg.alternatives[0][0])
+
+    def test_full_reset_changes_password_and_kills_old_sessions(self):
+        other = self.client_class()
+        other.login(username='resetter', password=self.OLD)
+        self._request_reset()
+        link = self._link()
+        resp = self.client.get(re.sub(r'^https://[^/]+', '', link), secure=True, follow=True)
+        set_url = resp.redirect_chain[-1][0]
+        done = self.client.post(set_url, {'new_password1': self.NEW, 'new_password2': self.NEW}, secure=True)
+        self.assertEqual(done.status_code, 302)
+        self.assertTrue(self.client_class().login(username='resetter', password=self.NEW))
+        self.assertFalse(self.client_class().login(username='resetter', password=self.OLD))
+        self.assertEqual(other.get(reverse('dashboard')).status_code, 302)
+
+    def test_weak_or_mismatched_passwords_are_rejected(self):
+        self._request_reset()
+        resp = self.client.get(re.sub(r'^https://[^/]+', '', self._link()), secure=True, follow=True)
+        set_url = resp.redirect_chain[-1][0]
+        for p1, p2 in [(self.NEW, 'Different-Pass-1!'), ('Ab1!', 'Ab1!'), ('83920174651', '83920174651'), ('password123', 'password123')]:
+            self.assertEqual(self.client.post(set_url, {'new_password1': p1, 'new_password2': p2}, secure=True).status_code, 200)
+        self.assertTrue(self.client_class().login(username='resetter', password=self.OLD))
+
+    def test_unknown_unverified_and_social_only_accounts_get_no_email_and_same_response(self):
+        User.objects.create_user('inactive', 'inactive@example.com', self.OLD, is_active=False)
+        social = User.objects.create_user('socialonly', 'social@example.com')
+        social.set_unusable_password()
+        social.save()
+        known = self._request_reset()['Location']
+        for email in ('inactive@example.com', 'social@example.com', 'nobody@example.com'):
+            mail.outbox.clear()
+            self.assertEqual(self._request_reset(email)['Location'], known)
+            self.assertEqual(len(mail.outbox), 0, email)
+
+    def test_requests_are_throttled_per_address_without_revealing_it(self):
+        responses = {self._request_reset('Resetter@Example.com ')['Location'] for _ in range(8)}
+        self.assertEqual(len(mail.outbox), 3)
+        self.assertEqual(len(responses), 1)
+
+    def test_expired_token_is_rejected(self):
+        from django.test import override_settings
+        self._request_reset()
+        link = re.sub(r'^https://[^/]+', '', self._link())
+        with override_settings(PASSWORD_RESET_TIMEOUT=-1):
+            resp = self.client.get(link, secure=True, follow=True)
+        self.assertNotIn('set-password', resp.redirect_chain[-1][0] if resp.redirect_chain else '')
