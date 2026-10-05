@@ -306,3 +306,61 @@ class CsrfFailurePageTests(TestCase):
         page = client.get(reverse('dashboard')).content.decode()
         token = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', page).group(1)
         self.assertEqual(client.post(reverse('logout'), {'csrfmiddlewaretoken': token}).status_code, 302)
+
+
+class AbandonedSignupTests(TestCase):
+    PW = 'Str0ng-Pass-9981!'
+
+    def _signup(self, username, email):
+        return self.client_class().post(reverse('signup'), {
+            'username': username, 'first_name': 'A', 'last_name': 'B', 'email': email,
+            'password1': self.PW, 'password2': self.PW}, follow=True)
+
+    def _form_errors(self, resp):
+        return dict(resp.context['form'].errors) if resp.context and 'form' in resp.context else None
+
+    def test_mistyped_email_can_be_retried_with_same_username(self):
+        self._signup('retry', 'wrong@no-such-domain-xyz.com')
+        mail.outbox.clear()
+        resp = self._signup('retry', 'right@example.com')
+        self.assertIsNone(self._form_errors(resp))
+        self.assertEqual(list(User.objects.filter(username='retry').values_list('email', flat=True)), ['right@example.com'])
+        self.assertEqual(mail.outbox[0].to, ['right@example.com'])
+
+    def test_real_owner_is_not_locked_out_by_an_unverified_squatter(self):
+        self._signup('squatter', 'victim@example.com')
+        resp = self._signup('owner', 'victim@example.com')
+        self.assertIsNone(self._form_errors(resp))
+        self.assertFalse(User.objects.filter(username='squatter').exists())
+        self.assertTrue(User.objects.filter(username='owner', is_active=False).exists())
+
+    def test_verified_staff_used_and_ticket_owning_accounts_are_never_replaced(self):
+        from django.utils import timezone
+        from repair.models import RepairTicket
+        User.objects.create_user('active', 'active@example.com', self.PW)
+        User.objects.create_user('staffer', 'staffer@example.com', self.PW, is_active=False, is_staff=True)
+        used = User.objects.create_user('used', 'used@example.com', self.PW, is_active=False)
+        used.last_login = timezone.now()
+        used.save()
+        owner = User.objects.create_user('owner2', 'owner2@example.com', self.PW, is_active=False)
+        RepairTicket.objects.create(user=owner, customer_name='T', customer_phone='0200000000', device='d')
+        for email in ('active@example.com', 'staffer@example.com', 'used@example.com', 'owner2@example.com'):
+            resp = self._signup('newname', email)
+            self.assertIn('email', self._form_errors(resp), email)
+        for username in ('active', 'ACTIVE', 'staffer', 'used', 'owner2'):
+            resp = self._signup(username, f'{username}-new@example.com')
+            self.assertIn('username', self._form_errors(resp), username)
+        self.assertEqual(User.objects.filter(username__in=['active', 'staffer', 'used', 'owner2']).count(), 4)
+
+    def test_failed_activation_email_keeps_the_existing_unverified_account(self):
+        from unittest import mock
+        self._signup('keeper', 'keep@example.com')
+        with mock.patch('core.utils.EmailMessage.send', side_effect=Exception('smtp down')):
+            resp = self._signup('keeper', 'keep2@example.com')
+        self.assertContains(resp, 'send the activation email')
+        self.assertTrue(User.objects.filter(username='keeper', email='keep@example.com').exists())
+
+    def test_malformed_email_gets_a_clear_error(self):
+        for bad in ('notanemail', 'john@', 'john@gmail'):
+            resp = self._signup('fmt', bad)
+            self.assertIn('Enter a valid email address.', self._form_errors(resp)['email'])

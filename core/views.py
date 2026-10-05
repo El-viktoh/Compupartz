@@ -50,6 +50,7 @@ def signup(request):
         if form.is_valid():
             try:
                 with transaction.atomic():
+                    form.replace_unverified_conflicts()
                     user = form.save(commit=False)
                     user.is_active = False  # ✅ Deactivate account until email confirmation
                     user.save()
@@ -97,7 +98,7 @@ def activate(request, uidb64, token):
 
 
 from django.db.models import Q
-from repair.models import RepairTicket, PartRequest, RepairMessage
+from repair.models import RepairTicket, PartRequest, RepairMessage, PartRequestMessage
 from customer_orders.models import Order
 from .models import FAQ, Profile, Testimonial
 from .forms import UserUpdateForm, ProfileUpdateForm
@@ -136,10 +137,13 @@ def dashboard(request):
 
     # All tickets raised by user for the lab communications center
     user_all_raised_tickets = user_tickets
-    total_user_messages = RepairMessage.objects.filter(ticket__user=request.user).count()
+    total_user_messages = (
+        RepairMessage.objects.filter(ticket__user=request.user).count() +
+        PartRequestMessage.objects.filter(part_request__user=request.user).count()
+    )
 
     # Hardware Parts requested & bought by this user
-    user_part_requests = PartRequest.objects.filter(user=request.user).order_by('-created_at')
+    user_part_requests = PartRequest.objects.filter(user=request.user).prefetch_related('messages').order_by('-created_at')
     user_orders = Order.objects.filter(user=request.user).prefetch_related('items').order_by('-created_at')
     total_parts_and_orders = user_part_requests.count() + user_orders.count()
 
@@ -151,7 +155,7 @@ def dashboard(request):
     staff_part_requests = None
     if request.user.is_staff:
         staff_bench_repairs = RepairTicket.objects.all().prefetch_related('messages').order_by('-created_at')[:40]
-        staff_part_requests = PartRequest.objects.all().order_by('-created_at')[:40]
+        staff_part_requests = PartRequest.objects.all().prefetch_related('messages').order_by('-created_at')[:40]
 
     # ✅ GET FORMS FOR MODAL
     u_form = UserUpdateForm(instance=request.user)

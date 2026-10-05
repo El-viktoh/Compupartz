@@ -1,7 +1,20 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Profile
+
+
+def is_unverified_signup(user):
+    """A self-registered account that never proved it owns its email address."""
+    if user.is_active or user.is_staff or user.is_superuser or user.last_login is not None:
+        return False
+    if user.socialaccount_set.exists():
+        return False
+    from repair.models import RepairTicket, PartRequest
+    return not (RepairTicket.objects.filter(user=user).exists() or PartRequest.objects.filter(user=user).exists())
+
 
 class RegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={
@@ -31,11 +44,37 @@ class RegistrationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get("email", "").strip()
-        if email and User.objects.filter(email__iexact=email).exists():
+        if email and any(not is_unverified_signup(u) for u in User.objects.filter(email__iexact=email)):
             raise forms.ValidationError(
                 "An account with this email already exists. Try logging in or resetting your password instead."
             )
         return email
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if username and any(not is_unverified_signup(u) for u in User.objects.filter(username__iexact=username)):
+            raise ValidationError(self.instance.unique_error_message(User, ["username"]))
+        return username
+
+    def validate_unique(self):
+        # Username uniqueness is enforced in clean_username so abandoned, unverified
+        # sign-ups don't lock the name (or email) away from the person retrying.
+        exclude = self._get_validation_exclusions()
+        exclude.add("username")
+        try:
+            self.instance.validate_unique(exclude=exclude)
+        except ValidationError as e:
+            self._update_errors(e)
+
+    def replace_unverified_conflicts(self):
+        """Delete abandoned, unverified accounts that hold this email or username."""
+        q = Q(email__iexact=self.cleaned_data["email"]) | Q(username__iexact=self.cleaned_data["username"])
+        removed = 0
+        for user in User.objects.filter(q):
+            if is_unverified_signup(user):
+                user.delete()
+                removed += 1
+        return removed
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
