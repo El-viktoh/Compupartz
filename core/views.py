@@ -299,3 +299,12 @@ def contact(request):
         messages.error(request, "Please fill in all fields.")
 
     return render(request, "core/contact.html")
+
+# =========================
+# CSRF FAILURE PAGE
+# =========================
+def csrf_failure(request, reason=""):
+    logger.error("CSRF failure on %s %s: %s", request.method, request.path, reason)
+    # A failed logout should land somewhere useful, not on the logout URL (which has no page).
+    retry_url = '/' if request.path.startswith('/accounts/logout') else request.path
+    return render(request, "403_csrf.html", {"retry_url": retry_url}, status=403)

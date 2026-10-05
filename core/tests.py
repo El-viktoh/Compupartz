@@ -285,3 +285,24 @@ class PasswordResetFlowTests(TestCase):
         with override_settings(PASSWORD_RESET_TIMEOUT=-1):
             resp = self.client.get(link, secure=True, follow=True)
         self.assertNotIn('set-password', resp.redirect_chain[-1][0] if resp.redirect_chain else '')
+
+
+class CsrfFailurePageTests(TestCase):
+    def test_stale_token_shows_friendly_page_and_keeps_user_logged_in(self):
+        user = User.objects.create_user('stale', 'stale@example.com', 'x')
+        client = self.client_class(enforce_csrf_checks=True)
+        client.force_login(user)
+        resp = client.post(reverse('logout'), {'csrfmiddlewaretoken': 'stale-token'})
+        self.assertEqual(resp.status_code, 403)
+        self.assertContains(resp, 'PAGE', status_code=403)
+        self.assertContains(resp, 'Reload', status_code=403)
+        self.assertNotContains(resp, 'CSRF verification failed', status_code=403)
+        self.assertEqual(client.get(reverse('dashboard')).status_code, 200)
+
+    def test_valid_token_logout_still_works(self):
+        user = User.objects.create_user('fresh', 'fresh@example.com', 'x')
+        client = self.client_class(enforce_csrf_checks=True)
+        client.force_login(user)
+        page = client.get(reverse('dashboard')).content.decode()
+        token = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', page).group(1)
+        self.assertEqual(client.post(reverse('logout'), {'csrfmiddlewaretoken': token}).status_code, 302)

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Page Expired | Compupartz{% endblock %}
+
+{% block content %}
+<div class="relative -mx-6 px-6 sm:-mx-0 sm:px-0 sm:w-screen sm:left-1/2 sm:-translate-x-1/2 bg-gray-50 dark:bg-[#0a0a0c] text-gray-900 dark:text-white -mt-10 py-24 min-h-[80vh] flex flex-col items-center justify-center transition-colors duration-500 overflow-hidden">
+
+    <div class="w-full max-w-md px-6 text-center">
+        <div class="inline-flex w-20 h-20 bg-[#FF7200]/10 rounded-full items-center justify-center mb-8 border border-[#FF7200]/20">
+            <svg class="w-10 h-10 text-[#FF7200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+
+        <h1 class="text-3xl font-display font-bold mb-4 uppercase tracking-widest text-gray-900 dark:text-white">
+            PAGE <span class="text-[#FF7200]">EXPIRED</span>
+        </h1>
+        <p class="text-gray-500 dark:text-gray-400 font-light text-sm tracking-wide mb-4 leading-relaxed">
+            For your security, this page was out of date, so your request wasn't processed. This usually happens when the page was left open while you signed in or out in another tab or window.
+        </p>
+        <p class="text-gray-500 dark:text-gray-400 font-light text-sm tracking-wide mb-10 leading-relaxed">
+            Nothing has been lost. Reload the page and try again.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="{{ retry_url }}" class="inline-block bg-gray-900 dark:bg-white text-white dark:text-black px-10 py-4 rounded-full font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-transform shadow-xl">
+                Reload &amp; Try Again
+            </a>
+            <a href="{% url 'home' %}" class="inline-block border border-gray-300 dark:border-white/20 px-10 py-4 rounded-full font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-transform">
+                Go Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
