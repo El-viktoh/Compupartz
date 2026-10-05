@@ -93,8 +93,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.microsoft',
-    'allauth.socialaccount.providers.apple',
-    'allauth.socialaccount.providers.twitter_oauth2',
 ]
 
 
@@ -261,23 +259,6 @@ SOCIALACCOUNT_PROVIDERS = {
         # Hotmail, Live) and work/school (Microsoft 365 / Azure AD) accounts.
         'tenant': os.getenv('MICROSOFT_TENANT', 'common'),
     },
-    'twitter_oauth2': {
-        'APP': {
-            'client_id': os.getenv('TWITTER_CLIENT_ID', ''),
-            'secret': os.getenv('TWITTER_SECRET', ''),
-        },
-        'SCOPE': ['tweet.read', 'users.read', 'offline.access'],
-    },
-    'apple': {
-        'APP': {
-            'client_id': os.getenv('APPLE_CLIENT_ID', ''),
-            'secret': os.getenv('APPLE_SECRET', ''),
-            'key_id': os.getenv('APPLE_KEY_ID', ''),
-        },
-        'settings': {
-            'certificate_key': os.getenv('APPLE_CERTIFICATE_KEY', ''),
-        }
-    }
 }
 
 ACCOUNT_LOGIN_METHODS = {'username', 'email'}

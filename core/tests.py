@@ -97,6 +97,14 @@ class RegistrationSecurityTests(TestCase):
             self.assertNotIn('process=connect', html)
             self.assertIn('/accounts/google/login/?process=login', html)
             self.assertIn('/accounts/microsoft/login/?process=login', html)
+            self.assertNotIn('apple', html.lower().replace('apple-touch', '').replace('-apple-system', ''))
+            self.assertNotIn('twitter_oauth2', html)
+
+    def test_apple_and_x_login_routes_are_gone(self):
+        for path in ('/accounts/apple/login/', '/accounts/twitter_oauth2/login/'):
+            self.assertEqual(self.client.get(path).status_code, 404, path)
+        self.assertEqual(self.client.get('/accounts/google/login/').status_code, 302)
+        self.assertEqual(self.client.get('/accounts/microsoft/login/').status_code, 302)
 
 
 class ProfileUpdateFeedbackTests(TestCase):
