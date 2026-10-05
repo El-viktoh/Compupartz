@@ -21,6 +21,8 @@ urlpatterns = [
     # Chat Edit / Delete
     path('message/<int:message_id>/edit/', views.edit_repair_message, name='edit_repair_message'),
     path('message/<int:message_id>/delete/', views.delete_repair_message, name='delete_repair_message'),
+    path('part-message/<int:message_id>/edit/', views.edit_part_request_message, name='edit_part_request_message'),
+    path('part-message/<int:message_id>/delete/', views.delete_part_request_message, name='delete_part_request_message'),
 
     # 🎯 Formal Quotation Desk (Staff Only)
     path('staff/quote/repair/<str:ticket_id>/', views.staff_create_repair_quote, name='staff_create_repair_quote'),
@@ -34,6 +36,7 @@ urlpatterns = [
     path('quote/repair/<str:ticket_id>/approve/', views.customer_approve_repair_quote, name='customer_approve_repair_quote'),
     path('quote/repair/<str:ticket_id>/decline/', views.customer_decline_repair_quote, name='customer_decline_repair_quote'),
     path('quote/part/<str:request_id>/approve/', views.customer_approve_part_quote, name='customer_approve_part_quote'),
+    path('quote/part/<str:request_id>/decline/', views.customer_decline_part_quote, name='customer_decline_part_quote'),
 
     # ⚙️ Part Request Tracking & Quotes
     path('track-part/', views.track_part_lookup, name='track_part_lookup'),

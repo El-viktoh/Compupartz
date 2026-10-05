@@ -266,3 +266,16 @@ class RepairMessage(models.Model):
 
     def __str__(self):
         return f"Message on {self.ticket.ticket_id} at {self.created_at}"
+
+
+class PartRequestMessage(models.Model):
+    part_request = models.ForeignKey(PartRequest, on_delete=models.CASCADE, related_name='messages')
+    sender_is_admin = models.BooleanField(default=False)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"Message on {self.part_request.request_id} at {self.created_at}"

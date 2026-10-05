@@ -1,7 +1,7 @@
 import logging
 from django.db.models.signals import post_init, post_save
 from django.dispatch import receiver
-from .models import RepairTicket, PartRequest, RepairMessage
+from .models import RepairTicket, PartRequest, RepairMessage, PartRequestMessage
 from .utils import (
     send_repair_status_email,
     send_part_request_status_email,
@@ -54,20 +54,39 @@ def notify_part_request_status_change(sender, instance, created, **kwargs):
                 f"{instance._original_status} to {instance.status}. Sending email notification..."
             )
             send_part_request_status_email(instance, instance._original_status, instance.status)
+            if instance.status != 'quoted':
+                PartRequestMessage.objects.create(
+                    part_request=instance,
+                    sender_is_admin=True,
+                    message=f"📦 Sourcing Status Updated to: {instance.get_status_display()}."
+                )
             instance._original_status = instance.status
 
 
 # ==========================================
-# TECHNICIAN DIRECT MESSAGE NOTIFICATION
+# TECHNICIAN & SOURCING DIRECT MESSAGE NOTIFICATIONS
 # ==========================================
 @receiver(post_save, sender=RepairMessage)
 def notify_technician_message_sent(sender, instance, created, **kwargs):
     if created and instance.sender_is_admin:
         # Don't send double email if this is an automated system note
-        if any(instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌")):
+        if any(instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")):
             return
         logger.info(
             f"Technician sent note on Ticket {instance.ticket.ticket_id}. "
+            "Dispatching email notification to client..."
+        )
+        send_technician_message_email(instance)
+
+
+@receiver(post_save, sender=PartRequestMessage)
+def notify_part_request_technician_message_sent(sender, instance, created, **kwargs):
+    if created and instance.sender_is_admin:
+        # Don't send double email if this is an automated system note
+        if any(instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")):
+            return
+        logger.info(
+            f"Technician / Sourcing Desk sent note on Part Request {instance.part_request.request_id}. "
             "Dispatching email notification to client..."
         )
         send_technician_message_email(instance)

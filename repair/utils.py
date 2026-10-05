@@ -142,22 +142,31 @@ def send_repair_status_email(ticket, old_status, new_status):
 
 
 def send_technician_message_email(message):
-    """Email sent to customer when a lab technician replies/messages on their ticket."""
-    ticket = message.ticket
-    if not ticket.customer_email:
+    """Email sent to customer when a lab technician or sourcing specialist replies/messages on their ticket or part request."""
+    is_part_request = hasattr(message, 'part_request')
+    target = message.part_request if is_part_request else message.ticket
+
+    if not target.customer_email:
         return False
 
     try:
         domain = get_site_domain()
-        tracking_url = f"https://{domain}/accounts/login/?next=/repair/track/{ticket.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/accounts/login/?next=/repair/track/{ticket.ticket_id}/"
-
-        subject = f"[Compupartz] Lab Bench Update on Ticket #{ticket.ticket_id}"
-
-        context = {
-            "ticket": ticket,
-            "message_text": message.message,
-            "tracking_url": tracking_url,
-        }
+        if is_part_request:
+            tracking_url = f"https://{domain}/accounts/login/?next=/repair/track-part/{target.request_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/accounts/login/?next=/repair/track-part/{target.request_id}/"
+            subject = f"[Compupartz] Sourcing Desk Update on Part Request #{target.request_id}"
+            context = {
+                "part_request": target,
+                "message_text": message.message,
+                "tracking_url": tracking_url,
+            }
+        else:
+            tracking_url = f"https://{domain}/accounts/login/?next=/repair/track/{target.ticket_id}/" if not settings.DEBUG else f"http://127.0.0.1:8000/accounts/login/?next=/repair/track/{target.ticket_id}/"
+            subject = f"[Compupartz] Lab Bench Update on Ticket #{target.ticket_id}"
+            context = {
+                "ticket": target,
+                "message_text": message.message,
+                "tracking_url": tracking_url,
+            }
 
         html_content = render_to_string("emails/technician_message.html", context)
         text_content = strip_tags(html_content)
@@ -166,13 +175,14 @@ def send_technician_message_email(message):
             subject=subject,
             message=text_content,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[ticket.customer_email],
+            recipient_list=[target.customer_email],
             html_message=html_content,
             fail_silently=True,
         )
         return True
     except Exception as e:
-        logger.error(f"Error sending technician message email for {ticket.ticket_id}: {e}")
+        item_id = target.request_id if is_part_request else target.ticket_id
+        logger.error(f"Error sending technician message email for {item_id}: {e}")
         return False
 
 

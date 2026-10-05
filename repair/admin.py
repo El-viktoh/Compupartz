@@ -3,12 +3,12 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.contrib import messages
 from django.utils import timezone
-from .models import RepairTicket, RepairMessage, PartRequest
+from .models import RepairTicket, RepairMessage, PartRequest, PartRequestMessage
 from .utils import send_formal_repair_quote_email, send_formal_part_quote_email
 
 
 # ==========================================
-# 1. DIRECT TECHNICIAN COMMUNICATION INLINE
+# 1. DIRECT TECHNICIAN COMMUNICATION INLINES
 # ==========================================
 class RepairMessageInline(admin.TabularInline):
     model = RepairMessage
@@ -17,6 +17,15 @@ class RepairMessageInline(admin.TabularInline):
     readonly_fields = ('created_at',)
     verbose_name = "Direct Technician Message / Bench Note"
     verbose_name_plural = "Direct Technician Communication Thread"
+
+
+class PartRequestMessageInline(admin.TabularInline):
+    model = PartRequestMessage
+    extra = 1
+    fields = ('sender_is_admin', 'message', 'created_at')
+    readonly_fields = ('created_at',)
+    verbose_name = "Direct Sourcing Message / Note"
+    verbose_name_plural = "Direct Sourcing & Technician Communication Thread"
 
 
 # ==========================================
@@ -299,6 +308,7 @@ class PartRequestAdmin(admin.ModelAdmin):
         'device_model',
         'admin_notes',
     )
+    inlines = [PartRequestMessageInline]
     readonly_fields = ('request_id', 'created_at', 'quote_sent_at')
     actions = [
         'mark_pending',
@@ -382,6 +392,14 @@ class PartRequestAdmin(admin.ModelAdmin):
         return "—"
     quoted_price_display.short_description = "Quoted (GH₵)"
 
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            if isinstance(instance, PartRequestMessage) and not instance.pk:
+                instance.sender_is_admin = True
+            instance.save()
+        formset.save_m2m()
+
     def save_model(self, request, obj, form, change):
         if obj.quoted_price and (obj.status == 'quoted' or obj.quote_status == 'sent'):
             if obj.quote_status != 'approved':
@@ -389,6 +407,11 @@ class PartRequestAdmin(admin.ModelAdmin):
             if not obj.quote_sent_at or 'quoted_price' in form.changed_data:
                 obj.quote_sent_at = timezone.now()
                 send_formal_part_quote_email(obj)
+                PartRequestMessage.objects.create(
+                    part_request=obj,
+                    sender_is_admin=True,
+                    message=f"📋 Formal Part Sourcing Quotation Dispatched: GH₵ {obj.quoted_price}. Estimated Arrival: {obj.estimated_delivery}. Warranty: {obj.warranty_period}."
+                )
         super().save_model(request, obj, form, change)
 
     @admin.action(description="🎯 Send / Resend Formal Quote Email to Selected Part Requests")
@@ -401,6 +424,11 @@ class PartRequestAdmin(admin.ModelAdmin):
                 req.quote_sent_at = timezone.now()
                 req.save()
                 send_formal_part_quote_email(req)
+                PartRequestMessage.objects.create(
+                    part_request=req,
+                    sender_is_admin=True,
+                    message=f"📋 Formal Part Sourcing Quotation Dispatched: GH₵ {req.quoted_price}. Estimated Arrival: {req.estimated_delivery}. Warranty: {req.warranty_period}."
+                )
                 count += 1
         if count:
             self.message_user(
@@ -447,4 +475,38 @@ class PartRequestAdmin(admin.ModelAdmin):
             f"{queryset.count()} part request(s) set to Declined. Customer email notifications sent.",
             messages.WARNING
         )
+
+
+@admin.register(PartRequestMessage)
+class PartRequestMessageAdmin(admin.ModelAdmin):
+    list_display = ('request_link', 'sender_role', 'message_snippet', 'created_at')
+    list_filter = ('sender_is_admin', 'created_at', 'part_request__status')
+    search_fields = ('part_request__request_id', 'part_request__customer_name', 'part_request__customer_phone', 'message')
+    readonly_fields = ('created_at',)
+
+    def request_link(self, obj):
+        return format_html(
+            '<a href="/admin/repair/partrequest/{}/change/"><strong>{}</strong> ({} - {})</a>',
+            obj.part_request.id,
+            obj.part_request.request_id,
+            obj.part_request.customer_name,
+            obj.part_request.part_needed
+        )
+    request_link.short_description = "Part Request"
+
+    def sender_role(self, obj):
+        if obj.sender_is_admin:
+            return mark_safe(
+                '<span style="background-color: #008BC6; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Sourcing Desk</span>'
+            )
+        return mark_safe(
+            '<span style="background-color: #FF7200; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">Customer</span>'
+        )
+    sender_role.short_description = "Sender"
+
+    def message_snippet(self, obj):
+        if len(obj.message) > 75:
+            return f"{obj.message[:75]}..."
+        return obj.message
+    message_snippet.short_description = "Message Note"
 

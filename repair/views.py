@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
 from .forms import RepairBookingForm, PartRequestForm
-from .models import RepairTicket, RepairMessage, PartRequest
+from .models import RepairTicket, RepairMessage, PartRequest, PartRequestMessage
 from .utils import (
     send_repair_email,
     send_part_request_email,
@@ -300,6 +300,14 @@ def staff_update_repair_status(request, ticket_id):
     return redirect("track_repair", ticket_id=ticket.ticket_id)
 
 
+def _acting_staff_name(request):
+    """Name of the staff member recording a decision for a client, or None for a client's own action."""
+    user = request.user
+    if user.is_authenticated and user.is_staff:
+        return user.get_full_name().strip() or user.username
+    return None
+
+
 def customer_approve_repair_quote(request, ticket_id):
     ticket = get_object_or_404(RepairTicket, ticket_id=ticket_id)
 
@@ -314,14 +322,18 @@ def customer_approve_repair_quote(request, ticket_id):
         ticket.status = "in_progress"
         ticket.save()
 
-        RepairMessage.objects.create(
-            ticket=ticket,
-            sender_is_admin=False,
-            message=(
+        staff_name = _acting_staff_name(request)
+        if staff_name:
+            note = (
+                f"✅ Quote Approved on the client's behalf by {staff_name} (client agreed by phone/WhatsApp): "
+                f"repair estimate of GH₵ {ticket.quoted_price}. Bench restoration is authorized."
+            )
+        else:
+            note = (
                 f"✅ Quote Approved: Client {ticket.customer_name} approved the repair estimate "
                 f"of GH₵ {ticket.quoted_price}. Bench restoration is authorized."
             )
-        )
+        RepairMessage.objects.create(ticket=ticket, sender_is_admin=bool(staff_name), message=note)
 
         messages.success(
             request,
@@ -344,11 +356,12 @@ def customer_decline_repair_quote(request, ticket_id):
         ticket.quote_status = "declined"
         ticket.save()
 
-        RepairMessage.objects.create(
-            ticket=ticket,
-            sender_is_admin=False,
-            message=f"❌ Client {ticket.customer_name} declined the current repair quote."
+        staff_name = _acting_staff_name(request)
+        note = (
+            f"❌ Quote declined on the client's behalf by {staff_name}."
+            if staff_name else f"❌ Client {ticket.customer_name} declined the current repair quote."
         )
+        RepairMessage.objects.create(ticket=ticket, sender_is_admin=bool(staff_name), message=note)
 
         messages.info(request, "Quote declined. Our technicians have been notified.")
 
@@ -390,6 +403,17 @@ def staff_create_part_quote(request, request_id):
 
         send_formal_part_quote_email(part_request)
 
+        # Record in communication thread
+        PartRequestMessage.objects.create(
+            part_request=part_request,
+            sender_is_admin=True,
+            message=(
+                f"📋 Formal Part Sourcing Quote Dispatched: GH₵ {part_request.quoted_price}. "
+                f"Component Notes: {part_request.admin_notes or 'OEM Spec Verified'}. "
+                f"Estimated Arrival: {part_request.estimated_delivery}. Warranty: {part_request.warranty_period}."
+            )
+        )
+
         messages.success(
             request,
             f"Hardware sourcing quote of GH₵ {part_request.quoted_price} generated and emailed to {part_request.customer_email}."
@@ -419,6 +443,13 @@ def staff_update_part_status(request, request_id):
                 part_request.admin_notes = admin_notes
             part_request.save()
 
+            if admin_notes:
+                PartRequestMessage.objects.create(
+                    part_request=part_request,
+                    sender_is_admin=True,
+                    message=f"📦 Sourcing Note ({part_request.get_status_display()}): {admin_notes}"
+                )
+
             messages.success(
                 request,
                 f"Part Request #{part_request.request_id} status updated to '{part_request.get_status_display()}'. Real-time email dispatched to {part_request.customer_email}."
@@ -445,10 +476,48 @@ def customer_approve_part_quote(request, request_id):
         part_request.quote_status = "approved"
         part_request.save()
 
+        staff_name = _acting_staff_name(request)
+        if staff_name:
+            note = (
+                f"✅ Quote Approved on the client's behalf by {staff_name} (client agreed by phone/WhatsApp): "
+                f"component sourcing estimate of GH₵ {part_request.quoted_price}. Procurement is authorized."
+            )
+        else:
+            note = (
+                f"✅ Quote Approved: Client {part_request.customer_name} approved the component sourcing estimate "
+                f"of GH₵ {part_request.quoted_price}. Procurement is authorized."
+            )
+        PartRequestMessage.objects.create(part_request=part_request, sender_is_admin=bool(staff_name), message=note)
+
         messages.success(
             request,
             "Part quote confirmed! Our procurement desk is securing your component."
         )
+
+    return redirect("track_part", request_id=part_request.request_id)
+
+
+def customer_decline_part_quote(request, request_id):
+    part_request = get_object_or_404(PartRequest, request_id=request_id)
+
+    if not _can_access_part_request(request, part_request):
+        raise PermissionDenied
+
+    if request.method == "POST":
+        if part_request.quote_status != "sent":
+            messages.error(request, "There is no active quote awaiting your response on this request.")
+            return redirect("track_part", request_id=part_request.request_id)
+        part_request.quote_status = "declined"
+        part_request.save()
+
+        staff_name = _acting_staff_name(request)
+        note = (
+            f"❌ Quote declined on the client's behalf by {staff_name}."
+            if staff_name else f"❌ Client {part_request.customer_name} declined the current part quote."
+        )
+        PartRequestMessage.objects.create(part_request=part_request, sender_is_admin=bool(staff_name), message=note)
+
+        messages.info(request, "Quote declined. Our sourcing specialists have been notified.")
 
     return redirect("track_part", request_id=part_request.request_id)
 
@@ -484,6 +553,21 @@ def track_part(request, request_id):
     if not _can_access_part_request(request, part_request):
         messages.error(request, "Please verify your Request ID and phone number to view this request.")
         return redirect("track_part_lookup")
+
+    if request.method == "POST" and "message" in request.POST:
+        message_text = request.POST.get("message", "").strip()
+        if message_text:
+            PartRequestMessage.objects.create(
+                part_request=part_request,
+                message=message_text,
+                sender_is_admin=request.user.is_authenticated and request.user.is_staff
+            )
+            messages.success(request, "Message sent successfully.")
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer and 'dashboard' in referer:
+            return redirect(f"/dashboard/?tab=communications&part_request={part_request.id}#comms-part-{part_request.id}")
+        return redirect("track_part", request_id=part_request.request_id)
 
     return render(request, "repair/track_part.html", {
         "part_request": part_request
@@ -550,6 +634,59 @@ def delete_repair_message(request, message_id):
     if referer and 'dashboard' in referer:
         return redirect(f"/dashboard/?tab=communications&ticket={ticket_pk}#comms-ticket-{ticket_pk}")
     return redirect("track_repair", ticket_id=ticket_id)
+
+
+def edit_part_request_message(request, message_id):
+    message = get_object_or_404(PartRequestMessage, id=message_id)
+
+    is_owner = False
+    if request.user.is_authenticated:
+        if request.user.is_staff and message.sender_is_admin:
+            is_owner = True
+        elif not message.sender_is_admin and _can_access_part_request(request, message.part_request):
+            is_owner = True
+    elif not message.sender_is_admin and _can_access_part_request(request, message.part_request):
+        is_owner = True
+
+    if request.method != "POST" or not is_owner:
+        raise PermissionDenied
+
+    new_text = request.POST.get("message", "").strip()
+    if new_text:
+        message.message = new_text
+        message.save()
+        messages.success(request, "Message updated successfully.")
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'dashboard' in referer:
+        return redirect(f"/dashboard/?tab=communications&part_request={message.part_request.id}#comms-part-{message.part_request.id}")
+    return redirect("track_part", request_id=message.part_request.request_id)
+
+
+def delete_part_request_message(request, message_id):
+    message = get_object_or_404(PartRequestMessage, id=message_id)
+
+    is_owner = False
+    if request.user.is_authenticated:
+        if request.user.is_staff and message.sender_is_admin:
+            is_owner = True
+        elif not message.sender_is_admin and _can_access_part_request(request, message.part_request):
+            is_owner = True
+    elif not message.sender_is_admin and _can_access_part_request(request, message.part_request):
+        is_owner = True
+
+    if request.method != "POST" or not is_owner:
+        raise PermissionDenied
+
+    request_id = message.part_request.request_id
+    part_pk = message.part_request.id
+    message.delete()
+    messages.success(request, "Message deleted successfully.")
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'dashboard' in referer:
+        return redirect(f"/dashboard/?tab=communications&part_request={part_pk}#comms-part-{part_pk}")
+    return redirect("track_part", request_id=request_id)
 
 
 # ===========================

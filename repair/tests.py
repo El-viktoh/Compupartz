@@ -3,7 +3,7 @@ from django.core import mail
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from repair.models import RepairTicket, PartRequest
+from repair.models import RepairTicket, PartRequest, PartRequestMessage
 from core.models import Testimonial, FAQ
 from core.notifications import (
     send_admin_repair_notification,
@@ -331,3 +331,141 @@ class QuoteApprovalGuardTests(TestCase):
         self.client.post(reverse('customer_approve_part_quote', args=[pr.request_id]))
         pr.refresh_from_db()
         self.assertNotEqual(pr.quote_status, 'approved')
+
+
+class PartRequestMessagingTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='partclient',
+            email='client@example.com',
+            password='Password123!'
+        )
+        self.staff_user = User.objects.create_superuser(
+            username='adminuser',
+            email='admin@compupartz.com',
+            password='AdminPassword123!'
+        )
+        self.part_req = PartRequest.objects.create(
+            user=self.user,
+            customer_name='Client Name',
+            customer_email='client@example.com',
+            customer_phone='0240000000',
+            part_needed='Dell XPS 15 Battery',
+            device_model='Dell XPS 15 9500',
+            status='pending',
+            quote_status='none'
+        )
+
+    def test_customer_can_post_message_on_part_request(self):
+        self.client.login(username='partclient', password='Password123!')
+        response = self.client.post(
+            reverse('track_part', args=[self.part_req.request_id]),
+            {'message': 'Do you have genuine OEM 86Wh battery in stock?'}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.part_req.messages.count(), 1)
+        msg = self.part_req.messages.first()
+        self.assertFalse(msg.sender_is_admin)
+        self.assertEqual(msg.message, 'Do you have genuine OEM 86Wh battery in stock?')
+
+    def test_technician_message_triggers_email_notification(self):
+        mail.outbox = []
+        PartRequestMessage.objects.create(
+            part_request=self.part_req,
+            sender_is_admin=True,
+            message='We sourced the 86Wh battery from Dell authorized distributor.'
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, ['client@example.com'])
+        self.assertIn(self.part_req.request_id, email.subject)
+        self.assertIn("sourced the 86Wh battery", email.body)
+
+    def test_customer_can_edit_and_delete_their_message(self):
+        self.client.login(username='partclient', password='Password123!')
+        msg = PartRequestMessage.objects.create(
+            part_request=self.part_req,
+            sender_is_admin=False,
+            message='Initial message'
+        )
+        # Edit
+        response = self.client.post(
+            reverse('edit_part_request_message', args=[msg.id]),
+            {'message': 'Updated message text'}
+        )
+        self.assertEqual(response.status_code, 302)
+        msg.refresh_from_db()
+        self.assertEqual(msg.message, 'Updated message text')
+
+        # Delete
+        response = self.client.post(reverse('delete_part_request_message', args=[msg.id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(PartRequestMessage.objects.filter(id=msg.id).exists())
+
+    def test_customer_can_approve_and_decline_part_quote(self):
+        self.part_req.status = 'quoted'
+        self.part_req.quote_status = 'sent'
+        self.part_req.quoted_price = 450.00
+        self.part_req.save()
+
+        self.client.login(username='partclient', password='Password123!')
+
+        # Decline
+        response = self.client.post(reverse('customer_decline_part_quote', args=[self.part_req.request_id]))
+        self.assertEqual(response.status_code, 302)
+        self.part_req.refresh_from_db()
+        self.assertEqual(self.part_req.quote_status, 'declined')
+        self.assertEqual(self.part_req.status, 'quoted')
+
+
+
+class StaffClientQuoteButtonTests(TestCase):
+    def setUp(self):
+        self.staff = User.objects.create_user('qstaff', 'qs@example.com', 'x', first_name='Ama', last_name='Mensah', is_staff=True)
+        self.ticket = RepairTicket.objects.create(
+            customer_name='Kofi', customer_email='kofi@example.com', customer_phone='0200000007', device='MBP',
+            status='quoted', quote_status='sent', quoted_price=450)
+        self.part = PartRequest.objects.create(
+            customer_name='Esi', customer_email='esi@example.com', customer_phone='0200000008',
+            part_needed='Battery', device_model='A1', status='quoted', quote_status='sent', quoted_price=300)
+
+    def test_staff_do_not_see_the_clients_authorize_and_decline_buttons(self):
+        self.client.force_login(self.staff)
+        for name, arg in (('track_repair', self.ticket.ticket_id), ('track_part', self.part.request_id)):
+            html = self.client.get(reverse(name, args=[arg])).content.decode()
+            self.assertIn('Awaiting client approval', html)
+            self.assertIn('Mark approved (client agreed by phone/WhatsApp)', html)
+            self.assertNotIn('Authorize (GH', html)
+            self.assertNotIn('Confirm Order (GH', html)
+            self.assertNotIn('customer_decline', html)
+
+    def test_clients_still_see_their_own_buttons(self):
+        c = self.client_class()
+        c.post(reverse('track_repair_lookup'), {'ticket_id': self.ticket.ticket_id, 'phone': '0200000007'})
+        c.post(reverse('track_part_lookup'), {'request_id': self.part.request_id, 'phone': '0200000008'})
+        self.assertContains(c.get(reverse('track_repair', args=[self.ticket.ticket_id])), 'Authorize (GH')
+        self.assertContains(c.get(reverse('track_part', args=[self.part.request_id])), 'Confirm Order (GH')
+        self.assertNotContains(c.get(reverse('track_part', args=[self.part.request_id])), 'Mark approved')
+
+    def test_staff_recorded_approval_is_attributed_in_the_thread(self):
+        self.client.force_login(self.staff)
+        self.client.post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        self.client.post(reverse('customer_approve_part_quote', args=[self.part.request_id]))
+        self.ticket.refresh_from_db(); self.part.refresh_from_db()
+        self.assertEqual((self.ticket.status, self.ticket.quote_status), ('in_progress', 'approved'))
+        self.assertEqual(self.part.quote_status, 'approved')
+        from .models import RepairMessage, PartRequestMessage
+        for msg in (RepairMessage.objects.filter(ticket=self.ticket).latest('id'),
+                    PartRequestMessage.objects.filter(part_request=self.part).latest('id')):
+            self.assertIn("on the client's behalf by Ama Mensah", msg.message)
+            self.assertTrue(msg.sender_is_admin)
+            self.assertNotIn('Client Kofi approved', msg.message)
+
+    def test_client_approval_message_is_unchanged(self):
+        c = self.client_class()
+        c.post(reverse('track_repair_lookup'), {'ticket_id': self.ticket.ticket_id, 'phone': '0200000007'})
+        c.post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        from .models import RepairMessage
+        msg = RepairMessage.objects.filter(ticket=self.ticket).latest('id')
+        self.assertIn('Client Kofi approved the repair estimate', msg.message)
+        self.assertFalse(msg.sender_is_admin)

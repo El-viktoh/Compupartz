@@ -243,7 +243,20 @@
             </div>
 
             <!-- Approval Action -->
-            {% if ticket.quote_status == 'sent' %}
+            {% if ticket.quote_status == 'sent' and user.is_authenticated and user.is_staff %}
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
+                <p class="text-xs text-slate-500 dark:text-gray-400">
+                    <span class="font-semibold text-amber-600 dark:text-amber-400">Awaiting client approval.</span>
+                    The client has been emailed this quote and can authorize it from their tracking page. Only use the button if they already agreed by phone or WhatsApp.
+                </p>
+                <form method="POST" action="{% url 'customer_approve_repair_quote' ticket.ticket_id %}" class="w-full sm:w-auto m-0" onsubmit="return confirm('Record that the client has approved this quote? This will be logged in the thread under your name.');">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-bold text-[11px] uppercase tracking-wider transition-all">
+                        Mark approved (client agreed by phone/WhatsApp)
+                    </button>
+                </form>
+            </div>
+            {% elif ticket.quote_status == 'sent' %}
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
                 <p class="text-xs text-slate-500 dark:text-gray-400">
                     Authorize this repair to begin lab bench work immediately.
@@ -266,12 +279,12 @@
             {% elif ticket.quote_status == 'approved' %}
             <div class="pt-4 flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
                 <span>✓</span>
-                <span>You authorized this repair. Our technicians are actively working on your device.</span>
+                <span>{% if user.is_authenticated and user.is_staff %}The client authorized this repair.{% else %}You authorized this repair.{% endif %} Our technicians are actively working on the device.</span>
             </div>
             {% elif ticket.quote_status == 'declined' %}
             <div class="pt-4 flex items-center gap-2 text-xs text-red-500 font-medium">
                 <span>✗</span>
-                <span>You declined this quote. Our team has paused work on this ticket.</span>
+                <span>{% if user.is_authenticated and user.is_staff %}The client declined this quote.{% else %}You declined this quote.{% endif %} Our team has paused work on this ticket.</span>
             </div>
             {% endif %}
         </div>

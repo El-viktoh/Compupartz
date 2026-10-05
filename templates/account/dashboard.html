@@ -568,6 +568,68 @@
                         </div>
                     </div>
 
+                    <!-- ================= MY HARDWARE PART REQUESTS ================= -->
+                    <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.03)]">
+                        <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100 dark:border-white/5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">📦</span>
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                                    Hardware Parts Sourced & Requested
+                                </h3>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 bg-slate-100 dark:bg-white/5 px-2.5 py-1 rounded-md">
+                                {{ user_part_requests.count }} {% if user_part_requests.count == 1 %}Item{% else %}Items{% endif %}
+                            </span>
+                        </div>
+
+                        <div class="space-y-3">
+                            {% for req in user_part_requests %}
+                            <div class="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/20 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="text-[10px] font-mono font-bold bg-white dark:bg-white/10 text-slate-700 dark:text-white px-2 py-0.5 rounded border border-slate-200 dark:border-white/5">
+                                            {{ req.request_id }}
+                                        </span>
+                                        <h4 class="text-sm font-bold text-slate-900 dark:text-white tracking-wide group-hover:text-[#008BC6] transition-colors">
+                                            {{ req.part_needed }}
+                                        </h4>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                            {{ req.get_status_display }}
+                                        </span>
+                                        {% if req.messages.count > 0 %}
+                                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-[#008BC6]">
+                                            💬 {{ req.messages.count }} note{{ req.messages.count|pluralize }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-xs text-slate-400 dark:text-gray-500">
+                                        Device: {{ req.device_model }} &bull; Intake: {{ req.created_at|date:"M d, Y" }}
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-2 self-end sm:self-center">
+                                    <button type="button" 
+                                            onclick="openPartChat('{{ req.id }}')" 
+                                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#008BC6] to-sky-600 hover:from-blue-600 hover:to-[#008BC6] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm">
+                                        <span>💬 Chat</span>
+                                    </button>
+                                    <a href="{% url 'track_part' req.request_id %}" 
+                                       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all">
+                                        <span>Track &rarr;</span>
+                                    </a>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-6">
+                                <p class="text-xs text-slate-400 font-light mb-3">No hardware part requests submitted yet.</p>
+                                <a href="{% url 'request_part' %}" class="inline-flex items-center gap-1 text-xs font-bold text-[#008BC6] hover:underline uppercase tracking-wider">
+                                    <span>Request an OEM Hardware Part</span>
+                                    <span>&rarr;</span>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- ================= TAB PANEL 2: LAB COMMUNICATIONS ================= -->
@@ -595,20 +657,21 @@
                         </div>
                     </div>
 
-                    {% if user_all_raised_tickets %}
-                        <!-- Ticket Selection Pills (if multiple tickets exist) -->
-                        {% if user_all_raised_tickets.count > 1 %}
+                    {% if user_all_raised_tickets or user_part_requests %}
+                        <!-- Communications Thread Selector (Tickets & Hardware Parts) -->
                         <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 shrink-0 mr-1">
-                                Select Ticket:
+                                Service Threads:
                             </span>
+                            
+                            {# Repair Tickets Pills #}
                             {% for t in user_all_raised_tickets %}
                             <button type="button" 
                                     onclick="selectCommsTicket('{{ t.id }}')" 
                                     id="comms-tab-btn-{{ t.id }}"
-                                    class="comms-ticket-tab px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-2 {% if forloop.first %}bg-gradient-to-r from-[#008BC6] to-sky-600 text-white border-transparent shadow-md shadow-blue-500/20{% else %}bg-white dark:bg-[#12141a] text-slate-700 dark:text-gray-300 border-slate-200/80 dark:border-white/10 hover:border-[#008BC6]{% endif %}">
+                                    class="comms-item-tab comms-ticket-tab px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-2 {% if forloop.first %}bg-gradient-to-r from-[#008BC6] to-sky-600 text-white border-transparent shadow-md shadow-blue-500/20{% else %}bg-white dark:bg-[#12141a] text-slate-700 dark:text-gray-300 border-slate-200/80 dark:border-white/10 hover:border-[#008BC6]{% endif %}">
                                 <span>🛠️</span>
-                                <span>{{ t.device|truncatechars:20 }}</span>
+                                <span>{{ t.device|truncatechars:18 }}</span>
                                 <span class="font-mono text-[10px] opacity-80 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded">
                                     {{ t.ticket_id }}
                                 </span>
@@ -617,19 +680,35 @@
                                 {% endif %}
                             </button>
                             {% endfor %}
-                        </div>
-                        {% endif %}
 
-                        <!-- Communications Containers for Each Ticket -->
+                            {# Hardware Part Requests Pills #}
+                            {% for req in user_part_requests %}
+                            <button type="button" 
+                                    onclick="selectCommsPart('{{ req.id }}')" 
+                                    id="comms-part-tab-btn-{{ req.id }}"
+                                    class="comms-item-tab comms-part-tab px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-2 {% if not user_all_raised_tickets and forloop.first %}bg-gradient-to-r from-[#008BC6] to-sky-600 text-white border-transparent shadow-md shadow-blue-500/20{% else %}bg-white dark:bg-[#12141a] text-slate-700 dark:text-gray-300 border-slate-200/80 dark:border-white/10 hover:border-[#008BC6]{% endif %}">
+                                <span>📦</span>
+                                <span>{{ req.part_needed|truncatechars:18 }}</span>
+                                <span class="font-mono text-[10px] opacity-80 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded">
+                                    {{ req.request_id }}
+                                </span>
+                                {% if req.messages.count > 0 %}
+                                <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                                {% endif %}
+                            </button>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Communications Containers for Each Repair Ticket -->
                         {% for ticket in user_all_raised_tickets %}
-                        <div id="comms-ticket-container-{{ ticket.id }}" class="comms-ticket-container {% if not forloop.first and user_all_raised_tickets.count > 1 %}hidden{% endif %}">
+                        <div id="comms-ticket-container-{{ ticket.id }}" class="comms-ticket-container {% if not forloop.first %}hidden{% endif %}">
                             <div class="bg-white dark:bg-[#12141a] rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.03)] overflow-hidden">
                                 
                                 <!-- Ticket Chat Banner -->
                                 <div class="p-5 sm:p-6 bg-gradient-to-r from-[#008BC6]/10 via-transparent to-[#FF7200]/10 border-b border-slate-200/80 dark:border-white/10 flex flex-wrap items-center justify-between gap-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-2xl bg-[#008BC6]/10 text-[#008BC6] flex items-center justify-center text-lg shrink-0">
-                                            💬
+                                            🛠️
                                         </div>
                                         <div>
                                             <div class="flex items-center gap-2">
@@ -745,23 +824,147 @@
                         </div>
                         {% endfor %}
 
+                        <!-- Communications Containers for Each Hardware Part Request -->
+                        {% for req in user_part_requests %}
+                        <div id="comms-part-container-{{ req.id }}" class="comms-part-container {% if user_all_raised_tickets or not forloop.first %}hidden{% endif %}">
+                            <div class="bg-white dark:bg-[#12141a] rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.03)] overflow-hidden">
+                                
+                                <!-- Part Request Chat Banner -->
+                                <div class="p-5 sm:p-6 bg-gradient-to-r from-[#008BC6]/10 via-transparent to-[#FF7200]/10 border-b border-slate-200/80 dark:border-white/10 flex flex-wrap items-center justify-between gap-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-2xl bg-[#008BC6]/10 text-[#008BC6] flex items-center justify-center text-lg shrink-0">
+                                            📦
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                                                    {{ req.part_needed }}
+                                                </h3>
+                                                <span class="font-mono text-xs font-bold text-slate-500 dark:text-gray-400 bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded">
+                                                    {{ req.request_id }}
+                                                </span>
+                                                {% if req.quoted_price %}
+                                                <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                                                    Quote: GH₵ {{ req.quoted_price }}
+                                                </span>
+                                                {% endif %}
+                                            </div>
+                                            <p class="text-xs text-slate-500 dark:text-gray-400 font-light truncate max-w-md">
+                                                Target Device: {{ req.device_model }} &bull; Sourcing Desk
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                            {{ req.get_status_display }}
+                                        </span>
+                                        <a href="{% url 'track_part' req.request_id %}" class="text-xs font-bold text-[#008BC6] hover:underline uppercase tracking-wider">
+                                            Part Tracker &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Part Messages Feed -->
+                                <div class="p-5 sm:p-6 min-h-[300px] max-h-[480px] overflow-y-auto space-y-4 dash-chat-box bg-[#F8FAFC]/50 dark:bg-black/20" id="dash-part-chat-box-{{ req.id }}">
+                                    {% for msg in req.messages.all %}
+                                        {% if not msg.sender_is_admin %}
+                                            {# Sent by Client (User) #}
+                                            <div class="flex flex-col items-end">
+                                                <div class="flex items-center gap-2 mb-1 justify-end">
+                                                    <div class="flex gap-2 opacity-60 hover:opacity-100 transition-opacity">
+                                                        <button type="button" onclick="editPartMessage({{ msg.id }}, '{{ msg.message|escapejs }}')" class="text-[10px] text-slate-400 hover:text-[#008BC6] transition-colors" title="Edit message">✏️</button>
+                                                        <form action="{% url 'delete_part_request_message' msg.id %}" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Delete this message?');">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="text-[10px] text-slate-400 hover:text-red-500 transition-colors" title="Delete message">🗑️</button>
+                                                        </form>
+                                                    </div>
+                                                    <span class="text-[10px] text-slate-400 dark:text-gray-500 font-medium">
+                                                        You &bull; {{ msg.created_at|date:"M d, g:i A" }}
+                                                    </span>
+                                                </div>
+                                                <div class="max-w-[85%] rounded-2xl rounded-tr-sm px-4 py-3 bg-gradient-to-r from-[#008BC6] to-sky-600 text-white text-xs leading-relaxed shadow-sm">
+                                                    <div id="part-msg-display-{{ msg.id }}">{{ msg.message }}</div>
+                                                    <form id="part-msg-edit-form-{{ msg.id }}" action="{% url 'edit_part_request_message' msg.id %}" method="POST" class="hidden flex-col gap-2 w-full mt-2">
+                                                        {% csrf_token %}
+                                                        <textarea name="message" class="w-full bg-white/20 border border-white/40 text-white text-xs rounded-xl p-2.5 outline-none resize-none placeholder:text-white/60" rows="2" required></textarea>
+                                                        <div class="flex justify-end gap-2">
+                                                            <button type="button" onclick="cancelPartEdit({{ msg.id }})" class="text-[9px] font-bold uppercase tracking-wider text-white/80 hover:text-white px-2 py-1">Cancel</button>
+                                                            <button type="submit" class="text-[9px] font-bold uppercase tracking-wider bg-white text-[#008BC6] px-3 py-1 rounded-md shadow-sm">Save</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            {# Sent by Sourcing Specialist / Staff #}
+                                            <div class="flex flex-col items-start">
+                                                <span class="text-[10px] text-[#008BC6] dark:text-[#38bdf8] mb-1 font-bold flex items-center gap-1.5">
+                                                    <span>👨‍💼</span> Compupartz Sourcing Specialist &bull; <span class="text-slate-400 dark:text-gray-500 font-medium">{{ msg.created_at|date:"M d, g:i A" }}</span>
+                                                </span>
+                                                <div class="max-w-[85%] rounded-2xl rounded-tl-sm px-4 py-3 bg-white dark:bg-[#1a1d26] text-slate-800 dark:text-slate-100 text-xs font-light leading-relaxed shadow-sm border border-slate-200/80 dark:border-white/10">
+                                                    {{ msg.message }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% empty %}
+                                        <div class="text-center py-12">
+                                            <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-[#008BC6] flex items-center justify-center text-2xl mx-auto mb-3">
+                                                📦
+                                            </div>
+                                            <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-1">
+                                                Sourcing Desk Channel Ready
+                                            </h4>
+                                            <p class="text-xs text-slate-500 dark:text-gray-400 font-light max-w-sm mx-auto">
+                                                No sourcing messages yet on Request <span class="font-mono font-bold">{{ req.request_id }}</span>. Send a question or specification note below to communicate directly with our procurement team.
+                                            </p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <!-- Chat Input Form for Part Request -->
+                                <div class="p-4 bg-white dark:bg-[#12141a] border-t border-slate-200/80 dark:border-white/10">
+                                    <form method="POST" action="{% url 'track_part' req.request_id %}" class="flex items-center gap-2">
+                                        {% csrf_token %}
+                                        <input type="text" 
+                                               name="message" 
+                                               required 
+                                               placeholder="Type a note or question to our sourcing team for {{ req.part_needed }}..." 
+                                               class="flex-1 bg-[#F8FAFC] dark:bg-white/[0.04] text-slate-800 dark:text-white border border-slate-200/80 dark:border-white/10 text-xs rounded-2xl px-4 py-3.5 outline-none focus:ring-2 focus:ring-[#008BC6]/40 focus:border-[#008BC6] placeholder:text-slate-400 dark:placeholder:text-gray-500 transition-all">
+                                        <button type="submit" 
+                                                class="bg-gradient-to-r from-[#008BC6] to-sky-600 hover:from-blue-600 hover:to-[#008BC6] text-white px-5 py-3.5 rounded-2xl transition-all shadow-md shadow-blue-500/20 active:scale-95 shrink-0 flex items-center gap-2 font-bold text-xs uppercase tracking-wider">
+                                            <span>Send</span>
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                        {% endfor %}
+
                     {% else %}
-                        <!-- No Raised Tickets to Chat On -->
+                        <!-- No Service Requests to Chat On -->
                         <div class="bg-white dark:bg-[#12141a] rounded-3xl p-10 sm:p-14 text-center border border-slate-200/80 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.03)]">
                             <div class="w-16 h-16 rounded-2xl bg-blue-500/10 text-[#008BC6] flex items-center justify-center text-3xl mx-auto mb-4">
                                 💬
                             </div>
                             <h2 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white mb-2">
-                                No Active Lab Tickets
+                                No Active Service Requests
                             </h2>
                             <p class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm font-light max-w-md mx-auto mb-8 leading-relaxed">
-                                Once you submit a device for diagnostic or board-level repair, a dedicated, direct communication thread with our bench engineers will appear here.
+                                Once you submit a device for diagnostic repair or submit a hardware component sourcing request, dedicated communication channels with our lab and sourcing specialists will appear here.
                             </p>
-                            <a href="{% url 'book_repair' %}" 
-                               class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-[#FF7200] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all">
-                                <span>Book a Device Repair</span>
-                                <span>&rarr;</span>
-                            </a>
+                            <div class="flex items-center justify-center gap-4 flex-wrap">
+                                <a href="{% url 'book_repair' %}" 
+                                   class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-[#FF7200] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all">
+                                    <span>Book a Device Repair</span>
+                                    <span>&rarr;</span>
+                                </a>
+                                <a href="{% url 'request_part' %}" 
+                                   class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-[#008BC6] to-sky-600 hover:from-blue-600 hover:to-[#008BC6] text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:scale-95 transition-all">
+                                    <span>Request OEM Part</span>
+                                    <span>&rarr;</span>
+                                </a>
+                            </div>
                         </div>
                     {% endif %}
 
@@ -892,6 +1095,12 @@
                                         GH₵ {{ req.quoted_price }}
                                     </span>
                                     {% endif %}
+                                    {% if req.messages.count > 0 %}
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8] border border-blue-500/20">
+                                        <span>💬</span>
+                                        <span>{{ req.messages.count }} note{{ req.messages.count|pluralize }}</span>
+                                    </span>
+                                    {% endif %}
                                 </div>
                                 <!-- Second Row: Device, Client, Phone, Intake Date -->
                                 <p class="text-xs text-slate-500 dark:text-gray-400">
@@ -908,7 +1117,7 @@
                             <div class="shrink-0 flex items-center justify-end">
                                 <a href="{% url 'track_part' req.request_id %}" 
                                    class="w-full sm:w-auto px-6 py-3.5 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-2 shadow-sm">
-                                    <span>QUOTE &bull; VIEW</span>
+                                    <span>QUOTE &bull; CHAT</span>
                                     <span>&rarr;</span>
                                 </a>
                             </div>
@@ -1079,23 +1288,26 @@
                 document.querySelectorAll('.dash-chat-box').forEach(function(box) {
                     box.scrollTop = box.scrollHeight;
                 });
-            }, 60);
+            }, 100);
         }
     }
 
-    // Communications Ticket Tab Selector
-    function selectCommsTicket(ticketId) {
-        document.querySelectorAll('.comms-ticket-container').forEach(function(el) {
+    // Communications Tab Item Selector (Tickets & Parts)
+    function selectCommsItem(type, itemId) {
+        document.querySelectorAll('.comms-ticket-container, .comms-part-container').forEach(function(el) {
             el.classList.add('hidden');
         });
 
-        document.querySelectorAll('.comms-ticket-tab').forEach(function(btn) {
+        document.querySelectorAll('.comms-item-tab').forEach(function(btn) {
             btn.classList.remove('bg-gradient-to-r', 'from-[#008BC6]', 'to-sky-600', 'text-white', 'border-transparent', 'shadow-md', 'shadow-blue-500/20');
             btn.classList.add('bg-white', 'dark:bg-[#12141a]', 'text-slate-700', 'dark:text-gray-300', 'border-slate-200/80', 'dark:border-white/10');
         });
 
-        const container = document.getElementById('comms-ticket-container-' + ticketId);
-        const btn = document.getElementById('comms-tab-btn-' + ticketId);
+        const containerId = type === 'part' ? 'comms-part-container-' + itemId : 'comms-ticket-container-' + itemId;
+        const btnId = type === 'part' ? 'comms-part-tab-btn-' + itemId : 'comms-tab-btn-' + itemId;
+
+        const container = document.getElementById(containerId);
+        const btn = document.getElementById(btnId);
 
         if (container) {
             container.classList.remove('hidden');
@@ -1106,6 +1318,14 @@
             btn.classList.add('bg-gradient-to-r', 'from-[#008BC6]', 'to-sky-600', 'text-white', 'border-transparent', 'shadow-md', 'shadow-blue-500/20');
             btn.classList.remove('bg-white', 'dark:bg-[#12141a]', 'text-slate-700', 'dark:text-gray-300', 'border-slate-200/80', 'dark:border-white/10');
         }
+    }
+
+    function selectCommsTicket(ticketId) {
+        selectCommsItem('ticket', ticketId);
+    }
+
+    function selectCommsPart(partId) {
+        selectCommsItem('part', partId);
     }
 
     // Direct jump from a Raised Ticket card to that ticket's chat
@@ -1120,7 +1340,19 @@
         }
     }
 
-    // Chat Message Edit Logic
+    // Direct jump from a Part Request card to that part's chat
+    function openPartChat(partId) {
+        switchDashboardTab('lab-communications');
+        selectCommsPart(partId);
+        const container = document.getElementById('comms-part-container-' + partId);
+        if (container) {
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const inputField = container.querySelector('input[name="message"]');
+            if (inputField) inputField.focus();
+        }
+    }
+
+    // Chat Message Edit Logic for Tickets
     function editMessage(msgId, content) {
         document.getElementById('msg-display-' + msgId).classList.add('hidden');
         const form = document.getElementById('msg-edit-form-' + msgId);
@@ -1137,16 +1369,39 @@
         form.classList.remove('flex');
     }
 
+    // Chat Message Edit Logic for Part Requests
+    function editPartMessage(msgId, content) {
+        document.getElementById('part-msg-display-' + msgId).classList.add('hidden');
+        const form = document.getElementById('part-msg-edit-form-' + msgId);
+        form.classList.remove('hidden');
+        form.classList.add('flex');
+        form.querySelector('textarea').value = content;
+        form.querySelector('textarea').focus();
+    }
+    
+    function cancelPartEdit(msgId) {
+        document.getElementById('part-msg-display-' + msgId).classList.remove('hidden');
+        const form = document.getElementById('part-msg-edit-form-' + msgId);
+        form.classList.add('hidden');
+        form.classList.remove('flex');
+    }
+
     // Auto-scroll chat boxes & URL parameter handling
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const tabParam = urlParams.get('tab');
         const ticketParam = urlParams.get('ticket');
+        const partParam = urlParams.get('part_request') || urlParams.get('part');
         const hash = window.location.hash;
 
-        if (tabParam === 'communications' || hash === '#communications' || (hash && hash.startsWith('#comms-ticket-'))) {
+        if (tabParam === 'communications' || hash === '#communications' || (hash && (hash.startsWith('#comms-ticket-') || hash.startsWith('#comms-part-')))) {
             switchDashboardTab('lab-communications');
-            if (ticketParam) {
+            if (partParam) {
+                selectCommsPart(partParam);
+            } else if (hash && hash.startsWith('#comms-part-')) {
+                const pId = hash.replace('#comms-part-', '');
+                selectCommsPart(pId);
+            } else if (ticketParam) {
                 selectCommsTicket(ticketParam);
             } else if (hash && hash.startsWith('#comms-ticket-')) {
                 const tId = hash.replace('#comms-ticket-', '');
