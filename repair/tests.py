@@ -469,3 +469,70 @@ class StaffClientQuoteButtonTests(TestCase):
         msg = RepairMessage.objects.filter(ticket=self.ticket).latest('id')
         self.assertIn('Client Kofi approved the repair estimate', msg.message)
         self.assertFalse(msg.sender_is_admin)
+
+
+class QuoteApprovalAdvancesBothTypesTests(TestCase):
+    def setUp(self):
+        self.ticket = RepairTicket.objects.create(
+            customer_name='R', customer_email='r@example.com', customer_phone='0200000011', device='d',
+            status='quoted', quote_status='sent', quoted_price=100)
+        self.part = PartRequest.objects.create(
+            customer_name='P', customer_email='p@example.com', customer_phone='0200000012',
+            part_needed='Battery', device_model='m', status='quoted', quote_status='sent', quoted_price=100)
+
+    def _client_with_access(self):
+        c = self.client_class()
+        c.post(reverse('track_repair_lookup'), {'ticket_id': self.ticket.ticket_id, 'phone': '0200000011'})
+        c.post(reverse('track_part_lookup'), {'request_id': self.part.request_id, 'phone': '0200000012'})
+        return c
+
+    def test_client_approval_moves_both_to_in_progress(self):
+        c = self._client_with_access()
+        c.post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        mail.outbox.clear()
+        c.post(reverse('customer_approve_part_quote', args=[self.part.request_id]))
+        self.ticket.refresh_from_db(); self.part.refresh_from_db()
+        self.assertEqual((self.ticket.status, self.ticket.quote_status), ('in_progress', 'approved'))
+        self.assertEqual((self.part.status, self.part.quote_status), ('in_progress', 'approved'))
+        customer_mail = [m for m in mail.outbox if m.to == ['p@example.com']]
+        self.assertEqual(len(customer_mail), 1)
+        self.assertIn('Sourcing Underway', customer_mail[0].subject)
+        self.assertEqual([m for m in mail.outbox if m.to == ['support@compupartz.com']], [])
+
+    def test_staff_recorded_approval_also_advances_a_part_request(self):
+        staff = User.objects.create_user('pstaff', 'ps@example.com', 'x', is_staff=True)
+        self.client.force_login(staff)
+        self.client.post(reverse('customer_approve_part_quote', args=[self.part.request_id]))
+        self.part.refresh_from_db()
+        self.assertEqual(self.part.status, 'in_progress')
+
+    def test_part_without_a_sent_quote_is_not_advanced(self):
+        self.part.quote_status = 'none'; self.part.status = 'pending'; self.part.save()
+        c = self._client_with_access()
+        c.post(reverse('customer_approve_part_quote', args=[self.part.request_id]))
+        self.part.refresh_from_db()
+        self.assertEqual(self.part.status, 'pending')
+
+    def test_in_progress_is_shown_and_selectable_for_staff_and_can_move_to_fulfilled(self):
+        self.part.status, self.part.quote_status = 'in_progress', 'approved'; self.part.save()
+        staff = User.objects.create_user('pstaff2', 'ps2@example.com', 'x', is_staff=True)
+        self.client.force_login(staff)
+        html = self.client.get(reverse('track_part', args=[self.part.request_id])).content.decode()
+        self.assertIn('value="in_progress" selected', html)
+        self.client.post(reverse('staff_update_part_status', args=[self.part.request_id]), {'status': 'fulfilled'})
+        self.part.refresh_from_db()
+        self.assertEqual(self.part.status, 'fulfilled')
+
+    def test_migration_advances_previously_approved_parts_only(self):
+        import importlib
+        from django.apps import apps
+        mig = importlib.import_module('repair.migrations.0014_part_request_in_progress_status')
+        old_approved = PartRequest.objects.create(customer_name='O', customer_phone='1', part_needed='x', device_model='y', status='quoted', quote_status='approved')
+        still_waiting = PartRequest.objects.create(customer_name='W', customer_phone='2', part_needed='x', device_model='y', status='quoted', quote_status='sent')
+        done = PartRequest.objects.create(customer_name='D', customer_phone='3', part_needed='x', device_model='y', status='fulfilled', quote_status='approved')
+        mig.advance_already_approved_parts(apps, None)
+        for obj in (old_approved, still_waiting, done):
+            obj.refresh_from_db()
+        self.assertEqual(old_approved.status, 'in_progress')
+        self.assertEqual(still_waiting.status, 'quoted')
+        self.assertEqual(done.status, 'fulfilled')

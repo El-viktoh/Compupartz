@@ -277,6 +277,12 @@ def send_part_request_status_email(part_request, old_status, new_status):
             status_message = (
                 f"Your requested hardware part ({part_request.part_needed}) has arrived at our lab and is tested and ready for collection or courier dispatch!"
             )
+        elif new_status == 'in_progress':
+            subject = f"[Compupartz] Quote Approved - Sourcing Underway for Part Request #{part_request.request_id}"
+            status_message = (
+                f"Your quote for {part_request.part_needed} has been approved. "
+                f"Our sourcing desk is now procuring the component and will update you when it is ready."
+            )
         elif new_status == 'declined':
             subject = f"[Compupartz] Sourcing Notice on Part Request #{part_request.request_id}"
             status_message = (

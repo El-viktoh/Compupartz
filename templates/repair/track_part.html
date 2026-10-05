@@ -33,7 +33,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h1 class="text-3xl sm:text-4xl font-display font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
                     Status: 
-                    <span class="{% if part_request.status == 'fulfilled' %}text-emerald-500{% elif part_request.status == 'quoted' %}text-[#008BC6]{% elif part_request.status == 'declined' %}text-red-500{% else %}text-amber-500{% endif %}">
+                    <span class="{% if part_request.status == 'fulfilled' %}text-emerald-500{% elif part_request.status == 'quoted' %}text-[#008BC6]{% elif part_request.status == 'in_progress' %}text-[#FF7200]{% elif part_request.status == 'declined' %}text-red-500{% else %}text-amber-500{% endif %}">
                         {{ part_request.get_status_display }}
                     </span>
                 </h1>
@@ -76,6 +76,7 @@
                             <select name="status" required class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white text-xs font-bold focus:border-[#008BC6] focus:ring-1 focus:ring-[#008BC6] outline-none">
                                 <option value="pending" {% if part_request.status == 'pending' %}selected{% endif %}>Pending Intake</option>
                                 <option value="quoted" {% if part_request.status == 'quoted' %}selected{% endif %}>Quoted / Awaiting Approval</option>
+                                <option value="in_progress" {% if part_request.status == 'in_progress' %}selected{% endif %}>Sourcing in Progress</option>
                                 <option value="fulfilled" {% if part_request.status == 'fulfilled' %}selected{% endif %}>Fulfilled (Ready for Dispatch)</option>
                                 <option value="declined" {% if part_request.status == 'declined' %}selected{% endif %}>Declined (Unavailable)</option>
                             </select>
@@ -333,11 +334,11 @@
 
                         <!-- Step 2: Sourcing & Quote -->
                         <div class="relative group">
-                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if part_request.status in 'quoted fulfilled' %}bg-[#008BC6] text-white shadow-md shadow-blue-500/30 {% if part_request.status == 'quoted' %}animate-pulse ring-4 ring-blue-500/20{% endif %}{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
-                                {% if part_request.status == 'fulfilled' %}✓{% elif part_request.status == 'quoted' %}📄{% else %}2{% endif %}
+                            <div class="absolute -left-8 top-1 w-7 h-7 rounded-full {% if part_request.status in 'quoted in_progress fulfilled' %}bg-[#008BC6] text-white shadow-md shadow-blue-500/30 {% if part_request.status == 'quoted' %}animate-pulse ring-4 ring-blue-500/20{% endif %}{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold transition-all">
+                                {% if part_request.status == 'fulfilled' or part_request.status == 'in_progress' %}✓{% elif part_request.status == 'quoted' %}📄{% else %}2{% endif %}
                             </div>
                             <div class="pl-3">
-                                <h4 class="text-xs font-bold uppercase tracking-wider {% if part_request.status in 'quoted fulfilled' %}text-[#008BC6] dark:text-[#38bdf8]{% else %}text-slate-400 dark:text-gray-500{% endif %}">
+                                <h4 class="text-xs font-bold uppercase tracking-wider {% if part_request.status in 'quoted in_progress fulfilled' %}text-[#008BC6] dark:text-[#38bdf8]{% else %}text-slate-400 dark:text-gray-500{% endif %}">
                                     02. Stock Verification & Formal Quote
                                 </h4>
                                 <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5 leading-relaxed">

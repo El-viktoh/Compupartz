@@ -150,6 +150,7 @@ class PartRequest(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending Intake'),
         ('quoted', 'Quoted / Awaiting Approval'),
+        ('in_progress', 'Sourcing in Progress'),
         ('fulfilled', 'Fulfilled'),
         ('declined', 'Declined'),
     ]

@@ -593,7 +593,7 @@
                                         <h4 class="text-sm font-bold text-slate-900 dark:text-white tracking-wide group-hover:text-[#008BC6] transition-colors">
                                             {{ req.part_needed }}
                                         </h4>
-                                        <span class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                        <span class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
                                             {{ req.get_status_display }}
                                         </span>
                                         {% if req.messages.count > 0 %}
@@ -855,7 +855,7 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-3">
-                                        <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
                                             {{ req.get_status_display }}
                                         </span>
                                         <a href="{% url 'track_part' req.request_id %}" class="text-xs font-bold text-[#008BC6] hover:underline uppercase tracking-wider">
@@ -1087,7 +1087,7 @@
                                     <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#008BC6] dark:group-hover:text-[#38bdf8] transition-colors">
                                         {{ req.part_needed }}
                                     </h3>
-                                    <span class="text-[10px] font-bold uppercase tracking-wider px-3.5 py-1 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-3.5 py-1 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
                                         {{ req.get_status_display }}
                                     </span>
                                     {% if req.quoted_price %}

@@ -474,6 +474,7 @@ def customer_approve_part_quote(request, request_id):
             messages.error(request, "There is no active quote awaiting your approval on this request.")
             return redirect("track_part", request_id=part_request.request_id)
         part_request.quote_status = "approved"
+        part_request.status = "in_progress"
         part_request.save()
 
         staff_name = _acting_staff_name(request)

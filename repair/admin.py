@@ -351,6 +351,7 @@ class PartRequestAdmin(admin.ModelAdmin):
         colors = {
             'pending': '#f59e0b',
             'quoted': '#008BC6',
+            'in_progress': '#FF7200',
             'fulfilled': '#10b981',
             'declined': '#ef4444',
         }
