@@ -26,6 +26,7 @@
 .font-outfit { font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 .font-inter { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 .hero-script-font { font-family: 'Caveat', cursive, -apple-system, sans-serif; }
+.queue-card-rounded { border-radius: 22px !important; }
 
 .line-clamp-2 {
     display: -webkit-box;

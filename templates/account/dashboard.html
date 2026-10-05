@@ -12,6 +12,9 @@
 .hero-script-font {
     font-family: 'Caveat', cursive, -apple-system, sans-serif;
 }
+.queue-card-rounded {
+    border-radius: 22px !important;
+}
 </style>
 
 <!-- ================= FULL-BLEED DASHBOARD WRAPPER ================= -->
@@ -143,7 +146,7 @@
         <!-- ================= MAIN WORKSPACE GRID ================= -->
         <div class="grid lg:grid-cols-12 gap-8 items-start">
 
-            <!-- ================= LEFT COLUMN: PROFILE & SHORTCUTS (4 cols) ================= -->
+            <!-- ================= LEFT COLUMN: PROFILE & SHORTCUTS (4 cols lg) ================= -->
             <div class="lg:col-span-4 space-y-6">
 
                 <!-- Client Profile Card -->
@@ -219,7 +222,7 @@
 
             </div>
 
-            <!-- ================= RIGHT COLUMN: WORKSPACE TABS & PANELS (8 cols) ================= -->
+            <!-- ================= RIGHT COLUMN: WORKSPACE TABS & PANELS (8 cols lg) ================= -->
             <div class="lg:col-span-8 space-y-6">
 
                 <!-- ================= WORKSPACE TAB SELECTOR ================= -->
@@ -232,7 +235,7 @@
                                 class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 bg-[#FF7200] text-white shadow-md shadow-orange-500/20">
                             <span>🛠️</span>
                             <span>My Raised Tickets</span>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono">
+                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono font-bold" data-inactive-class="bg-orange-500/10 text-[#FF7200]">
                                 {{ active_repairs.count }}
                             </span>
                         </button>
@@ -248,22 +251,34 @@
                             </span>
                             <span>Lab Communications</span>
                             {% if total_user_messages %}
-                            <span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-[#008BC6] font-mono font-bold">
+                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-[#008BC6] font-mono font-bold" data-inactive-class="bg-blue-500/10 text-[#008BC6]">
                                 {{ total_user_messages }}
                             </span>
                             {% endif %}
                         </button>
 
                         {% if user.is_staff %}
-                        <!-- Tab 4: Lab Process Queue (Staff/Admin Only) -->
+                        <!-- Tab 3: Lab Process Queue (Staff/Admin Only) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('staff-workshop')" 
                                 id="tab-btn-staff-workshop"
                                 class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
                             <span>⚙️</span>
                             <span>Lab Process Queue</span>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 font-mono font-bold">
+                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 font-mono font-bold" data-inactive-class="bg-purple-500/10 text-purple-600 dark:text-purple-400">
                                 {{ staff_bench_repairs.count|default:0 }}
+                            </span>
+                        </button>
+
+                        <!-- Tab 4: Hardware Parts Sourcing Queue (Staff/Admin Only) -->
+                        <button type="button" 
+                                onclick="switchDashboardTab('hardware-parts-queue')" 
+                                id="tab-btn-hardware-parts-queue"
+                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
+                            <span>📦</span>
+                            <span>Hardware Parts Sourcing Queue</span>
+                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8] font-mono font-bold" data-inactive-class="bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8]">
+                                {{ staff_part_requests.count|default:0 }}
                             </span>
                         </button>
                         {% endif %}
@@ -752,122 +767,161 @@
 
                 </div>
 
-                <!-- ================= TAB PANEL 4: STAFF WORKSHOP QUEUE (STAFF ONLY) ================= -->
+                <!-- ================= TAB PANEL 3: LAB PROCESS QUEUE (STAFF ONLY) ================= -->
                 {% if user.is_staff %}
-                <div id="section-staff-workshop" class="dash-section-panel hidden space-y-8">
-                    <!-- 1. Lab Process Queue (Repairs) -->
-                    <div class="space-y-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80 dark:border-white/10">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400">
-                                        Workshop Bench Oversight
-                                    </span>
-                                </div>
-                                <h2 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white">
+                <div id="section-staff-workshop" class="dash-section-panel hidden space-y-6">
+                    <!-- Section Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-purple-500/20">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 block mb-1">
+                                WORKSHOP BENCH OVERSIGHT
+                            </span>
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-2xl sm:text-3xl font-display font-black text-slate-900 dark:text-white">
                                     Lab Process Queue
                                 </h2>
-                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5">
-                                    Client hardware tickets undergoing diagnostic testing, quoting, or bench restoration.
-                                </p>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs bg-purple-500/10 text-purple-600 dark:text-purple-400 font-mono font-bold">
+                                    {{ staff_bench_repairs.count|default:0 }}
+                                </span>
                             </div>
-                            <a href="/admin/repair/repairticket/" target="_blank" class="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline uppercase tracking-wider">
-                                Open Django Admin Repairs &rarr;
-                            </a>
+                            <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-1">
+                                Client hardware tickets undergoing diagnostic testing, quoting, or bench restoration.
+                            </p>
                         </div>
-
-                        {% if staff_bench_repairs %}
-                        <div class="space-y-4">
-                            {% for ticket in staff_bench_repairs %}
-                            <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                <div class="space-y-1">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="font-mono text-xs font-bold bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded text-slate-700 dark:text-white">{{ ticket.ticket_id }}</span>
-                                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ ticket.device }}</h3>
-                                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full {% if ticket.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% elif ticket.status == 'completed' %}bg-emerald-500/10 text-emerald-600{% elif ticket.status == 'cancelled' or ticket.status == 'no_fix' %}bg-rose-500/10 text-rose-600{% elif ticket.status == 'quoted' %}bg-sky-500/10 text-sky-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
-                                            {{ ticket.get_status_display }}
-                                        </span>
-                                        {% if ticket.quoted_price %}
-                                        <span class="text-[11px] font-mono font-bold text-orange-600 dark:text-orange-400">GH₵ {{ ticket.quoted_price }}</span>
-                                        {% endif %}
-                                    </div>
-                                    <p class="text-xs text-slate-500 dark:text-gray-400">
-                                        Client: <strong>{{ ticket.customer_name }}</strong> ({{ ticket.customer_phone }}) &bull; Intake: {{ ticket.created_at|date:"M d, Y" }}
-                                    </p>
-                                    <p class="text-xs text-slate-600 dark:text-gray-300 font-light line-clamp-1">
-                                        Issue: {{ ticket.issue_description }}
-                                    </p>
-                                </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <a href="{% url 'track_repair' ticket.ticket_id %}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
-                                        Process &bull; Comms &rarr;
-                                    </a>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                        <p class="text-xs text-slate-400 py-4">No repair tickets in process.</p>
-                        {% endif %}
+                        <a href="/admin/repair/repairticket/" target="_blank" class="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline uppercase tracking-wider shrink-0 flex items-center gap-1">
+                            <span>OPEN DJANGO ADMIN REPAIRS</span>
+                            <span>&rarr;</span>
+                        </a>
                     </div>
 
-                    <!-- 2. Hardware Parts Sourcing Queue -->
-                    <div class="pt-6 border-t border-slate-200/80 dark:border-white/10 space-y-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8]">
-                                        OEM Procurement Desk
+                    {% if staff_bench_repairs %}
+                    <div class="space-y-4">
+                        {% for ticket in staff_bench_repairs %}
+                        <div class="queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:border-purple-500/40 hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                            <div class="space-y-1.5 flex-1 min-w-0">
+                                <!-- Top Row: ID, Device, Status, Price -->
+                                <div class="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+                                    <span class="font-mono text-xs font-bold bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white px-3 py-1.5 rounded-xl">
+                                        {{ ticket.ticket_id }}
                                     </span>
-                                </div>
-                                <h3 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white">
-                                    Hardware Parts Sourcing Queue
-                                </h3>
-                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5">
-                                    Component sourcing requests awaiting distributor quotes, fulfillment, or courier delivery.
-                                </p>
-                            </div>
-                            <a href="/admin/repair/partrequest/" target="_blank" class="text-xs font-bold text-[#008BC6] dark:text-[#38bdf8] hover:underline uppercase tracking-wider">
-                                Open Django Admin Parts &rarr;
-                            </a>
-                        </div>
-
-                        {% if staff_part_requests %}
-                        <div class="space-y-4">
-                            {% for req in staff_part_requests %}
-                            <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                <div class="space-y-1">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="font-mono text-xs font-bold bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded text-slate-700 dark:text-white">{{ req.request_id }}</span>
-                                        <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ req.part_needed }}</h4>
-                                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'declined' %}bg-red-500/10 text-red-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
-                                            {{ req.get_status_display }}
-                                        </span>
-                                        {% if req.quoted_price %}
-                                        <span class="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400">GH₵ {{ req.quoted_price }}</span>
-                                        {% endif %}
-                                    </div>
-                                    <p class="text-xs text-slate-500 dark:text-gray-400">
-                                        Device: <strong>{{ req.device_model }}</strong> &bull; Client: <strong>{{ req.customer_name }}</strong> ({{ req.customer_phone }}) &bull; {{ req.created_at|date:"M d, Y" }}
-                                    </p>
-                                    {% if req.additional_details %}
-                                    <p class="text-xs text-slate-600 dark:text-gray-300 font-light line-clamp-1">
-                                        Specs: {{ req.additional_details }}
-                                    </p>
+                                    <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                                        {{ ticket.device }}
+                                    </h3>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-3.5 py-1 rounded-full {% if ticket.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% elif ticket.status == 'completed' %}bg-emerald-500/10 text-emerald-600{% elif ticket.status == 'cancelled' or ticket.status == 'no_fix' %}bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300{% elif ticket.status == 'quoted' %}bg-sky-500/10 text-sky-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                        {% if ticket.status == 'pending' %}PENDING INTAKE{% else %}{{ ticket.get_status_display }}{% endif %}
+                                    </span>
+                                    {% if ticket.quoted_price %}
+                                    <span class="text-xs font-mono font-bold text-slate-900 dark:text-white ml-0.5">
+                                        GH₵ {{ ticket.quoted_price }}
+                                    </span>
                                     {% endif %}
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <a href="{% url 'track_part' req.request_id %}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all">
-                                        Quote &bull; View &rarr;
-                                    </a>
-                                </div>
+                                <!-- Second Row: Client, Phone, Intake Date -->
+                                <p class="text-xs text-slate-500 dark:text-gray-400">
+                                    Client: <strong class="text-slate-800 dark:text-gray-200 font-bold">{{ ticket.customer_name }}</strong> ({{ ticket.customer_phone }}) &bull; Intake: {{ ticket.created_at|date:"M d, Y" }}
+                                </p>
+                                <!-- Third Row: Issue Description -->
+                                <p class="text-xs text-slate-600 dark:text-gray-300 font-light leading-relaxed">
+                                    <span class="text-slate-500 dark:text-gray-400 font-medium">Issue:</span> {{ ticket.issue_description }}
+                                </p>
                             </div>
-                            {% endfor %}
+                            <!-- Right Button -->
+                            <div class="shrink-0 flex items-center justify-end">
+                                <a href="{% url 'track_repair' ticket.ticket_id %}" 
+                                   class="w-full sm:w-auto px-6 py-3.5 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-2 shadow-sm">
+                                    <span>PROCESS &bull; COMMS</span>
+                                    <span>&rarr;</span>
+                                </a>
+                            </div>
                         </div>
-                        {% else %}
-                        <p class="text-xs text-slate-400 py-4">No active hardware part sourcing requests.</p>
-                        {% endif %}
+                        {% endfor %}
                     </div>
+                    {% else %}
+                    <div class="queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-10 sm:p-14 border border-dashed border-slate-200/80 dark:border-white/10 text-center">
+                        <span class="text-3xl block mb-2">⚙️</span>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-1">Queue Clear</h4>
+                        <p class="text-xs text-slate-400">No repair tickets in process.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- ================= TAB PANEL 4: HARDWARE PARTS SOURCING QUEUE (STAFF ONLY) ================= -->
+                <div id="section-hardware-parts-queue" class="dash-section-panel hidden space-y-6">
+                    <!-- Section Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-blue-500/20">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8] block mb-1">
+                                OEM PROCUREMENT DESK
+                            </span>
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-2xl sm:text-3xl font-display font-black text-slate-900 dark:text-white">
+                                    Hardware Parts Sourcing Queue
+                                </h2>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8] font-mono font-bold">
+                                    {{ staff_part_requests.count|default:0 }}
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-1">
+                                Component sourcing requests awaiting distributor quotes, procurement, or delivery.
+                            </p>
+                        </div>
+                        <a href="/admin/repair/partrequest/" target="_blank" class="text-xs font-bold text-[#008BC6] dark:text-[#38bdf8] hover:underline uppercase tracking-wider shrink-0 flex items-center gap-1">
+                            <span>OPEN DJANGO ADMIN PARTS</span>
+                            <span>&rarr;</span>
+                        </a>
+                    </div>
+
+                    {% if staff_part_requests %}
+                    <div class="space-y-4">
+                        {% for req in staff_part_requests %}
+                        <div class="queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:border-[#008BC6]/40 hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                            <div class="space-y-1.5 flex-1 min-w-0">
+                                <!-- Top Row: ID, Part Needed, Status, Price -->
+                                <div class="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+                                    <span class="font-mono text-xs font-bold bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white px-3 py-1.5 rounded-xl">
+                                        {{ req.request_id }}
+                                    </span>
+                                    <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#008BC6] dark:group-hover:text-[#38bdf8] transition-colors">
+                                        {{ req.part_needed }}
+                                    </h3>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-3.5 py-1 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
+                                        {{ req.get_status_display }}
+                                    </span>
+                                    {% if req.quoted_price %}
+                                    <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 ml-0.5">
+                                        GH₵ {{ req.quoted_price }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <!-- Second Row: Device, Client, Phone, Intake Date -->
+                                <p class="text-xs text-slate-500 dark:text-gray-400">
+                                    Device: <strong class="text-slate-800 dark:text-gray-200 font-bold">{{ req.device_model }}</strong> &bull; Client: <strong class="text-slate-800 dark:text-gray-200 font-bold">{{ req.customer_name }}</strong> ({{ req.customer_phone }}) &bull; Intake: {{ req.created_at|date:"M d, Y" }}
+                                </p>
+                                <!-- Third Row: Specs Description -->
+                                {% if req.additional_details %}
+                                <p class="text-xs text-slate-600 dark:text-gray-300 font-light leading-relaxed">
+                                    <span class="text-slate-500 dark:text-gray-400 font-medium">Specs:</span> {{ req.additional_details }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            <!-- Right Button -->
+                            <div class="shrink-0 flex items-center justify-end">
+                                <a href="{% url 'track_part' req.request_id %}" 
+                                   class="w-full sm:w-auto px-6 py-3.5 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-2 shadow-sm">
+                                    <span>QUOTE &bull; VIEW</span>
+                                    <span>&rarr;</span>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-10 sm:p-14 border border-dashed border-slate-200/80 dark:border-white/10 text-center">
+                        <span class="text-3xl block mb-2">📦</span>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-1">Queue Clear</h4>
+                        <p class="text-xs text-slate-400">No active hardware part sourcing requests.</p>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
 
@@ -982,19 +1036,31 @@
 
     // Workspace Tab Switching
     function switchDashboardTab(tabId) {
+        let activeSection = document.getElementById('section-' + tabId);
+        let activeBtn = document.getElementById('tab-btn-' + tabId);
+
+        // Fallback if requested tab does not exist (e.g. non-staff accessing staff tab)
+        if (!activeSection) {
+            tabId = 'raised-tickets';
+            activeSection = document.getElementById('section-' + tabId);
+            activeBtn = document.getElementById('tab-btn-' + tabId);
+        }
+
         // Hide all tab panels
         document.querySelectorAll('.dash-section-panel').forEach(function(el) {
             el.classList.add('hidden');
         });
 
-        // Reset all tab button styles
+        // Reset all tab button styles & badges
         document.querySelectorAll('.dash-tab-btn').forEach(function(btn) {
             btn.classList.remove('bg-[#FF7200]', 'text-white', 'shadow-md', 'shadow-orange-500/20');
             btn.classList.add('text-slate-600', 'dark:text-gray-300');
+            const badge = btn.querySelector('.dash-tab-badge');
+            if (badge) {
+                const inactiveCls = badge.getAttribute('data-inactive-class') || '';
+                badge.className = 'dash-tab-badge px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ' + inactiveCls;
+            }
         });
-
-        const activeSection = document.getElementById('section-' + tabId);
-        const activeBtn = document.getElementById('tab-btn-' + tabId);
 
         if (activeSection) {
             activeSection.classList.remove('hidden');
@@ -1002,6 +1068,10 @@
         if (activeBtn) {
             activeBtn.classList.add('bg-[#FF7200]', 'text-white', 'shadow-md', 'shadow-orange-500/20');
             activeBtn.classList.remove('text-slate-600', 'dark:text-gray-300');
+            const badge = activeBtn.querySelector('.dash-tab-badge');
+            if (badge) {
+                badge.className = 'dash-tab-badge px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/20 text-white';
+            }
         }
 
         if (tabId === 'lab-communications') {
@@ -1082,8 +1152,10 @@
                 const tId = hash.replace('#comms-ticket-', '');
                 selectCommsTicket(tId);
             }
-        } else if (tabParam === 'workshop') {
+        } else if (tabParam === 'workshop' || tabParam === 'staff-workshop' || tabParam === 'lab-process-queue' || hash === '#staff-workshop' || hash === '#lab-process-queue') {
             switchDashboardTab('staff-workshop');
+        } else if (tabParam === 'hardware-parts-queue' || tabParam === 'parts-queue' || tabParam === 'hardware-parts' || tabParam === 'parts' || hash === '#hardware-parts-queue' || hash === '#parts-queue' || hash === '#hardware-parts') {
+            switchDashboardTab('hardware-parts-queue');
         } else {
             switchDashboardTab('raised-tickets');
         }

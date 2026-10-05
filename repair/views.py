@@ -428,7 +428,7 @@ def staff_update_part_status(request, request_id):
 
     referer = request.META.get('HTTP_REFERER')
     if referer and 'dashboard' in referer:
-        return redirect('/dashboard/?tab=staff-workshop')
+        return redirect('/dashboard/?tab=hardware-parts-queue')
     return redirect("track_part", request_id=part_request.request_id)
 
 
