@@ -102,6 +102,8 @@ class AdminNotificationTests(TestCase):
         self.assertIn("★★★★★", email.body)
 
     def test_preview_endpoints_render_successfully(self):
+        staff = User.objects.create_user('previewstaff', 'ps@example.com', 'x', is_staff=True)
+        self.client.force_login(staff)
         repair_res = self.client.get(reverse('preview_admin_repair_email'))
         self.assertEqual(repair_res.status_code, 200)
         self.assertContains(repair_res, "Repair Ticket Intake")
@@ -260,3 +262,72 @@ class NoFixStatusTests(TestCase):
         self.assertEqual(self.ticket.status, 'no_fix')
 
 
+
+
+from django.contrib.auth.models import User
+from django.urls import reverse
+from .models import RepairTicket, PartRequest
+
+
+class EmailPreviewAccessTests(TestCase):
+    NAMES = [
+        'preview_repair_intake_email', 'preview_part_intake_email',
+        'preview_repair_quote_email', 'preview_part_quote_email',
+        'preview_admin_repair_email', 'preview_admin_part_email',
+        'preview_admin_testimonial_email',
+    ]
+
+    def test_previews_require_staff(self):
+        regular = User.objects.create_user('reg', 'reg@example.com', 'x')
+        staff = User.objects.create_user('stf', 'stf@example.com', 'x', is_staff=True)
+        for name in self.NAMES:
+            url = reverse(name)
+            self.assertEqual(self.client.get(url).status_code, 302, name)
+            self.client.force_login(regular)
+            self.assertEqual(self.client.get(url).status_code, 302, name)
+            self.client.force_login(staff)
+            self.assertEqual(self.client.get(url).status_code, 200, name)
+            self.client.logout()
+
+    def test_previews_never_expose_real_customer_data_to_anonymous(self):
+        RepairTicket.objects.create(
+            customer_name='RealCustomerName', customer_email='real@example.com',
+            customer_phone='0245550123', device='Dev')
+        for name in self.NAMES:
+            resp = self.client.get(reverse(name), follow=False)
+            self.assertNotContains(resp, 'RealCustomerName', status_code=302)
+
+
+class QuoteApprovalGuardTests(TestCase):
+    def setUp(self):
+        self.ticket = RepairTicket.objects.create(
+            customer_name='Q', customer_phone='0200000001', device='D')
+        self.client.post(reverse('track_repair_lookup'),
+                         {'ticket_id': self.ticket.ticket_id, 'phone': '0200000001'})
+
+    def test_cannot_approve_when_no_quote_was_sent(self):
+        self.client.post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual((self.ticket.status, self.ticket.quote_status), ('pending', 'none'))
+
+    def test_cannot_reopen_completed_ticket_via_approve(self):
+        self.ticket.status = 'completed'
+        self.ticket.save()
+        self.client.post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.status, 'completed')
+
+    def test_can_approve_and_decline_when_quote_is_sent(self):
+        self.ticket.status, self.ticket.quote_status, self.ticket.quoted_price = 'quoted', 'sent', 100
+        self.ticket.save()
+        self.client.post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual((self.ticket.status, self.ticket.quote_status), ('in_progress', 'approved'))
+
+    def test_cannot_approve_part_quote_that_was_not_sent(self):
+        pr = PartRequest.objects.create(customer_name='P', customer_phone='0200000002',
+                                        part_needed='x', device_model='y')
+        self.client.post(reverse('track_part_lookup'), {'request_id': pr.request_id, 'phone': '0200000002'})
+        self.client.post(reverse('customer_approve_part_quote', args=[pr.request_id]))
+        pr.refresh_from_db()
+        self.assertNotEqual(pr.quote_status, 'approved')

@@ -1,5 +1,6 @@
 from decimal import Decimal, InvalidOperation
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -306,6 +307,9 @@ def customer_approve_repair_quote(request, ticket_id):
         raise PermissionDenied
 
     if request.method == "POST":
+        if ticket.quote_status != "sent":
+            messages.error(request, "There is no active quote awaiting your approval on this ticket.")
+            return redirect("track_repair", ticket_id=ticket.ticket_id)
         ticket.quote_status = "approved"
         ticket.status = "in_progress"
         ticket.save()
@@ -334,6 +338,9 @@ def customer_decline_repair_quote(request, ticket_id):
         raise PermissionDenied
 
     if request.method == "POST":
+        if ticket.quote_status != "sent":
+            messages.error(request, "There is no active quote awaiting your response on this ticket.")
+            return redirect("track_repair", ticket_id=ticket.ticket_id)
         ticket.quote_status = "declined"
         ticket.save()
 
@@ -432,6 +439,9 @@ def customer_approve_part_quote(request, request_id):
         raise PermissionDenied
 
     if request.method == "POST":
+        if part_request.quote_status != "sent":
+            messages.error(request, "There is no active quote awaiting your approval on this request.")
+            return redirect("track_part", request_id=part_request.request_id)
         part_request.quote_status = "approved"
         part_request.save()
 
@@ -545,6 +555,7 @@ def delete_repair_message(request, message_id):
 # ===========================
 # 📧 LIVE EMAIL PREVIEWS (DEV / DEMO)
 # ===========================
+@staff_member_required
 def preview_repair_quote_email(request):
     """Live preview of the formal repair quotation email sent to customers."""
     ticket = RepairTicket.objects.filter(quoted_price__isnull=False).first()
@@ -570,6 +581,7 @@ def preview_repair_quote_email(request):
     })
 
 
+@staff_member_required
 def preview_part_quote_email(request):
     """Live preview of the formal part request quotation email sent to customers."""
     part_request = PartRequest.objects.filter(quoted_price__isnull=False).first()
@@ -597,6 +609,7 @@ def preview_part_quote_email(request):
     })
 
 
+@staff_member_required
 def preview_repair_intake_email(request):
     """Live preview of the initial intake confirmation email sent with tracking ID upon repair booking."""
     ticket = RepairTicket.objects.first()
@@ -622,6 +635,7 @@ def preview_repair_intake_email(request):
     })
 
 
+@staff_member_required
 def preview_part_intake_email(request):
     """Live preview of the initial intake confirmation email sent with request ID upon part request."""
     part_request = PartRequest.objects.first()
@@ -649,6 +663,7 @@ def preview_part_intake_email(request):
     })
 
 
+@staff_member_required
 def preview_admin_repair_email(request):
     """Live preview of staff notification email for new repair ticket."""
     ticket = RepairTicket.objects.first()
@@ -677,6 +692,7 @@ def preview_admin_repair_email(request):
     })
 
 
+@staff_member_required
 def preview_admin_part_email(request):
     """Live preview of staff notification email for new part sourcing request."""
     part_request = PartRequest.objects.first()
@@ -703,6 +719,7 @@ def preview_admin_part_email(request):
     })
 
 
+@staff_member_required
 def preview_admin_testimonial_email(request):
     """Live preview of staff notification email for new testimonial review."""
     from core.models import Testimonial
