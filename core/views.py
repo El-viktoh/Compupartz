@@ -8,7 +8,7 @@ from blog.models import Post
 from media_hub.models import Video
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode, url_has_allowed_host_and_scheme
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
@@ -219,16 +219,20 @@ def submit_testimonial(request):
                 quote=quote,
                 rating=rating_val,
                 service_rendered=service_rendered or "Hardware Diagnostics & Restoration",
-                is_approved=True,
+                is_approved=False,
                 is_featured=False
             )
             send_admin_testimonial_notification(testimonial)
-            messages.success(request, "Thank you! Your review has been submitted successfully.")
+            messages.success(request, "Thank you! Your review has been submitted and will appear on the site once our team has approved it.")
         else:
             messages.error(request, "Please enter your review feedback before submitting.")
 
-    redirect_target = request.POST.get('next') or request.META.get('HTTP_REFERER') or 'reviews'
-    return redirect(redirect_target)
+    candidate = request.POST.get('next') or request.META.get('HTTP_REFERER') or ''
+    if candidate and url_has_allowed_host_and_scheme(
+        candidate, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return redirect(candidate)
+    return redirect('reviews')
 
 
 # =========================
