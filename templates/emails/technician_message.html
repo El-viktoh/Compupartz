@@ -50,7 +50,7 @@
                         {% if ticket %}New Note from Your Technician{% else %}New Note from Sourcing Desk{% endif %}
                     </h1>
                     <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.6; color: #475569;">
-                        Hello <strong>{{ ticket.customer_name|default:part_request.customer_name }}</strong>,
+                        Hello <strong>{% if ticket %}{{ ticket.customer_name }}{% else %}{{ part_request.customer_name }}{% endif %}</strong>,
                     </p>
                     <p style="margin: 0 0 20px; font-size: 14px; line-height: 1.6; color: #475569;">
                         {% if ticket %}
