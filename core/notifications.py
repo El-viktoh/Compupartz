@@ -150,3 +150,76 @@ def send_admin_testimonial_notification(testimonial):
     except Exception as e:
         logger.error(f"Error sending staff testimonial notification for {getattr(testimonial, 'id', 'unknown')}: {e}")
         return False
+
+
+def build_quote_approved_context(item):
+    """One normalized set of fields so repair and part approvals render through the identical layout."""
+    from django.utils.text import Truncator
+
+    is_repair = hasattr(item, "ticket_id")
+    if is_repair:
+        specifics = {
+            "kind": "Repair",
+            "service_type": "Device Repair",
+            "reference": item.ticket_id,
+            "card_label": "Approved Repair",
+            "card_title": item.device,
+            "device_target": " ".join(filter(None, [item.manufacturer, item.get_device_category_display()])),
+            "work_requested": Truncator(item.issue_description or "").chars(120),
+            "device_model": item.device,
+            "extra_label": "Drop-off Method",
+            "extra_value": item.get_logistics_preference_display(),
+            "timing_label": "Turnaround",
+            "timing_value": item.estimated_turnaround,
+            "approval_sentence": "The client has authorized this repair from their tracking page.",
+            "record_noun": "ticket",
+            "next_action": "bench work can begin",
+            "admin_path": "repairticket",
+        }
+    else:
+        specifics = {
+            "kind": "Part",
+            "service_type": "Part Sourcing",
+            "reference": item.request_id,
+            "card_label": "Approved Component",
+            "card_title": item.part_needed,
+            "device_target": item.device_model,
+            "work_requested": item.part_needed,
+            "device_model": item.device_model,
+            "extra_label": "Condition",
+            "extra_value": item.get_condition_preference_display(),
+            "timing_label": "Estimated Delivery",
+            "timing_value": item.estimated_delivery,
+            "approval_sentence": "The client has confirmed this quote from their tracking page.",
+            "record_noun": "request",
+            "next_action": "procurement can begin",
+            "admin_path": "partrequest",
+        }
+    return {"notification_type": "quote_approved", "quote_item": item, "is_repair": is_repair, **specifics}
+
+
+def send_admin_quote_approved_notification(item):
+    """Alert support when a CLIENT approves a repair or part quote."""
+    try:
+        ctx = build_quote_approved_context(item)
+        support_email = get_support_email()
+        clean_phone = format_whatsapp_phone(item.customer_phone)
+        ctx.update({
+            "admin_url": f"{get_base_url()}/admin/repair/{ctx['admin_path']}/{item.id}/change/",
+            "whatsapp_url": f"https://wa.me/{clean_phone}" if clean_phone else "",
+            "domain": get_site_domain(),
+        })
+        email = EmailMessage(
+            subject=f"[Quote Approved] #{ctx['reference']} — {item.customer_name} (GH\u20b5 {item.quoted_price})",
+            body=render_to_string("emails/admin_notification.html", ctx),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[support_email],
+            reply_to=[item.customer_email] if item.customer_email else [],
+        )
+        email.content_subtype = "html"
+        email.send(fail_silently=True)
+        logger.info(f"Quote-approved alert dispatched for #{ctx['reference']} to {support_email}")
+        return True
+    except Exception as e:
+        logger.error(f"Error sending quote-approved alert for {getattr(item, 'pk', 'unknown')}: {e}")
+        return False

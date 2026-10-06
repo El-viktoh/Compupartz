@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        {% if notification_type == 'repair_ticket' or ticket %}
+        {% if notification_type == 'quote_approved' %}
+            [Quote Approved] #{{ reference }} — {{ quote_item.customer_name }}
+        {% elif notification_type == 'repair_ticket' or ticket %}
             [New Repair Ticket] #{{ ticket.ticket_id }} — {{ ticket.customer_name }}
         {% elif notification_type == 'part_request' or part_request %}
             [New Part Request] #{{ part_request.request_id }} — {{ part_request.customer_name }}
@@ -47,7 +49,11 @@
                                 </div>
                             </td>
                             <td class="stack-column" align="right" style="vertical-align: middle; padding-top: 8px;">
-                                {% if notification_type == 'repair_ticket' or ticket %}
+                                {% if notification_type == 'quote_approved' %}
+                                    <span style="display: inline-block; background-color: #ECFDF5; color: #047857; border: 1px solid #6EE7B7; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        ✅ Quote Approved
+                                    </span>
+                                {% elif notification_type == 'repair_ticket' or ticket %}
                                     <span style="display: inline-block; background-color: #FFF7ED; color: #C2410C; border: 1px solid #FDBA74; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
                                         🔧 Repair Ticket Intake
                                     </span>
@@ -75,9 +81,92 @@
                 <td class="mobile-padding" style="padding: 28px 32px 32px;">
 
                     <!-- ============================================================= -->
+                    <!-- 0. CLIENT APPROVED A QUOTE -->
+                    <!-- ============================================================= -->
+                    {% if notification_type == 'quote_approved' %}
+
+                        <!-- Alert Banner -->
+                        <div style="background-color: #F0FDF4; border-left: 4px solid #10B981; border-radius: 10px; padding: 16px 18px; margin-bottom: 24px; border-top: 1px solid #bbf7d0; border-right: 1px solid #bbf7d0; border-bottom: 1px solid #bbf7d0;">
+                            <div style="font-size: 15px; font-weight: 800; color: #166534; margin-bottom: 4px;">
+                                ✅ Client Approved {{ kind }} Quote #{{ reference }}
+                            </div>
+                            <div style="font-size: 13px; color: #14532d; line-height: 1.5;">
+                                {{ approval_sentence }} The {{ record_noun }} has moved to <strong>{{ quote_item.get_status_display }}</strong>, so {{ next_action }}.
+                            </div>
+                        </div>
+
+                        <!-- Highlight Card -->
+                        <div style="background-color: #0f172a; color: #ffffff; border-radius: 12px; padding: 20px 22px; margin-bottom: 24px;">
+                            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #34d399; margin-bottom: 4px;">
+                                {{ card_label }}
+                            </div>
+                            <div style="font-size: 19px; font-weight: 800; color: #ffffff; line-height: 1.3;">
+                                {{ card_title }}
+                            </div>
+                            <div style="font-size: 13px; color: #94a3b8; margin-top: 6px;">
+                                Device Target: <strong style="color: #f1f5f9;">{{ device_target }}</strong>
+                                &bull; Approved Price: <strong style="color: #34d399;">GH&#8373; {{ quote_item.quoted_price }}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Key Details Table -->
+                        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7; width: 40%;">Reference</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><span style="color: #008BC6; font-weight: 800; font-family: monospace; font-size: 14px;">#{{ reference }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Customer Name</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><strong style="color: #0f172a;">{{ quote_item.customer_name }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Email Address</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><a href="mailto:{{ quote_item.customer_email }}" style="color: #008BC6; font-weight: 700; text-decoration: none;">{{ quote_item.customer_email }}</a></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Phone Number</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><a href="tel:{{ quote_item.customer_phone }}" style="color: #0f172a; font-weight: 700; text-decoration: none;">{{ quote_item.customer_phone }}</a></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Request Type</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><span style="color: #0f172a; font-weight: 600;">{{ service_type }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Work Requested</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><span style="color: #0f172a; font-weight: 700;">{{ work_requested }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Device / Model</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><span style="color: #0f172a; font-weight: 600;">{{ device_model }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">{{ extra_label }}</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><span style="color: #0f172a; font-weight: 600;">{{ extra_value|default:"—" }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Approved Price</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><span style="color: #059669; font-weight: 800;">GH&#8373; {{ quote_item.quoted_price }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">{{ timing_label }}</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><span style="color: #0f172a; font-weight: 600;">{{ timing_value|default:"—" }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Warranty</td>
+                                    <td style="padding: 9px 0; text-align: right; border-bottom: 1px solid #edf2f7;"><span style="color: #0f172a; font-weight: 600;">{{ quote_item.warranty_period|default:"—" }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 9px 0; color: #64748b; font-weight: 600;">Current Status</td>
+                                    <td style="padding: 9px 0; text-align: right;"><span style="color: #059669; font-weight: 700;">{{ quote_item.get_status_display }}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    <!-- ============================================================= -->
                     <!-- 1. REPAIR TICKET NOTIFICATION -->
                     <!-- ============================================================= -->
-                    {% if notification_type == 'repair_ticket' or ticket %}
+                    {% elif notification_type == 'repair_ticket' or ticket %}
                         
                         <!-- Alert Banner -->
                         <div style="background-color: #FFFBF5; border-left: 4px solid #FF7200; border-radius: 10px; padding: 16px 18px; margin-bottom: 24px; border-top: 1px solid #fed7aa; border-right: 1px solid #fed7aa; border-bottom: 1px solid #fed7aa;">

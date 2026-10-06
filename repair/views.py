@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
+from core.notifications import build_quote_approved_context, send_admin_quote_approved_notification
 from .forms import RepairBookingForm, PartRequestForm
 from .models import RepairTicket, RepairMessage, PartRequest, PartRequestMessage
 from .utils import (
@@ -334,6 +335,8 @@ def customer_approve_repair_quote(request, ticket_id):
                 f"of GH₵ {ticket.quoted_price}. Bench restoration is authorized."
             )
         RepairMessage.objects.create(ticket=ticket, sender_is_admin=bool(staff_name), message=note)
+        if not staff_name:
+            send_admin_quote_approved_notification(ticket)
 
         messages.success(
             request,
@@ -489,6 +492,8 @@ def customer_approve_part_quote(request, request_id):
                 f"of GH₵ {part_request.quoted_price}. Procurement is authorized."
             )
         PartRequestMessage.objects.create(part_request=part_request, sender_is_admin=bool(staff_name), message=note)
+        if not staff_name:
+            send_admin_quote_approved_notification(part_request)
 
         messages.success(
             request,
@@ -855,6 +860,37 @@ def preview_admin_part_email(request):
         "whatsapp_url": whatsapp_url,
         "domain": "compupartz.com",
     })
+
+
+@staff_member_required
+def preview_admin_quote_approved_email(request):
+    """Preview of the staff alert sent when a client approves a quote (sample data only).
+
+    Use ?kind=repair for the repair version; the part-request version is the default.
+    Both render through the identical layout used by the real alert.
+    """
+    if request.GET.get("kind") == "repair":
+        item = RepairTicket(
+            id=1, ticket_id="R-108", customer_name="Kwame Mensah", customer_email="kwame@example.com",
+            customer_phone="0244123456", device_category="laptop", manufacturer="Apple",
+            device='MacBook Pro 16" M1 Pro (A2485)', issue_description="Laptop does not power on after liquid spill.",
+            logistics_preference="drop_off", quoted_price=Decimal("850.00"), estimated_turnaround="24 - 48 Hours",
+            warranty_period="90-Day Compupartz Warranty", status="in_progress", quote_status="approved",
+        )
+    else:
+        item = PartRequest(
+            id=1, request_id="P-3", customer_name="Stephen Mills", customer_email="stephenmills2019@gmail.com",
+            customer_phone="0242130666", part_needed="Mother board", device_model="Lenovo thinkpad x1 carbon",
+            condition_preference="new", quoted_price=Decimal("1200.00"), estimated_delivery="3 - 5 Days",
+            warranty_period="90-Day OEM Replacement Warranty", status="in_progress", quote_status="approved",
+        )
+    ctx = build_quote_approved_context(item)
+    ctx.update({
+        "admin_url": request.build_absolute_uri(f"/admin/repair/{ctx['admin_path']}/1/change/"),
+        "whatsapp_url": "https://wa.me/233242130666",
+        "domain": "compupartz.com",
+    })
+    return render(request, "emails/admin_notification.html", ctx)
 
 
 @staff_member_required

@@ -497,7 +497,7 @@ class QuoteApprovalAdvancesBothTypesTests(TestCase):
         customer_mail = [m for m in mail.outbox if m.to == ['p@example.com']]
         self.assertEqual(len(customer_mail), 1)
         self.assertIn('Sourcing Underway', customer_mail[0].subject)
-        self.assertEqual([m for m in mail.outbox if m.to == ['support@compupartz.com']], [])
+        self.assertEqual(len([m for m in mail.outbox if m.to == ['support@compupartz.com']]), 1)
 
     def test_staff_recorded_approval_also_advances_a_part_request(self):
         staff = User.objects.create_user('pstaff', 'ps@example.com', 'x', is_staff=True)
@@ -536,3 +536,175 @@ class QuoteApprovalAdvancesBothTypesTests(TestCase):
         self.assertEqual(old_approved.status, 'in_progress')
         self.assertEqual(still_waiting.status, 'quoted')
         self.assertEqual(done.status, 'fulfilled')
+
+
+class QuoteApprovedAdminAlertTests(TestCase):
+    def setUp(self):
+        self.ticket = RepairTicket.objects.create(
+            customer_name='Kofi <b>Mensah</b>', customer_email='kofi@example.com', customer_phone='0244123456',
+            device='MacBook Pro', status='quoted', quote_status='sent', quoted_price=450,
+            estimated_turnaround='48h', warranty_period='90 days')
+        self.part = PartRequest.objects.create(
+            customer_name='Esi Boateng', customer_email='esi@example.com', customer_phone='0244000111',
+            part_needed='Mother board', device_model='Lenovo X1', condition_preference='new',
+            status='quoted', quote_status='sent', quoted_price=1200, estimated_delivery='3 - 5 Days')
+
+    def _client(self):
+        c = self.client_class()
+        c.post(reverse('track_repair_lookup'), {'ticket_id': self.ticket.ticket_id, 'phone': '0244123456'})
+        c.post(reverse('track_part_lookup'), {'request_id': self.part.request_id, 'phone': '0244000111'})
+        return c
+
+    def _alerts(self):
+        return [m for m in mail.outbox if m.to == ['support@compupartz.com']]
+
+    def test_support_is_alerted_when_a_client_approves_a_repair_quote(self):
+        mail.outbox.clear()
+        self._client().post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        alert = self._alerts()[0]
+        self.assertEqual(len(self._alerts()), 1)
+        self.assertIn(f'[Quote Approved] #{self.ticket.ticket_id}', alert.subject)
+        self.assertIn('GH₵ 450', alert.subject)
+        self.assertEqual(alert.reply_to, ['kofi@example.com'])
+        for text in ('Client Approved Repair Quote', 'In Progress', 'MacBook Pro', '48h', '90 days',
+                     f'/admin/repair/repairticket/{self.ticket.id}/change/', 'https://wa.me/233244123456'):
+            self.assertIn(text, alert.body)
+        self.assertIn('&lt;b&gt;Mensah&lt;/b&gt;', alert.body)
+        self.assertNotIn('<b>Mensah</b>', alert.body)
+
+    def test_support_is_alerted_when_a_client_approves_a_part_quote(self):
+        mail.outbox.clear()
+        self._client().post(reverse('customer_approve_part_quote', args=[self.part.request_id]))
+        alert = self._alerts()[0]
+        self.assertEqual(len(self._alerts()), 1)
+        self.assertIn(f'[Quote Approved] #{self.part.request_id}', alert.subject)
+        for text in ('Client Approved Part Quote', 'Sourcing in Progress', 'Mother board', 'Lenovo X1', '3 - 5 Days',
+                     f'/admin/repair/partrequest/{self.part.id}/change/'):
+            self.assertIn(text, alert.body)
+
+    def test_no_alert_when_staff_record_the_approval_or_when_a_client_declines(self):
+        staff = User.objects.create_user('alertstaff', 'als@example.com', 'x', is_staff=True)
+        self.client.force_login(staff)
+        mail.outbox.clear()
+        self.client.post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        self.client.post(reverse('customer_approve_part_quote', args=[self.part.request_id]))
+        self.assertEqual(self._alerts(), [])
+        self.ticket.quote_status, self.ticket.status = 'sent', 'quoted'; self.ticket.save()
+        self._client().post(reverse('customer_decline_repair_quote', args=[self.ticket.ticket_id]))
+        self.assertEqual(self._alerts(), [])
+
+    def test_no_alert_when_there_was_no_quote_to_approve(self):
+        self.ticket.quote_status, self.ticket.status = 'none', 'pending'; self.ticket.save()
+        mail.outbox.clear()
+        self._client().post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        self.assertEqual(self._alerts(), [])
+
+    def test_existing_intake_alerts_still_use_their_own_layouts(self):
+        mail.outbox.clear()
+        send_admin_part_request_notification(self.part)
+        send_admin_repair_notification(self.ticket)
+        bodies = ' '.join(m.body for m in self._alerts())
+        self.assertIn('Submitted', bodies)
+        self.assertNotIn('Client Approved', bodies)
+
+    def test_preview_is_staff_only_and_renders_both_versions(self):
+        url = reverse('preview_admin_quote_approved_email')
+        self.assertEqual(self.client.get(url).status_code, 302)
+        self.client.force_login(User.objects.create_user('pv', 'pv@example.com', 'x', is_staff=True))
+        self.assertContains(self.client.get(url), 'Client Approved Part Quote')
+        self.assertContains(self.client.get(url + '?kind=repair'), 'Client Approved Repair Quote')
+
+
+class QuoteApprovedSameTemplateTests(TestCase):
+    @staticmethod
+    def _skeleton(html):
+        import re
+        html = re.sub(r'(href|src)="[^"]*"', r'\1=""', html)
+        html = re.sub(r'>[^<]+<', '><', html)
+        return re.sub(r'\s+', ' ', html).strip()
+
+    def _bodies(self):
+        from core.notifications import send_admin_quote_approved_notification
+        t = RepairTicket.objects.create(
+            customer_name='Kwame', customer_email='k@example.com', customer_phone='0244123456', device_category='laptop',
+            manufacturer='Apple', device='MBP A2485', issue_description='No power', quoted_price=850,
+            estimated_turnaround='48h', warranty_period='90d', status='in_progress', quote_status='approved')
+        p = PartRequest.objects.create(
+            customer_name='Esi', customer_email='e@example.com', customer_phone='0244000111', part_needed='Mother board',
+            device_model='Lenovo X1', condition_preference='new', quoted_price=1200, estimated_delivery='3 days',
+            warranty_period='90d', status='in_progress', quote_status='approved')
+        mail.outbox.clear()
+        send_admin_quote_approved_notification(t)
+        send_admin_quote_approved_notification(p)
+        return mail.outbox[0].body, mail.outbox[1].body
+
+    def test_repair_and_part_alerts_share_the_exact_same_layout(self):
+        repair, part = self._bodies()
+        self.assertEqual(self._skeleton(repair), self._skeleton(part))
+
+    def test_both_show_the_same_rows_in_the_same_order(self):
+        import re
+        labels = lambda body: re.findall(r'color: #64748b; font-weight: 600;[^>]*>([^<]+)</td>', body)
+        repair, part = self._bodies()
+        expected = ['Reference', 'Customer Name', 'Email Address', 'Phone Number', 'Request Type',
+                    'Work Requested', 'Device / Model', None, 'Approved Price', None, 'Warranty', 'Current Status']
+        for body in (repair, part):
+            found = labels(body)
+            self.assertEqual(len(found), len(expected), found)
+            for got, want in zip(found, expected):
+                if want:
+                    self.assertEqual(got, want)
+        self.assertEqual((labels(repair)[7], labels(repair)[9]), ('Drop-off Method', 'Turnaround'))
+        self.assertEqual((labels(part)[7], labels(part)[9]), ('Condition', 'Estimated Delivery'))
+
+    def test_values_differ_per_type_but_never_leak_across(self):
+        repair, part = self._bodies()
+        for text in ('Device Repair', 'MBP A2485', 'No power', 'Apple Laptop', '48h', 'Drop-off', 'Client Approved Repair Quote'):
+            self.assertIn(text, repair)
+            self.assertNotIn(text, part)
+        for text in ('Part Sourcing', 'Mother board', 'Lenovo X1', '3 days', 'Client Approved Part Quote'):
+            self.assertIn(text, part)
+            self.assertNotIn(text, repair)
+
+
+class StaffMessageEmailsCustomerTests(TestCase):
+    """Guards against the shared message email template failing for one of the two item types."""
+
+    def setUp(self):
+        self.ticket = RepairTicket.objects.create(
+            customer_name='Kofi', customer_email='kofi@example.com', customer_phone='0200000021', device='MBP')
+        self.part = PartRequest.objects.create(
+            customer_name='Esi', customer_email='esi@example.com', customer_phone='0200000022',
+            part_needed='Fan', device_model='X1')
+        self.staff = User.objects.create_user('msgstaff', 'ms@example.com', 'x', is_staff=True)
+
+    def test_staff_message_on_a_repair_ticket_emails_the_customer(self):
+        from .models import RepairMessage
+        mail.outbox.clear()
+        RepairMessage.objects.create(ticket=self.ticket, message='Your laptop is ready for pickup', sender_is_admin=True)
+        sent = [m for m in mail.outbox if m.to == ['kofi@example.com']]
+        self.assertEqual(len(sent), 1)
+        self.assertIn('Lab Bench Update', sent[0].subject)
+        self.assertIn('Hello <strong>Kofi</strong>', sent[0].alternatives[0][0])
+        self.assertIn('Your laptop is ready for pickup', sent[0].alternatives[0][0])
+
+    def test_staff_message_on_a_part_request_emails_the_customer(self):
+        from .models import PartRequestMessage
+        mail.outbox.clear()
+        PartRequestMessage.objects.create(part_request=self.part, message='We found your fan', sender_is_admin=True)
+        sent = [m for m in mail.outbox if m.to == ['esi@example.com']]
+        self.assertEqual(len(sent), 1)
+        self.assertIn('Sourcing Desk Update', sent[0].subject)
+        self.assertIn('Hello <strong>Esi</strong>', sent[0].alternatives[0][0])
+
+    def test_posting_a_message_through_the_tracking_page_sends_the_email_end_to_end(self):
+        self.client.force_login(self.staff)
+        mail.outbox.clear()
+        self.client.post(reverse('track_repair', args=[self.ticket.ticket_id]), {'message': 'Quick update'})
+        self.assertEqual(len([m for m in mail.outbox if m.to == ['kofi@example.com']]), 1)
+
+    def test_customers_own_messages_never_email_themselves(self):
+        from .models import RepairMessage
+        mail.outbox.clear()
+        RepairMessage.objects.create(ticket=self.ticket, message='When will it be ready?', sender_is_admin=False)
+        self.assertEqual([m for m in mail.outbox if m.to == ['kofi@example.com']], [])
