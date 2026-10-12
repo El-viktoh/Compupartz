@@ -456,3 +456,25 @@ class StaffQueueFilterTests(TestCase):
         self.assertContains(resp, 'data-customer="kofi mensah"')
         self.assertContains(resp, 'data-part="mother board"')
 
+    def test_staff_and_client_tab_ordering(self):
+        # Staff user gets Lab Process Queue first
+        resp = self.client.get(reverse('dashboard'))
+        content = resp.content.decode('utf-8')
+        staff_pos = content.find('id="tab-btn-staff-workshop"')
+        parts_pos = content.find('id="tab-btn-hardware-parts-queue"')
+        raised_pos = content.find('id="tab-btn-raised-tickets"')
+        comms_pos = content.find('id="tab-btn-lab-communications"')
+
+        self.assertTrue(staff_pos != -1 and parts_pos != -1 and raised_pos != -1 and comms_pos != -1)
+        self.assertTrue(staff_pos < parts_pos < raised_pos < comms_pos)
+
+        # Non-staff client does not get staff queue tabs, gets raised-tickets first
+        client_user = User.objects.create_user('normal_client', 'client@example.com', 'x', is_staff=False)
+        self.client.force_login(client_user)
+        resp_client = self.client.get(reverse('dashboard'))
+        content_client = resp_client.content.decode('utf-8')
+
+        self.assertNotIn('id="tab-btn-staff-workshop"', content_client)
+        self.assertNotIn('id="tab-btn-hardware-parts-queue"', content_client)
+        self.assertIn('id="tab-btn-raised-tickets"', content_client)
+

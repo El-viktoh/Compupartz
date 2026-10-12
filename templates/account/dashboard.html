@@ -228,19 +228,44 @@
                 <!-- ================= WORKSPACE TAB SELECTOR ================= -->
                 <div class="flex flex-wrap items-center justify-between gap-3 p-2 rounded-3xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
                     <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                        <!-- Tab 1: Raised Lab Tickets -->
+                        {% if user.is_staff %}
+                        <!-- Tab 1: Lab Process Queue (Staff/Admin Only) -->
+                        <button type="button" 
+                                onclick="switchDashboardTab('staff-workshop')" 
+                                id="tab-btn-staff-workshop"
+                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 bg-[#FF7200] text-white shadow-md shadow-orange-500/20">
+                            <span>⚙️</span>
+                            <span>Lab Process Queue</span>
+                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/20 text-white" data-inactive-class="bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                                {{ staff_bench_repairs.count|default:0 }}
+                            </span>
+                        </button>
+
+                        <!-- Tab 2: Hardware Parts Sourcing Queue (Staff/Admin Only) -->
+                        <button type="button" 
+                                onclick="switchDashboardTab('hardware-parts-queue')" 
+                                id="tab-btn-hardware-parts-queue"
+                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
+                            <span>📦</span>
+                            <span>Hardware Parts Sourcing Queue</span>
+                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8] font-mono font-bold" data-inactive-class="bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8]">
+                                {{ staff_part_requests.count|default:0 }}
+                            </span>
+                        </button>
+
+                        <!-- Tab 3: Raised Lab Tickets (Staff/Admin) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('raised-tickets')" 
                                 id="tab-btn-raised-tickets"
-                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 bg-[#FF7200] text-white shadow-md shadow-orange-500/20">
+                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
                             <span>🛠️</span>
                             <span>My Raised Tickets</span>
-                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono font-bold" data-inactive-class="bg-orange-500/10 text-[#FF7200]">
+                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-orange-500/10 text-[#FF7200] font-mono font-bold" data-inactive-class="bg-orange-500/10 text-[#FF7200]">
                                 {{ active_repairs.count }}
                             </span>
                         </button>
 
-                        <!-- Tab 2: Lab Communications -->
+                        <!-- Tab 4: Lab Communications (Staff/Admin) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('lab-communications')" 
                                 id="tab-btn-lab-communications"
@@ -256,30 +281,34 @@
                             </span>
                             {% endif %}
                         </button>
-
-                        {% if user.is_staff %}
-                        <!-- Tab 3: Lab Process Queue (Staff/Admin Only) -->
+                        {% else %}
+                        <!-- Tab 1: Raised Lab Tickets (Non-Staff) -->
                         <button type="button" 
-                                onclick="switchDashboardTab('staff-workshop')" 
-                                id="tab-btn-staff-workshop"
-                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
-                            <span>⚙️</span>
-                            <span>Lab Process Queue</span>
-                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 font-mono font-bold" data-inactive-class="bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                                {{ staff_bench_repairs.count|default:0 }}
+                                onclick="switchDashboardTab('raised-tickets')" 
+                                id="tab-btn-raised-tickets"
+                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 bg-[#FF7200] text-white shadow-md shadow-orange-500/20">
+                            <span>🛠️</span>
+                            <span>My Raised Tickets</span>
+                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono font-bold" data-inactive-class="bg-orange-500/10 text-[#FF7200]">
+                                {{ active_repairs.count }}
                             </span>
                         </button>
 
-                        <!-- Tab 4: Hardware Parts Sourcing Queue (Staff/Admin Only) -->
+                        <!-- Tab 2: Lab Communications (Non-Staff) -->
                         <button type="button" 
-                                onclick="switchDashboardTab('hardware-parts-queue')" 
-                                id="tab-btn-hardware-parts-queue"
+                                onclick="switchDashboardTab('lab-communications')" 
+                                id="tab-btn-lab-communications"
                                 class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
-                            <span>📦</span>
-                            <span>Hardware Parts Sourcing Queue</span>
-                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8] font-mono font-bold" data-inactive-class="bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8]">
-                                {{ staff_part_requests.count|default:0 }}
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#008BC6] opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-[#008BC6]"></span>
                             </span>
+                            <span>Lab Communications</span>
+                            {% if total_user_messages %}
+                            <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-[#008BC6] font-mono font-bold" data-inactive-class="bg-blue-500/10 text-[#008BC6]">
+                                {{ total_user_messages }}
+                            </span>
+                            {% endif %}
                         </button>
                         {% endif %}
                     </div>
@@ -292,7 +321,7 @@
                 </div>
 
                 <!-- ================= TAB PANEL 1: MY RAISED LAB TICKETS ================= -->
-                <div id="section-raised-tickets" class="dash-section-panel space-y-8">
+                <div id="section-raised-tickets" class="dash-section-panel {% if user.is_staff %}hidden{% endif %} space-y-8">
                     
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80 dark:border-white/10">
                         <div>
@@ -972,7 +1001,7 @@
 
                 <!-- ================= TAB PANEL 3: LAB PROCESS QUEUE (STAFF ONLY) ================= -->
                 {% if user.is_staff %}
-                <div id="section-staff-workshop" class="dash-section-panel hidden space-y-6">
+                <div id="section-staff-workshop" class="dash-section-panel {% if not user.is_staff %}hidden{% endif %} space-y-6">
                     <!-- Section Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-purple-500/20">
                         <div>
@@ -1698,8 +1727,14 @@
             switchDashboardTab('staff-workshop');
         } else if (tabParam === 'hardware-parts-queue' || tabParam === 'parts-queue' || tabParam === 'hardware-parts' || tabParam === 'parts' || hash === '#hardware-parts-queue' || hash === '#parts-queue' || hash === '#hardware-parts') {
             switchDashboardTab('hardware-parts-queue');
-        } else {
+        } else if (tabParam === 'raised-tickets' || hash === '#raised-tickets') {
             switchDashboardTab('raised-tickets');
+        } else {
+            {% if user.is_staff %}
+            switchDashboardTab('staff-workshop');
+            {% else %}
+            switchDashboardTab('raised-tickets');
+            {% endif %}
         }
 
         document.querySelectorAll('.dash-chat-box').forEach(function(box) {
