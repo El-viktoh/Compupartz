@@ -227,13 +227,13 @@
 
                 <!-- ================= WORKSPACE TAB SELECTOR ================= -->
                 <div class="flex flex-wrap items-center justify-between gap-3 p-2 rounded-3xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
-                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                        {% if user.is_staff %}
+                    {% if user.is_staff %}
+                    <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none py-0.5 max-w-full">
                         <!-- Tab 1: Lab Process Queue (Staff/Admin Only) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('staff-workshop')" 
                                 id="tab-btn-staff-workshop"
-                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 bg-[#FF7200] text-white shadow-md shadow-orange-500/20">
+                                class="dash-tab-btn px-3 sm:px-4 py-2 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 bg-[#FF7200] text-white shadow-md shadow-orange-500/20 shrink-0 whitespace-nowrap">
                             <span>⚙️</span>
                             <span>Lab Process Queue</span>
                             <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/20 text-white" data-inactive-class="bg-purple-500/10 text-purple-600 dark:text-purple-400">
@@ -245,7 +245,7 @@
                         <button type="button" 
                                 onclick="switchDashboardTab('hardware-parts-queue')" 
                                 id="tab-btn-hardware-parts-queue"
-                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
+                                class="dash-tab-btn px-3 sm:px-4 py-2 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent shrink-0 whitespace-nowrap">
                             <span>📦</span>
                             <span>Hardware Parts Sourcing Queue</span>
                             <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8] font-mono font-bold" data-inactive-class="bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8]">
@@ -257,7 +257,7 @@
                         <button type="button" 
                                 onclick="switchDashboardTab('raised-tickets')" 
                                 id="tab-btn-raised-tickets"
-                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
+                                class="dash-tab-btn px-3 sm:px-4 py-2 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent shrink-0 whitespace-nowrap">
                             <span>🛠️</span>
                             <span>My Raised Tickets</span>
                             <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-orange-500/10 text-[#FF7200] font-mono font-bold" data-inactive-class="bg-orange-500/10 text-[#FF7200]">
@@ -269,7 +269,7 @@
                         <button type="button" 
                                 onclick="switchDashboardTab('lab-communications')" 
                                 id="tab-btn-lab-communications"
-                                class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
+                                class="dash-tab-btn px-3 sm:px-4 py-2 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent shrink-0 whitespace-nowrap">
                             <span class="relative flex h-2 w-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#008BC6] opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-[#008BC6]"></span>
@@ -281,7 +281,9 @@
                             </span>
                             {% endif %}
                         </button>
-                        {% else %}
+                    </div>
+                    {% else %}
+                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                         <!-- Tab 1: Raised Lab Tickets (Non-Staff) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('raised-tickets')" 
@@ -310,7 +312,6 @@
                             </span>
                             {% endif %}
                         </button>
-                        {% endif %}
                     </div>
 
                     <!-- Quick Action -->
@@ -318,6 +319,7 @@
                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#FF7200] hover:text-white hover:bg-[#FF7200] border border-orange-500/30 transition-all uppercase tracking-wider shrink-0">
                         <span>+ Raise Ticket</span>
                     </a>
+                    {% endif %}
                 </div>
 
                 <!-- ================= TAB PANEL 1: MY RAISED LAB TICKETS ================= -->
