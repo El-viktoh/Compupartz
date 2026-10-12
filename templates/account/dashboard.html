@@ -226,9 +226,10 @@
             <div class="lg:col-span-8 space-y-6">
 
                 <!-- ================= WORKSPACE TAB SELECTOR ================= -->
-                <div class="flex flex-wrap items-center justify-between gap-3 p-2 rounded-3xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
+                {% if user.is_staff %}
+                <div class="space-y-2 p-2 rounded-3xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
+                    <!-- Staff Row 1: The 3 Primary Queues / Ticket Tabs -->
                     <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                        {% if user.is_staff %}
                         <!-- Tab 1: Lab Process Queue (Staff/Admin Only) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('staff-workshop')" 
@@ -264,7 +265,10 @@
                                 {{ active_repairs.count }}
                             </span>
                         </button>
+                    </div>
 
+                    <!-- Staff Row 2: Lab Communications & Quick Action -->
+                    <div class="flex items-center justify-between gap-3 pt-1 border-t border-slate-100 dark:border-white/5">
                         <!-- Tab 4: Lab Communications (Staff/Admin) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('lab-communications')" 
@@ -281,7 +285,18 @@
                             </span>
                             {% endif %}
                         </button>
-                        {% else %}
+
+                        <!-- Quick Action for Staff -->
+                        <a href="{% url 'book_repair' %}" 
+                           class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#FF7200] hover:text-white hover:bg-[#FF7200] border border-orange-500/30 transition-all uppercase tracking-wider shrink-0">
+                            <span>+ Raise Ticket</span>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Regular User Tab Selector (Untouched) -->
+                <div class="flex flex-wrap items-center justify-between gap-3 p-2 rounded-3xl bg-white dark:bg-[#12141a] border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
+                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                         <!-- Tab 1: Raised Lab Tickets (Non-Staff) -->
                         <button type="button" 
                                 onclick="switchDashboardTab('raised-tickets')" 
@@ -310,17 +325,15 @@
                             </span>
                             {% endif %}
                         </button>
-                        {% endif %}
                     </div>
 
-                    {% if not user.is_staff %}
                     <!-- Quick Action -->
                     <a href="{% url 'book_repair' %}" 
                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#FF7200] hover:text-white hover:bg-[#FF7200] border border-orange-500/30 transition-all uppercase tracking-wider shrink-0">
                         <span>+ Raise Ticket</span>
                     </a>
-                    {% endif %}
                 </div>
+                {% endif %}
 
                 <!-- ================= TAB PANEL 1: MY RAISED LAB TICKETS ================= -->
                 <div id="section-raised-tickets" class="dash-section-panel {% if user.is_staff %}hidden{% endif %} space-y-8">
