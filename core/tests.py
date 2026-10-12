@@ -407,3 +407,52 @@ class DashboardCounterTests(TestCase):
             user=None, customer_name='Guest', customer_email='COUNTER@example.com',
             customer_phone='0200000042', device='x', status='in_progress')
         self.assertEqual(self._counts(), (1, 0))
+
+
+class StaffQueueFilterTests(TestCase):
+    def setUp(self):
+        from repair.models import RepairTicket, PartRequest
+        self.staff_user = User.objects.create_user('staff_tech', 'tech@example.com', 'x', is_staff=True)
+        self.client.force_login(self.staff_user)
+
+        self.ticket = RepairTicket.objects.create(
+            customer_name='Hillary Ofori',
+            customer_email='hillary@example.com',
+            customer_phone='0540123456',
+            device='HP Pavillion',
+            issue_description='Fixing hinge',
+            status='in_progress',
+            quoted_price=250.00
+        )
+        self.part_req = PartRequest.objects.create(
+            customer_name='Kofi Mensah',
+            customer_email='kofi@example.com',
+            customer_phone='0244123456',
+            part_needed='Mother board',
+            device_model='Lenovo Thinkpad',
+            additional_details='Model X1 Carbon',
+            status='quoted',
+            quoted_price=450.00
+        )
+
+    def test_staff_dashboard_renders_queues_and_filter_attributes(self):
+        resp = self.client.get(reverse('dashboard'))
+        self.assertEqual(resp.status_code, 200)
+
+        # Check filter elements
+        self.assertContains(resp, 'id="repair-filter-search"')
+        self.assertContains(resp, 'id="repair-filter-sort"')
+        self.assertContains(resp, 'id="repair-filter-status"')
+        self.assertContains(resp, 'id="part-filter-search"')
+        self.assertContains(resp, 'id="part-filter-sort"')
+        self.assertContains(resp, 'id="part-filter-status"')
+
+        # Check data attributes for client filtering
+        self.assertContains(resp, 'data-ticket-id=')
+        self.assertContains(resp, 'data-customer="hillary ofori"')
+        self.assertContains(resp, 'data-phone="0540123456"')
+        self.assertContains(resp, 'data-email="hillary@example.com"')
+        self.assertContains(resp, 'data-request-id=')
+        self.assertContains(resp, 'data-customer="kofi mensah"')
+        self.assertContains(resp, 'data-part="mother board"')
+

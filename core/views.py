@@ -154,8 +154,8 @@ def dashboard(request):
     staff_bench_repairs = None
     staff_part_requests = None
     if request.user.is_staff:
-        staff_bench_repairs = RepairTicket.objects.all().prefetch_related('messages').order_by('-created_at')[:40]
-        staff_part_requests = PartRequest.objects.all().prefetch_related('messages').order_by('-created_at')[:40]
+        staff_bench_repairs = RepairTicket.objects.all().prefetch_related('messages').order_by('-created_at')[:150]
+        staff_part_requests = PartRequest.objects.all().prefetch_related('messages').order_by('-created_at')[:150]
 
     # ✅ GET FORMS FOR MODAL
     u_form = UserUpdateForm(instance=request.user)

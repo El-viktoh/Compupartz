@@ -998,9 +998,131 @@
                     </div>
 
                     {% if staff_bench_repairs %}
-                    <div class="space-y-4">
+                    <!-- Interactive Filter & Navigation Bar: Lab Process Queue -->
+                    <div class="bg-white dark:bg-[#12141a] rounded-[22px] p-5 sm:p-6 border border-slate-200/80 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-4">
+                        <!-- Row 1: Search Pill + Sorting Dropdown (Aligned close together) -->
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                            <!-- Search Pill (Compact, Rounded, Icon on Right) -->
+                            <div class="relative w-full sm:w-72 md:w-80 h-10 flex items-center">
+                                <input type="text" 
+                                       id="repair-filter-search" 
+                                       placeholder="Search" 
+                                       title="Filter by client, phone, email, ticket ID, hardware, or issue..." 
+                                       style="padding-left: 22px; padding-right: 56px;"
+                                       class="w-full h-10 rounded-full text-xs sm:text-sm bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all font-medium shadow-sm">
+                                <div style="right: 20px;" class="absolute top-0 bottom-0 flex items-center pointer-events-none text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </div>
+                                <button type="button" 
+                                        id="repair-filter-search-clear" 
+                                        onclick="clearRepairSearch()" 
+                                        style="right: 44px;"
+                                        class="hidden absolute top-0 bottom-0 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs">
+                                    ✕
+                                </button>
+                            </div>
+
+                            <!-- Sorting Dropdown beside Search (Brought close) -->
+                            <div class="flex items-center gap-2">
+                                <label for="repair-filter-sort" class="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500 shrink-0">Sort:</label>
+                                <select id="repair-filter-sort" 
+                                        onchange="applyRepairFilters()" 
+                                        class="h-10 py-2 px-3.5 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 font-semibold cursor-pointer">
+                                    <option value="newest">Intake: Newest First</option>
+                                    <option value="oldest">Intake: Oldest First</option>
+                                    <option value="customer-asc">Client Name (A &rarr; Z)</option>
+                                    <option value="price-desc">Quote: High &rarr; Low</option>
+                                    <option value="price-asc">Quote: Low &rarr; High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Status Dropdown + Date Filter + Quote Filter -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 dark:border-white/5">
+                            <!-- Status Dropdown -->
+                            <div class="flex items-center gap-2">
+                                <label for="repair-filter-status" class="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500 shrink-0">Status:</label>
+                                <select id="repair-filter-status" 
+                                        onchange="applyRepairFilters()" 
+                                        class="w-full py-2.5 px-3 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 font-semibold cursor-pointer">
+                                    <option value="all" id="repair-opt-all">All Statuses</option>
+                                    <option value="pending" id="repair-opt-pending">Pending</option>
+                                    <option value="quoted" id="repair-opt-quoted">Quoted</option>
+                                    <option value="in_progress" id="repair-opt-in_progress">In Progress</option>
+                                    <option value="completed" id="repair-opt-completed">Completed</option>
+                                    <option value="no_fix" id="repair-opt-no_fix">No-Fix</option>
+                                </select>
+                            </div>
+
+                            <!-- Date Range -->
+                            <div class="flex items-center gap-2">
+                                <label for="repair-filter-date" class="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500 shrink-0">Date:</label>
+                                <select id="repair-filter-date" 
+                                        onchange="handleRepairDateChange()" 
+                                        class="w-full py-2.5 px-3 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 font-semibold cursor-pointer">
+                                    <option value="all">All Dates</option>
+                                    <option value="today">Today</option>
+                                    <option value="week">Past 7 Days</option>
+                                    <option value="month">Past 30 Days</option>
+                                    <option value="custom">Custom Range...</option>
+                                </select>
+                            </div>
+
+                            <!-- Quote Filter -->
+                            <div class="flex items-center gap-2">
+                                <label for="repair-filter-quote" class="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500 shrink-0">Quote:</label>
+                                <select id="repair-filter-quote" 
+                                        onchange="applyRepairFilters()" 
+                                        class="w-full py-2.5 px-3 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 font-semibold cursor-pointer">
+                                    <option value="all">All Quotes</option>
+                                    <option value="quoted">Has Quote (GH₵)</option>
+                                    <option value="unquoted">Pending Quote</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 2.5: Custom Date Inputs (Hidden by default) -->
+                        <div id="repair-custom-date-container" class="hidden flex items-center gap-3 pt-2 flex-wrap text-xs text-slate-500 dark:text-gray-400">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">From:</span>
+                                <input type="date" id="repair-filter-date-from" onchange="applyRepairFilters()" class="py-1 px-2.5 rounded-lg text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50">
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">To:</span>
+                                <input type="date" id="repair-filter-date-to" onchange="applyRepairFilters()" class="py-1 px-2.5 rounded-lg text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50">
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Active Results Counter & Reset Button -->
+                        <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-100 dark:border-white/5">
+                            <span class="text-slate-500 dark:text-gray-400 font-medium">
+                                Showing <strong id="repair-matched-count" class="text-purple-600 dark:text-purple-400 font-bold">0</strong> of <span id="repair-total-count" class="font-bold text-slate-700 dark:text-gray-200">0</span> tickets
+                            </span>
+                            <button type="button" 
+                                    id="repair-filter-reset-btn" 
+                                    onclick="resetRepairFilters()" 
+                                    class="hidden inline-flex items-center gap-1 text-[11px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:underline">
+                                <span>↺ Reset Filters</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="repair-cards-container" class="space-y-4">
                         {% for ticket in staff_bench_repairs %}
-                        <div class="queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:border-purple-500/40 hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                        <div class="staff-repair-card queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:border-purple-500/40 hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+                             data-ticket-id="{{ ticket.ticket_id|default:''|lower }}"
+                             data-customer="{{ ticket.customer_name|default:''|lower }}"
+                             data-phone="{{ ticket.customer_phone|default:''|lower }}"
+                             data-email="{{ ticket.customer_email|default:''|lower }}"
+                             data-device="{{ ticket.device|default:''|lower }}"
+                             data-issue="{{ ticket.issue_description|default:''|lower }}"
+                             data-status="{{ ticket.status }}"
+                             data-date="{{ ticket.created_at|date:'Y-m-d' }}"
+                             data-timestamp="{{ ticket.created_at|date:'U' }}"
+                             data-price="{{ ticket.quoted_price|default:'0' }}"
+                             data-has-quote="{% if ticket.quoted_price %}true{% else %}false{% endif %}">
                             <div class="space-y-1.5 flex-1 min-w-0">
                                 <!-- Top Row: ID, Device, Status, Price -->
                                 <div class="flex items-center gap-2.5 sm:gap-3 flex-wrap">
@@ -1049,6 +1171,16 @@
                         </div>
                         {% endfor %}
                     </div>
+
+                    <!-- Filter Empty State -->
+                    <div id="repair-filter-empty" class="hidden queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-10 sm:p-14 border border-dashed border-slate-200/80 dark:border-white/10 text-center space-y-3">
+                        <span class="text-3xl block mb-2">🔍</span>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">No matching repair tickets found</h4>
+                        <p class="text-xs text-slate-400 max-w-sm mx-auto">No tickets match your search query or selected filter criteria. Try adjusting keywords, status, or date range.</p>
+                        <button type="button" onclick="resetRepairFilters()" class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-all">
+                            <span>↺ Reset All Filters</span>
+                        </button>
+                    </div>
                     {% else %}
                     <div class="queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-10 sm:p-14 border border-dashed border-slate-200/80 dark:border-white/10 text-center">
                         <span class="text-3xl block mb-2">⚙️</span>
@@ -1085,9 +1217,132 @@
                     </div>
 
                     {% if staff_part_requests %}
-                    <div class="space-y-4">
+                    <!-- Interactive Filter & Navigation Bar: Hardware Parts Sourcing Queue -->
+                    <div class="bg-white dark:bg-[#12141a] rounded-[22px] p-5 sm:p-6 border border-slate-200/80 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-4">
+                        <!-- Row 1: Search Pill + Sorting Dropdown (Aligned close together) -->
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                            <!-- Search Pill (Compact, Rounded, Icon on Right) -->
+                            <div class="relative w-full sm:w-72 md:w-80 h-10 flex items-center">
+                                <input type="text" 
+                                       id="part-filter-search" 
+                                       placeholder="Search" 
+                                       title="Filter by client, phone, email, request ID, part, device, or notes..." 
+                                       style="padding-left: 22px; padding-right: 56px;"
+                                       class="w-full h-10 rounded-full text-xs sm:text-sm bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] transition-all font-medium shadow-sm">
+                                <div style="right: 20px;" class="absolute top-0 bottom-0 flex items-center pointer-events-none text-slate-400">
+                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                     </svg>
+                                </div>
+                                <button type="button" 
+                                        id="part-filter-search-clear" 
+                                        onclick="clearPartSearch()" 
+                                        style="right: 44px;"
+                                        class="hidden absolute top-0 bottom-0 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs">
+                                    ✕
+                                </button>
+                            </div>
+
+                            <!-- Sorting Dropdown beside Search (Brought close) -->
+                            <div class="flex items-center gap-2">
+                                <label for="part-filter-sort" class="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500 shrink-0">Sort:</label>
+                                <select id="part-filter-sort" 
+                                        onchange="applyPartFilters()" 
+                                        class="h-10 py-2 px-3.5 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] font-semibold cursor-pointer">
+                                    <option value="newest">Intake: Newest First</option>
+                                    <option value="oldest">Intake: Oldest First</option>
+                                    <option value="customer-asc">Client Name (A &rarr; Z)</option>
+                                    <option value="price-desc">Quote: High &rarr; Low</option>
+                                    <option value="price-asc">Quote: Low &rarr; High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Status Dropdown + Date Filter + Quote Filter -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 dark:border-white/5">
+                            <!-- Status Dropdown -->
+                            <div class="flex items-center gap-2">
+                                <label for="part-filter-status" class="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500 shrink-0">Status:</label>
+                                <select id="part-filter-status" 
+                                        onchange="applyPartFilters()" 
+                                        class="w-full py-2.5 px-3 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] font-semibold cursor-pointer">
+                                    <option value="all" id="part-opt-all">All Statuses</option>
+                                    <option value="pending" id="part-opt-pending">Pending</option>
+                                    <option value="quoted" id="part-opt-quoted">Quoted</option>
+                                    <option value="in_progress" id="part-opt-in_progress">Sourcing</option>
+                                    <option value="fulfilled" id="part-opt-fulfilled">Fulfilled</option>
+                                    <option value="declined" id="part-opt-declined">Declined</option>
+                                </select>
+                            </div>
+
+                            <!-- Date Range -->
+                            <div class="flex items-center gap-2">
+                                <label for="part-filter-date" class="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500 shrink-0">Date:</label>
+                                <select id="part-filter-date" 
+                                        onchange="handlePartDateChange()" 
+                                        class="w-full py-2.5 px-3 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] font-semibold cursor-pointer">
+                                    <option value="all">All Dates</option>
+                                    <option value="today">Today</option>
+                                    <option value="week">Past 7 Days</option>
+                                    <option value="month">Past 30 Days</option>
+                                    <option value="custom">Custom Range...</option>
+                                </select>
+                            </div>
+
+                            <!-- Quote Filter -->
+                            <div class="flex items-center gap-2">
+                                <label for="part-filter-quote" class="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500 shrink-0">Quote:</label>
+                                <select id="part-filter-quote" 
+                                        onchange="applyPartFilters()" 
+                                        class="w-full py-2.5 px-3 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50 focus:border-[#008BC6] font-semibold cursor-pointer">
+                                    <option value="all">All Quotes</option>
+                                    <option value="quoted">Has Quote (GH₵)</option>
+                                    <option value="unquoted">Pending Quote</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 2.5: Custom Date Inputs (Hidden by default) -->
+                        <div id="part-custom-date-container" class="hidden flex items-center gap-3 pt-2 flex-wrap text-xs text-slate-500 dark:text-gray-400">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">From:</span>
+                                <input type="date" id="part-filter-date-from" onchange="applyPartFilters()" class="py-1 px-2.5 rounded-lg text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50">
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">To:</span>
+                                <input type="date" id="part-filter-date-to" onchange="applyPartFilters()" class="py-1 px-2.5 rounded-lg text-xs bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#008BC6]/50">
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Active Results Counter & Reset Button -->
+                        <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-100 dark:border-white/5">
+                            <span class="text-slate-500 dark:text-gray-400 font-medium">
+                                Showing <strong id="part-matched-count" class="text-[#008BC6] dark:text-[#38bdf8] font-bold">0</strong> of <span id="part-total-count" class="font-bold text-slate-700 dark:text-gray-200">0</span> requests
+                            </span>
+                            <button type="button" 
+                                    id="part-filter-reset-btn" 
+                                    onclick="resetPartFilters()" 
+                                    class="hidden inline-flex items-center gap-1 text-[11px] font-bold text-[#008BC6] dark:text-[#38bdf8] hover:underline">
+                                <span>↺ Reset Filters</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="part-cards-container" class="space-y-4">
                         {% for req in staff_part_requests %}
-                        <div class="queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:border-[#008BC6]/40 hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                        <div class="staff-part-card queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-6 sm:p-7 border border-slate-200/80 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:border-[#008BC6]/40 hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+                             data-request-id="{{ req.request_id|default:''|lower }}"
+                             data-customer="{{ req.customer_name|default:''|lower }}"
+                             data-phone="{{ req.customer_phone|default:''|lower }}"
+                             data-email="{{ req.customer_email|default:''|lower }}"
+                             data-part="{{ req.part_needed|default:''|lower }}"
+                             data-device="{{ req.device_model|default:''|lower }}"
+                             data-details="{{ req.additional_details|default:''|lower }}"
+                             data-status="{{ req.status }}"
+                             data-date="{{ req.created_at|date:'Y-m-d' }}"
+                             data-timestamp="{{ req.created_at|date:'U' }}"
+                             data-price="{{ req.quoted_price|default:'0' }}"
+                             data-has-quote="{% if req.quoted_price %}true{% else %}false{% endif %}">
                             <div class="space-y-1.5 flex-1 min-w-0">
                                 <!-- Top Row: ID, Part Needed, Status, Price -->
                                 <div class="flex items-center gap-2.5 sm:gap-3 flex-wrap">
@@ -1145,6 +1400,16 @@
                             </div>
                         </div>
                         {% endfor %}
+                    </div>
+
+                    <!-- Filter Empty State -->
+                    <div id="part-filter-empty" class="hidden queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-10 sm:p-14 border border-dashed border-slate-200/80 dark:border-white/10 text-center space-y-3">
+                        <span class="text-3xl block mb-2">🔍</span>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">No matching sourcing requests found</h4>
+                        <p class="text-xs text-slate-400 max-w-sm mx-auto">No component requests match your search query or selected filter criteria. Try adjusting keywords, status, or date range.</p>
+                        <button type="button" onclick="resetPartFilters()" class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-blue-500/10 text-[#008BC6] dark:text-[#38bdf8] hover:bg-blue-500/20 transition-all">
+                            <span>↺ Reset All Filters</span>
+                        </button>
                     </div>
                     {% else %}
                     <div class="queue-card-rounded bg-white dark:bg-[#12141a] rounded-[22px] p-10 sm:p-14 border border-dashed border-slate-200/80 dark:border-white/10 text-center">
@@ -1440,7 +1705,504 @@
         document.querySelectorAll('.dash-chat-box').forEach(function(box) {
             box.scrollTop = box.scrollHeight;
         });
+
+        // Initialize Staff Queue Filters
+        initRepairQueue();
+        initPartQueue();
+
+        // Check if status is set in query parameter (e.g. ?status=pending)
+        const statusParam = urlParams.get('status');
+        if (statusParam) {
+            if (tabParam === 'workshop' || tabParam === 'staff-workshop' || tabParam === 'lab-process-queue') {
+                setRepairStatusFilter(statusParam);
+            } else if (tabParam === 'hardware-parts-queue' || tabParam === 'parts-queue' || tabParam === 'hardware-parts') {
+                setPartStatusFilter(statusParam);
+            }
+        }
     });
+
+    /* =====================================================================
+       STAFF QUEUE FILTERING ENGINE (LAB PROCESS QUEUE & PARTS SOURCING)
+    ===================================================================== */
+    let currentRepairStatusFilter = 'all';
+    let currentPartStatusFilter = 'all';
+
+    function getQueueLocalDateStr(d) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // ---------------- 1. LAB PROCESS QUEUE FILTER ENGINE ----------------
+    function initRepairQueue() {
+        const cards = document.querySelectorAll('.staff-repair-card');
+        if (!cards.length) return;
+
+        // Calculate pill counts
+        const counts = { all: cards.length, pending: 0, quoted: 0, in_progress: 0, completed: 0, no_fix: 0 };
+        cards.forEach(function(card) {
+            const s = card.dataset.status;
+            if (s === 'no_fix' || s === 'cancelled') {
+                counts.no_fix++;
+            } else if (counts[s] !== undefined) {
+                counts[s]++;
+            }
+        });
+
+        const statusLabels = {
+            all: 'All Statuses',
+            pending: 'Pending',
+            quoted: 'Quoted',
+            in_progress: 'In Progress',
+            completed: 'Completed',
+            no_fix: 'No-Fix'
+        };
+        Object.keys(counts).forEach(function(key) {
+            const opt = document.getElementById('repair-opt-' + key);
+            if (opt) opt.textContent = statusLabels[key] + ' (' + counts[key] + ')';
+        });
+
+        const totalEl = document.getElementById('repair-total-count');
+        if (totalEl) totalEl.textContent = cards.length;
+
+        // Search input debounce/live listener
+        const searchInput = document.getElementById('repair-filter-search');
+        if (searchInput && !searchInput.dataset.initialized) {
+            searchInput.dataset.initialized = 'true';
+            searchInput.addEventListener('input', function() {
+                const clearBtn = document.getElementById('repair-filter-search-clear');
+                if (clearBtn) clearBtn.classList.toggle('hidden', !this.value.trim());
+                applyRepairFilters();
+            });
+        }
+
+        applyRepairFilters();
+    }
+
+    function clearRepairSearch() {
+        const input = document.getElementById('repair-filter-search');
+        if (input) {
+            input.value = '';
+            const clearBtn = document.getElementById('repair-filter-search-clear');
+            if (clearBtn) clearBtn.classList.add('hidden');
+            applyRepairFilters();
+            input.focus();
+        }
+    }
+
+    function setRepairStatusFilter(status) {
+        currentRepairStatusFilter = status;
+        const select = document.getElementById('repair-filter-status');
+        if (select) {
+            select.value = status;
+        }
+        applyRepairFilters();
+    }
+
+    function handleRepairDateChange() {
+        const select = document.getElementById('repair-filter-date');
+        const customContainer = document.getElementById('repair-custom-date-container');
+        if (select && customContainer) {
+            if (select.value === 'custom') {
+                customContainer.classList.remove('hidden');
+            } else {
+                customContainer.classList.add('hidden');
+            }
+        }
+        applyRepairFilters();
+    }
+
+    function resetRepairFilters() {
+        const searchInput = document.getElementById('repair-filter-search');
+        if (searchInput) searchInput.value = '';
+        const clearBtn = document.getElementById('repair-filter-search-clear');
+        if (clearBtn) clearBtn.classList.add('hidden');
+
+        const sortSelect = document.getElementById('repair-filter-sort');
+        if (sortSelect) sortSelect.value = 'newest';
+
+        const statusSelect = document.getElementById('repair-filter-status');
+        if (statusSelect) statusSelect.value = 'all';
+        currentRepairStatusFilter = 'all';
+
+        const dateSelect = document.getElementById('repair-filter-date');
+        if (dateSelect) dateSelect.value = 'all';
+
+        const customContainer = document.getElementById('repair-custom-date-container');
+        if (customContainer) customContainer.classList.add('hidden');
+
+        const dateFrom = document.getElementById('repair-filter-date-from');
+        if (dateFrom) dateFrom.value = '';
+
+        const dateTo = document.getElementById('repair-filter-date-to');
+        if (dateTo) dateTo.value = '';
+
+        const quoteSelect = document.getElementById('repair-filter-quote');
+        if (quoteSelect) quoteSelect.value = 'all';
+
+        applyRepairFilters();
+    }
+
+    function applyRepairFilters() {
+        const cards = Array.from(document.querySelectorAll('.staff-repair-card'));
+        if (!cards.length) return;
+
+        const searchInput = document.getElementById('repair-filter-search');
+        const query = (searchInput ? searchInput.value.trim().toLowerCase() : '');
+        const searchTerms = query.split(/\s+/).filter(Boolean);
+
+        const statusSelect = document.getElementById('repair-filter-status');
+        const statusFilter = statusSelect ? statusSelect.value : currentRepairStatusFilter;
+        currentRepairStatusFilter = statusFilter;
+
+        const dateSelect = document.getElementById('repair-filter-date');
+        const dateRange = dateSelect ? dateSelect.value : 'all';
+        const dateFrom = document.getElementById('repair-filter-date-from')?.value;
+        const dateTo = document.getElementById('repair-filter-date-to')?.value;
+
+        const quoteSelect = document.getElementById('repair-filter-quote');
+        const quoteFilter = quoteSelect ? quoteSelect.value : 'all';
+
+        const sortSelect = document.getElementById('repair-filter-sort');
+        const sortVal = sortSelect ? sortSelect.value : 'newest';
+
+        const todayStr = getQueueLocalDateStr(new Date());
+        const nowSec = Math.floor(Date.now() / 1000);
+        const weekSec = 7 * 86400;
+        const monthSec = 30 * 86400;
+
+        let matchedCount = 0;
+        let isFilterActive = (query !== '' || statusFilter !== 'all' || dateRange !== 'all' || quoteFilter !== 'all');
+
+        cards.forEach(function(card) {
+            // Status Match
+            let statusMatch = true;
+            if (statusFilter !== 'all') {
+                const s = card.dataset.status;
+                if (statusFilter === 'no_fix') {
+                    statusMatch = (s === 'no_fix' || s === 'cancelled');
+                } else {
+                    statusMatch = (s === statusFilter);
+                }
+            }
+
+            // Quote Match
+            let quoteMatch = true;
+            if (quoteFilter === 'quoted') {
+                quoteMatch = card.dataset.hasQuote === 'true';
+            } else if (quoteFilter === 'unquoted') {
+                quoteMatch = card.dataset.hasQuote === 'false';
+            }
+
+            // Date Match
+            let dateMatch = true;
+            const cardDate = card.dataset.date || '';
+            const cardTs = parseInt(card.dataset.timestamp || '0', 10);
+            if (dateRange === 'today') {
+                dateMatch = (cardDate === todayStr);
+            } else if (dateRange === 'week') {
+                dateMatch = (cardTs >= (nowSec - weekSec));
+            } else if (dateRange === 'month') {
+                dateMatch = (cardTs >= (nowSec - monthSec));
+            } else if (dateRange === 'custom') {
+                if (dateFrom && cardDate < dateFrom) dateMatch = false;
+                if (dateTo && cardDate > dateTo) dateMatch = false;
+            }
+
+            // Search Match across multiple attributes
+            let searchMatch = true;
+            if (searchTerms.length > 0) {
+                const haystack = [
+                    card.dataset.ticketId || '',
+                    card.dataset.customer || '',
+                    card.dataset.phone || '',
+                    card.dataset.email || '',
+                    card.dataset.device || '',
+                    card.dataset.issue || ''
+                ].join(' ');
+                searchMatch = searchTerms.every(function(term) {
+                    return haystack.includes(term);
+                });
+            }
+
+            const visible = statusMatch && quoteMatch && dateMatch && searchMatch;
+            if (visible) {
+                card.classList.remove('hidden');
+                matchedCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        // DOM Sorting
+        const container = document.getElementById('repair-cards-container');
+        if (container) {
+            cards.sort(function(a, b) {
+                if (sortVal === 'newest') {
+                    return parseInt(b.dataset.timestamp || 0) - parseInt(a.dataset.timestamp || 0);
+                } else if (sortVal === 'oldest') {
+                    return parseInt(a.dataset.timestamp || 0) - parseInt(b.dataset.timestamp || 0);
+                } else if (sortVal === 'customer-asc') {
+                    return (a.dataset.customer || '').localeCompare(b.dataset.customer || '');
+                } else if (sortVal === 'price-desc') {
+                    return parseFloat(b.dataset.price || 0) - parseFloat(a.dataset.price || 0);
+                } else if (sortVal === 'price-asc') {
+                    return parseFloat(a.dataset.price || 0) - parseFloat(b.dataset.price || 0);
+                }
+                return 0;
+            });
+            cards.forEach(function(card) {
+                container.appendChild(card);
+            });
+        }
+
+        // Counter & Empty State
+        const matchedCountEl = document.getElementById('repair-matched-count');
+        if (matchedCountEl) matchedCountEl.textContent = matchedCount;
+
+        const emptyEl = document.getElementById('repair-filter-empty');
+        if (emptyEl) {
+            emptyEl.classList.toggle('hidden', matchedCount > 0);
+        }
+
+        const resetBtn = document.getElementById('repair-filter-reset-btn');
+        if (resetBtn) {
+            resetBtn.classList.toggle('hidden', !isFilterActive);
+        }
+    }
+
+    // ---------------- 2. HARDWARE PARTS SOURCING QUEUE FILTER ENGINE ----------------
+    function initPartQueue() {
+        const cards = document.querySelectorAll('.staff-part-card');
+        if (!cards.length) return;
+
+        // Calculate pill counts
+        const counts = { all: cards.length, pending: 0, quoted: 0, in_progress: 0, fulfilled: 0, declined: 0 };
+        cards.forEach(function(card) {
+            const s = card.dataset.status;
+            if (counts[s] !== undefined) {
+                counts[s]++;
+            }
+        });
+
+        const statusLabels = {
+            all: 'All Statuses',
+            pending: 'Pending',
+            quoted: 'Quoted',
+            in_progress: 'Sourcing',
+            fulfilled: 'Fulfilled',
+            declined: 'Declined'
+        };
+        Object.keys(counts).forEach(function(key) {
+            const opt = document.getElementById('part-opt-' + key);
+            if (opt) opt.textContent = statusLabels[key] + ' (' + counts[key] + ')';
+        });
+
+        const totalEl = document.getElementById('part-total-count');
+        if (totalEl) totalEl.textContent = cards.length;
+
+        // Search input debounce/live listener
+        const searchInput = document.getElementById('part-filter-search');
+        if (searchInput && !searchInput.dataset.initialized) {
+            searchInput.dataset.initialized = 'true';
+            searchInput.addEventListener('input', function() {
+                const clearBtn = document.getElementById('part-filter-search-clear');
+                if (clearBtn) clearBtn.classList.toggle('hidden', !this.value.trim());
+                applyPartFilters();
+            });
+        }
+
+        applyPartFilters();
+    }
+
+    function clearPartSearch() {
+        const input = document.getElementById('part-filter-search');
+        if (input) {
+            input.value = '';
+            const clearBtn = document.getElementById('part-filter-search-clear');
+            if (clearBtn) clearBtn.classList.add('hidden');
+            applyPartFilters();
+            input.focus();
+        }
+    }
+
+    function setPartStatusFilter(status) {
+        currentPartStatusFilter = status;
+        const select = document.getElementById('part-filter-status');
+        if (select) {
+            select.value = status;
+        }
+        applyPartFilters();
+    }
+
+    function handlePartDateChange() {
+        const select = document.getElementById('part-filter-date');
+        const customContainer = document.getElementById('part-custom-date-container');
+        if (select && customContainer) {
+            if (select.value === 'custom') {
+                customContainer.classList.remove('hidden');
+            } else {
+                customContainer.classList.add('hidden');
+            }
+        }
+        applyPartFilters();
+    }
+
+    function resetPartFilters() {
+        const searchInput = document.getElementById('part-filter-search');
+        if (searchInput) searchInput.value = '';
+        const clearBtn = document.getElementById('part-filter-search-clear');
+        if (clearBtn) clearBtn.classList.add('hidden');
+
+        const sortSelect = document.getElementById('part-filter-sort');
+        if (sortSelect) sortSelect.value = 'newest';
+
+        const statusSelect = document.getElementById('part-filter-status');
+        if (statusSelect) statusSelect.value = 'all';
+        currentPartStatusFilter = 'all';
+
+        const dateSelect = document.getElementById('part-filter-date');
+        if (dateSelect) dateSelect.value = 'all';
+
+        const customContainer = document.getElementById('part-custom-date-container');
+        if (customContainer) customContainer.classList.add('hidden');
+
+        const dateFrom = document.getElementById('part-filter-date-from');
+        if (dateFrom) dateFrom.value = '';
+
+        const dateTo = document.getElementById('part-filter-date-to');
+        if (dateTo) dateTo.value = '';
+
+        const quoteSelect = document.getElementById('part-filter-quote');
+        if (quoteSelect) quoteSelect.value = 'all';
+
+        applyPartFilters();
+    }
+
+    function applyPartFilters() {
+        const cards = Array.from(document.querySelectorAll('.staff-part-card'));
+        if (!cards.length) return;
+
+        const searchInput = document.getElementById('part-filter-search');
+        const query = (searchInput ? searchInput.value.trim().toLowerCase() : '');
+        const searchTerms = query.split(/\s+/).filter(Boolean);
+
+        const statusSelect = document.getElementById('part-filter-status');
+        const statusFilter = statusSelect ? statusSelect.value : currentPartStatusFilter;
+        currentPartStatusFilter = statusFilter;
+
+        const dateSelect = document.getElementById('part-filter-date');
+        const dateRange = dateSelect ? dateSelect.value : 'all';
+        const dateFrom = document.getElementById('part-filter-date-from')?.value;
+        const dateTo = document.getElementById('part-filter-date-to')?.value;
+
+        const quoteSelect = document.getElementById('part-filter-quote');
+        const quoteFilter = quoteSelect ? quoteSelect.value : 'all';
+
+        const sortSelect = document.getElementById('part-filter-sort');
+        const sortVal = sortSelect ? sortSelect.value : 'newest';
+
+        const todayStr = getQueueLocalDateStr(new Date());
+        const nowSec = Math.floor(Date.now() / 1000);
+        const weekSec = 7 * 86400;
+        const monthSec = 30 * 86400;
+
+        let matchedCount = 0;
+        let isFilterActive = (query !== '' || statusFilter !== 'all' || dateRange !== 'all' || quoteFilter !== 'all');
+
+        cards.forEach(function(card) {
+            // Status Match
+            let statusMatch = true;
+            if (statusFilter !== 'all') {
+                statusMatch = (card.dataset.status === statusFilter);
+            }
+
+            // Quote Match
+            let quoteMatch = true;
+            if (quoteFilter === 'quoted') {
+                quoteMatch = card.dataset.hasQuote === 'true';
+            } else if (quoteFilter === 'unquoted') {
+                quoteMatch = card.dataset.hasQuote === 'false';
+            }
+
+            // Date Match
+            let dateMatch = true;
+            const cardDate = card.dataset.date || '';
+            const cardTs = parseInt(card.dataset.timestamp || '0', 10);
+            if (dateRange === 'today') {
+                dateMatch = (cardDate === todayStr);
+            } else if (dateRange === 'week') {
+                dateMatch = (cardTs >= (nowSec - weekSec));
+            } else if (dateRange === 'month') {
+                dateMatch = (cardTs >= (nowSec - monthSec));
+            } else if (dateRange === 'custom') {
+                if (dateFrom && cardDate < dateFrom) dateMatch = false;
+                if (dateTo && cardDate > dateTo) dateMatch = false;
+            }
+
+            // Search Match across multiple attributes
+            let searchMatch = true;
+            if (searchTerms.length > 0) {
+                const haystack = [
+                    card.dataset.requestId || '',
+                    card.dataset.customer || '',
+                    card.dataset.phone || '',
+                    card.dataset.email || '',
+                    card.dataset.part || '',
+                    card.dataset.device || '',
+                    card.dataset.details || ''
+                ].join(' ');
+                searchMatch = searchTerms.every(function(term) {
+                    return haystack.includes(term);
+                });
+            }
+
+            const visible = statusMatch && quoteMatch && dateMatch && searchMatch;
+            if (visible) {
+                card.classList.remove('hidden');
+                matchedCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        // DOM Sorting
+        const container = document.getElementById('part-cards-container');
+        if (container) {
+            cards.sort(function(a, b) {
+                if (sortVal === 'newest') {
+                    return parseInt(b.dataset.timestamp || 0) - parseInt(a.dataset.timestamp || 0);
+                } else if (sortVal === 'oldest') {
+                    return parseInt(a.dataset.timestamp || 0) - parseInt(b.dataset.timestamp || 0);
+                } else if (sortVal === 'customer-asc') {
+                    return (a.dataset.customer || '').localeCompare(b.dataset.customer || '');
+                } else if (sortVal === 'price-desc') {
+                    return parseFloat(b.dataset.price || 0) - parseFloat(a.dataset.price || 0);
+                } else if (sortVal === 'price-asc') {
+                    return parseFloat(a.dataset.price || 0) - parseFloat(b.dataset.price || 0);
+                }
+                return 0;
+            });
+            cards.forEach(function(card) {
+                container.appendChild(card);
+            });
+        }
+
+        // Counter & Empty State
+        const matchedCountEl = document.getElementById('part-matched-count');
+        if (matchedCountEl) matchedCountEl.textContent = matchedCount;
+
+        const emptyEl = document.getElementById('part-filter-empty');
+        if (emptyEl) {
+            emptyEl.classList.toggle('hidden', matchedCount > 0);
+        }
+
+        const resetBtn = document.getElementById('part-filter-reset-btn');
+        if (resetBtn) {
+            resetBtn.classList.toggle('hidden', !isFilterActive);
+        }
+    }
 </script>
 
 {% endblock %}
