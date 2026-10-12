@@ -364,3 +364,46 @@ class AbandonedSignupTests(TestCase):
         for bad in ('notanemail', 'john@', 'john@gmail'):
             resp = self._signup('fmt', bad)
             self.assertIn('Enter a valid email address.', self._form_errors(resp)['email'])
+
+
+class DashboardCounterTests(TestCase):
+    def setUp(self):
+        from repair.models import RepairTicket
+        self.RepairTicket = RepairTicket
+        self.user = User.objects.create_user('counter', 'counter@example.com', 'x')
+        self.client.force_login(self.user)
+
+    def _ticket(self, status, **kw):
+        return self.RepairTicket.objects.create(
+            user=self.user, customer_name='C', customer_email='counter@example.com',
+            customer_phone='0200000041', device='MBP', status=status, **kw)
+
+    def _counts(self):
+        ctx = self.client.get(reverse('dashboard')).context
+        return ctx['active_repairs'].count(), ctx['past_repairs'].count()
+
+    def test_each_status_lands_in_the_right_counter(self):
+        t = self._ticket('pending')
+        expected = {'pending': (1, 0), 'quoted': (1, 0), 'in_progress': (1, 0), 'completed': (0, 1), 'no_fix': (0, 0)}
+        for status, counts in expected.items():
+            t.status = status
+            t.save()
+            self.assertEqual(self._counts(), counts, status)
+
+    def test_a_quote_awaiting_approval_is_listed_with_its_authorize_button(self):
+        self._ticket('quoted', quote_status='sent', quoted_price=450)
+        resp = self.client.get(reverse('dashboard'))
+        self.assertContains(resp, 'Review & Authorize')
+
+    def test_completing_a_ticket_moves_it_from_active_to_completed(self):
+        t = self._ticket('in_progress')
+        self.assertEqual(self._counts(), (1, 0))
+        t.status = 'completed'
+        t.save()
+        self.assertEqual(self._counts(), (0, 1))
+
+    def test_a_logged_out_booking_with_the_same_email_is_claimed_on_dashboard_load(self):
+        self.RepairTicket.objects.create(
+            user=None, customer_name='Guest', customer_email='COUNTER@example.com',
+            customer_phone='0200000042', device='x', status='in_progress')
+        self.assertEqual(self._counts(), (1, 0))

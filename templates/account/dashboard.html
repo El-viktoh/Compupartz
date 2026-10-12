@@ -1019,9 +1019,19 @@
                                     </span>
                                     {% endif %}
                                 </div>
-                                <!-- Second Row: Client, Phone, Intake Date -->
-                                <p class="text-xs text-slate-500 dark:text-gray-400">
-                                    Client: <strong class="text-slate-800 dark:text-gray-200 font-bold">{{ ticket.customer_name }}</strong> ({{ ticket.customer_phone }}) &bull; Intake: {{ ticket.created_at|date:"M d, Y" }}
+                                <!-- Second Row: Client, Phone, Email, Intake Date -->
+                                <p class="text-xs text-slate-500 dark:text-gray-400 flex items-center flex-wrap gap-x-2 gap-y-1">
+                                    <span>Client: <strong class="text-slate-800 dark:text-gray-200 font-bold">{{ ticket.customer_name }}</strong></span>
+                                    {% if ticket.customer_phone %}
+                                    <span>&bull;</span>
+                                    <a href="tel:{{ ticket.customer_phone }}" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium text-slate-700 dark:text-gray-300">{{ ticket.customer_phone }}</a>
+                                    {% endif %}
+                                    {% if ticket.customer_email %}
+                                    <span>&bull;</span>
+                                    <a href="mailto:{{ ticket.customer_email }}" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium text-slate-700 dark:text-gray-300">{{ ticket.customer_email }}</a>
+                                    {% endif %}
+                                    <span>&bull;</span>
+                                    <span>Intake: {{ ticket.created_at|date:"M d, Y" }}</span>
                                 </p>
                                 <!-- Third Row: Issue Description -->
                                 <p class="text-xs text-slate-600 dark:text-gray-300 font-light leading-relaxed">
@@ -1102,9 +1112,21 @@
                                     </span>
                                     {% endif %}
                                 </div>
-                                <!-- Second Row: Device, Client, Phone, Intake Date -->
-                                <p class="text-xs text-slate-500 dark:text-gray-400">
-                                    Device: <strong class="text-slate-800 dark:text-gray-200 font-bold">{{ req.device_model }}</strong> &bull; Client: <strong class="text-slate-800 dark:text-gray-200 font-bold">{{ req.customer_name }}</strong> ({{ req.customer_phone }}) &bull; Intake: {{ req.created_at|date:"M d, Y" }}
+                                <!-- Second Row: Device, Client, Phone, Email, Intake Date -->
+                                <p class="text-xs text-slate-500 dark:text-gray-400 flex items-center flex-wrap gap-x-2 gap-y-1">
+                                    <span>Device: <strong class="text-slate-800 dark:text-gray-200 font-bold">{{ req.device_model }}</strong></span>
+                                    <span>&bull;</span>
+                                    <span>Client: <strong class="text-slate-800 dark:text-gray-200 font-bold">{{ req.customer_name }}</strong></span>
+                                    {% if req.customer_phone %}
+                                    <span>&bull;</span>
+                                    <a href="tel:{{ req.customer_phone }}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors font-medium text-slate-700 dark:text-gray-300">{{ req.customer_phone }}</a>
+                                    {% endif %}
+                                    {% if req.customer_email %}
+                                    <span>&bull;</span>
+                                    <a href="mailto:{{ req.customer_email }}" class="hover:text-[#008BC6] dark:hover:text-[#38bdf8] transition-colors font-medium text-slate-700 dark:text-gray-300">{{ req.customer_email }}</a>
+                                    {% endif %}
+                                    <span>&bull;</span>
+                                    <span>Intake: {{ req.created_at|date:"M d, Y" }}</span>
                                 </p>
                                 <!-- Third Row: Specs Description -->
                                 {% if req.additional_details %}

@@ -132,7 +132,7 @@ def dashboard(request):
         user=request.user
     ).prefetch_related('messages').order_by('-created_at')
 
-    active_repairs = user_tickets.filter(status__in=['pending', 'in_progress'])
+    active_repairs = user_tickets.filter(status__in=['pending', 'quoted', 'in_progress'])
     past_repairs = user_tickets.filter(status='completed')
 
     # All tickets raised by user for the lab communications center
