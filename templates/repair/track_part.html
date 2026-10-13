@@ -21,7 +21,7 @@
 
         <!-- Back Navigation to Queue / Dashboard -->
         <div class="mb-6">
-            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=hardware-parts-queue{% else %}{% url 'dashboard' %}{% endif %}" 
+            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=hardware-parts-queue{% elif user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'track_part_lookup' %}{% endif %}" 
                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#12141a] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm hover:shadow hover:-translate-x-0.5 group">
                 <span class="text-[#008BC6] dark:text-[#38bdf8] group-hover:-translate-x-1 transition-transform font-bold text-sm">&larr;</span>
                 <span>Back</span>
@@ -321,16 +321,6 @@
                         {% endif %}
                     </div>
                 </div>
-
-                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] text-xs space-y-3">
-                    <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
-                        <span>🛡️</span>
-                        <span>Compupartz OEM Guarantee</span>
-                    </div>
-                    <p class="text-slate-500 dark:text-gray-400 font-light leading-relaxed">
-                        All hardware parts sourced undergo pinout verification, capacitance testing, and are covered by our 90-day replacement warranty.
-                    </p>
-                </div>
             </div>
 
             <!-- Right Panel: Sourcing Milestone Pipeline (8 cols) -->
@@ -483,7 +473,7 @@
 
         <!-- Bottom Back Navigation -->
         <div class="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10 flex items-center justify-between">
-            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=hardware-parts-queue{% else %}{% url 'dashboard' %}{% endif %}" 
+            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=hardware-parts-queue{% elif user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'track_part_lookup' %}{% endif %}" 
                class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white dark:bg-[#12141a] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm hover:-translate-x-0.5 group">
                 <span class="text-[#008BC6] dark:text-[#38bdf8] group-hover:-translate-x-1 transition-transform font-bold text-sm">&larr;</span>
                 <span>Back</span>

@@ -58,7 +58,7 @@
 
         <!-- Back Navigation to Queue / Dashboard -->
         <div class="mb-6">
-            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=staff-workshop{% else %}{% url 'dashboard' %}{% endif %}" 
+            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=staff-workshop{% elif user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'track_repair_lookup' %}{% endif %}" 
                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#12141a] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm hover:shadow hover:-translate-x-0.5 group">
                 <span class="text-purple-600 dark:text-purple-400 group-hover:-translate-x-1 transition-transform font-bold text-sm">&larr;</span>
                 <span>Back</span>
@@ -355,21 +355,6 @@
                         {% endif %}
                     </div>
                 </div>
-
-                <!-- Warranty & Intake Desk Info -->
-                <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] text-xs space-y-3">
-                    <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
-                        <span>🛡️</span>
-                        <span>Compupartz Lab Guarantee</span>
-                    </div>
-                    <p class="text-slate-500 dark:text-gray-400 font-light leading-relaxed">
-                        Every hardware repair includes a comprehensive 90-day parts and labor warranty seal.
-                    </p>
-                    <div class="pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-[11px] font-bold">
-                        <span class="text-slate-400">Workshop Desk</span>
-                        <a href="tel:0540322533" class="text-[#FF7200] hover:underline">0540 322 533</a>
-                    </div>
-                </div>
             </div>
 
             <!-- Right Panel: Repair Milestone Pipeline (8 cols) -->
@@ -537,7 +522,7 @@
 
         <!-- Bottom Back Navigation -->
         <div class="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10 flex items-center justify-between">
-            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=staff-workshop{% else %}{% url 'dashboard' %}{% endif %}" 
+            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=staff-workshop{% elif user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'track_repair_lookup' %}{% endif %}" 
                class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white dark:bg-[#12141a] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm hover:shadow hover:-translate-x-0.5 group">
                 <span class="text-purple-600 dark:text-purple-400 group-hover:-translate-x-1 transition-transform font-bold text-sm">&larr;</span>
                 <span>Back</span>

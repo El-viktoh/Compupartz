@@ -708,3 +708,33 @@ class StaffMessageEmailsCustomerTests(TestCase):
         mail.outbox.clear()
         RepairMessage.objects.create(ticket=self.ticket, message='When will it be ready?', sender_is_admin=False)
         self.assertEqual([m for m in mail.outbox if m.to == ['kofi@example.com']], [])
+
+
+class TrackingPageBackLinkTests(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user('backowner', 'bo@example.com', 'x')
+        self.staff = User.objects.create_user('backstaff', 'bs@example.com', 'x', is_staff=True)
+        self.ticket = RepairTicket.objects.create(
+            user=self.owner, customer_name='B', customer_email='bo@example.com', customer_phone='0200000061', device='d')
+        self.part = PartRequest.objects.create(
+            user=self.owner, customer_name='B', customer_email='bo@example.com', customer_phone='0200000062',
+            part_needed='p', device_model='m')
+
+    def _backs(self, resp):
+        import re
+        html = resp.content.decode()
+        return set(re.findall(r'href="([^"]+)"[^>]*>\s*<span[^>]*>&larr;</span>\s*<span>Back</span>', html))
+
+    def test_guest_back_link_goes_to_the_lookup_page_not_a_login_wall(self):
+        guest = self.client_class()
+        guest.post(reverse('track_repair_lookup'), {'ticket_id': self.ticket.ticket_id, 'phone': '0200000061'})
+        guest.post(reverse('track_part_lookup'), {'request_id': self.part.request_id, 'phone': '0200000062'})
+        self.assertEqual(self._backs(guest.get(reverse('track_repair', args=[self.ticket.ticket_id]))), {reverse('track_repair_lookup')})
+        self.assertEqual(self._backs(guest.get(reverse('track_part', args=[self.part.request_id]))), {reverse('track_part_lookup')})
+
+    def test_owner_and_staff_back_links_still_go_to_the_right_dashboard_tab(self):
+        self.client.force_login(self.owner)
+        self.assertEqual(self._backs(self.client.get(reverse('track_repair', args=[self.ticket.ticket_id]))), {reverse('dashboard')})
+        self.client.force_login(self.staff)
+        self.assertEqual(self._backs(self.client.get(reverse('track_repair', args=[self.ticket.ticket_id]))), {reverse('dashboard') + '?tab=staff-workshop'})
+        self.assertEqual(self._backs(self.client.get(reverse('track_part', args=[self.part.request_id]))), {reverse('dashboard') + '?tab=hardware-parts-queue'})
