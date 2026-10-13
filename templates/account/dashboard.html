@@ -209,6 +209,7 @@
 
                 </div>
 
+                {% if not user.is_staff %}
                 <!-- Laboratory Guarantee Card -->
                 <div class="bg-gradient-to-br from-[#008BC6]/5 to-[#FF7200]/5 rounded-3xl p-6 border border-slate-200/80 dark:border-white/10 text-xs space-y-3">
                     <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
@@ -219,6 +220,7 @@
                         Every micro-soldered board and replaced OEM component is covered under our 90-day comprehensive parts and workmanship protection warranty.
                     </p>
                 </div>
+                {% endif %}
 
             </div>
 
