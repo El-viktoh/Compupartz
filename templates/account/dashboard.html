@@ -66,7 +66,7 @@
         <!-- ================= DIAGNOSTIC STATS BAR ================= -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             
-            <!-- Metric 1: Active Tickets -->
+            <!-- Metric 1: Active Service (Sum of Active Repairs + Active Parts) -->
             <div class="bg-white dark:bg-[#12141a] rounded-3xl p-5 sm:p-6 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.02)] relative overflow-hidden group hover:border-[#FF7200]/50 transition-all">
                 <div class="absolute -top-10 -right-10 w-24 h-24 bg-[#FF7200]/10 rounded-full blur-2xl group-hover:scale-125 transition-transform"></div>
                 <div class="flex items-center justify-between mb-3">
@@ -76,16 +76,16 @@
                     </span>
                 </div>
                 <div class="flex items-baseline gap-2 mb-1">
-                    <span class="text-3xl font-display font-black text-slate-900 dark:text-white">{{ active_repairs.count }}</span>
-                    <span class="text-xs font-semibold text-slate-500">{% if active_repairs.count == 1 %}Device{% else %}Devices{% endif %}</span>
+                    <span class="text-3xl font-display font-black text-slate-900 dark:text-white">{{ total_active_services }}</span>
+                    <span class="text-xs font-semibold text-slate-500">{% if total_active_services == 1 %}Request{% else %}Requests{% endif %}</span>
                 </div>
-                <div class="flex items-center gap-1.5 text-[11px] {% if active_repairs.count > 0 %}text-[#FF7200]{% else %}text-emerald-500{% endif %} font-medium">
-                    <span class="w-2 h-2 rounded-full {% if active_repairs.count > 0 %}bg-[#FF7200] animate-pulse{% else %}bg-emerald-500{% endif %}"></span>
-                    <span>{% if active_repairs.count > 0 %}Lab Bench Diagnostics{% else %}All Systems Clear{% endif %}</span>
+                <div class="flex items-center gap-1.5 text-[11px] {% if total_active_services > 0 %}text-[#FF7200]{% else %}text-emerald-500{% endif %} font-medium">
+                    <span class="w-2 h-2 rounded-full {% if total_active_services > 0 %}bg-[#FF7200] animate-pulse{% else %}bg-emerald-500{% endif %}"></span>
+                    <span>{% if total_active_services > 0 %}{{ active_repairs.count }} Repairs &bull; {{ active_part_requests.count }} Parts{% else %}All Systems Clear{% endif %}</span>
                 </div>
             </div>
 
-            <!-- Metric 2: Completed Restorations -->
+            <!-- Metric 2: Completed Restorations & Fulfilled Parts -->
             <div class="bg-white dark:bg-[#12141a] rounded-3xl p-5 sm:p-6 border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.02)] relative overflow-hidden group hover:border-[#008BC6]/50 transition-all">
                 <div class="absolute -top-10 -right-10 w-24 h-24 bg-[#008BC6]/10 rounded-full blur-2xl group-hover:scale-125 transition-transform"></div>
                 <div class="flex items-center justify-between mb-3">
@@ -95,12 +95,12 @@
                     </span>
                 </div>
                 <div class="flex items-baseline gap-2 mb-1">
-                    <span class="text-3xl font-display font-black text-slate-900 dark:text-white">{{ past_repairs.count }}</span>
+                    <span class="text-3xl font-display font-black text-slate-900 dark:text-white">{{ total_completed_restorations }}</span>
                     <span class="text-xs font-semibold text-slate-500">Completed</span>
                 </div>
                 <div class="flex items-center gap-1.5 text-[11px] text-emerald-500 dark:text-emerald-400 font-medium">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>90-Day Warranty Protected</span>
+                    <span>{% if total_completed_restorations > 0 %}{{ past_repairs.count }} Repaired &bull; {{ completed_part_requests.count }} Sourced{% else %}90-Day Warranty Protected{% endif %}</span>
                 </div>
             </div>
 

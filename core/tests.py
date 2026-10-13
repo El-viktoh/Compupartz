@@ -408,6 +408,32 @@ class DashboardCounterTests(TestCase):
             customer_phone='0200000042', device='x', status='in_progress')
         self.assertEqual(self._counts(), (1, 0))
 
+    def test_active_and_completed_sums_both_repairs_and_part_requests(self):
+        from repair.models import PartRequest
+        # Create 1 active repair ticket and 1 active part request
+        self._ticket('in_progress')
+        PartRequest.objects.create(
+            user=self.user, customer_name='Counter', customer_email='counter@example.com',
+            customer_phone='0200000041', part_needed='Battery', device_model='MacBook',
+            status='pending')
+
+        # Create 1 completed repair and 1 fulfilled part request
+        self._ticket('completed')
+        PartRequest.objects.create(
+            user=self.user, customer_name='Counter', customer_email='counter@example.com',
+            customer_phone='0200000041', part_needed='Screen', device_model='Dell',
+            status='fulfilled')
+
+        resp = self.client.get(reverse('dashboard'))
+        ctx = resp.context
+        self.assertEqual(ctx['total_active_services'], 2)
+        self.assertEqual(ctx['total_completed_restorations'], 2)
+
+        content = resp.content.decode('utf-8')
+        self.assertIn('2', content)
+        self.assertIn('1 Repairs &bull; 1 Parts', content)
+        self.assertIn('1 Repaired &bull; 1 Sourced', content)
+
 
 class StaffQueueFilterTests(TestCase):
     def setUp(self):

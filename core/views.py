@@ -144,6 +144,12 @@ def dashboard(request):
 
     # Hardware Parts requested & bought by this user
     user_part_requests = PartRequest.objects.filter(user=request.user).prefetch_related('messages').order_by('-created_at')
+    active_part_requests = user_part_requests.filter(status__in=['pending', 'quoted', 'in_progress'])
+    completed_part_requests = user_part_requests.filter(status='fulfilled')
+
+    total_active_services = active_repairs.count() + active_part_requests.count()
+    total_completed_restorations = past_repairs.count() + completed_part_requests.count()
+
     user_orders = Order.objects.filter(user=request.user).prefetch_related('items').order_by('-created_at')
     total_parts_and_orders = user_part_requests.count() + user_orders.count()
 
@@ -164,6 +170,10 @@ def dashboard(request):
     return render(request, "account/dashboard.html", {
         "active_repairs": active_repairs,
         "past_repairs": past_repairs,
+        "active_part_requests": active_part_requests,
+        "completed_part_requests": completed_part_requests,
+        "total_active_services": total_active_services,
+        "total_completed_restorations": total_completed_restorations,
         "user_all_raised_tickets": user_all_raised_tickets,
         "total_user_messages": total_user_messages,
         "user_part_requests": user_part_requests,
