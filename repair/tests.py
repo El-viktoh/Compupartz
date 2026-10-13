@@ -738,3 +738,70 @@ class TrackingPageBackLinkTests(TestCase):
         self.client.force_login(self.staff)
         self.assertEqual(self._backs(self.client.get(reverse('track_repair', args=[self.ticket.ticket_id]))), {reverse('dashboard') + '?tab=staff-workshop'})
         self.assertEqual(self._backs(self.client.get(reverse('track_part', args=[self.part.request_id]))), {reverse('dashboard') + '?tab=hardware-parts-queue'})
+
+
+class TrackingPageStructureTests(TestCase):
+    """An unclosed <div> in the chat loop once swallowed the Back row into the chat card."""
+
+    VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr',
+            'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'stop'}
+
+    def _unbalanced(self, html):
+        from html.parser import HTMLParser
+        outer = self
+
+        class P(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.stack, self.bad = [], []
+
+            def handle_starttag(self, tag, attrs):
+                if tag not in outer.VOID:
+                    self.stack.append(tag)
+
+            def handle_endtag(self, tag):
+                if tag in outer.VOID:
+                    return
+                if self.stack and self.stack[-1] == tag:
+                    self.stack.pop()
+                else:
+                    self.bad.append(tag)
+
+        p = P()
+        p.feed(html)
+        return p.bad, p.stack
+
+    def setUp(self):
+        self.owner = User.objects.create_user('domowner', 'do@example.com', 'x')
+        self.ticket = RepairTicket.objects.create(
+            user=self.owner, customer_name='D', customer_email='do@example.com', customer_phone='0200000081', device='d')
+        self.part = PartRequest.objects.create(
+            user=self.owner, customer_name='D', customer_email='do@example.com', customer_phone='0200000082',
+            part_needed='p', device_model='m')
+        from .models import RepairMessage, PartRequestMessage
+        for i in range(3):
+            RepairMessage.objects.create(ticket=self.ticket, message=f'client {i}', sender_is_admin=False)
+            RepairMessage.objects.create(ticket=self.ticket, message=f'staff {i}', sender_is_admin=True)
+            PartRequestMessage.objects.create(part_request=self.part, message=f'client {i}', sender_is_admin=False)
+            PartRequestMessage.objects.create(part_request=self.part, message=f'staff {i}', sender_is_admin=True)
+        self.client.force_login(self.owner)
+
+    def test_tracking_pages_with_messages_are_well_formed(self):
+        for name, arg in (('track_repair', self.ticket.ticket_id), ('track_part', self.part.request_id)):
+            bad, unclosed = self._unbalanced(self.client.get(reverse(name, args=[arg])).content.decode())
+            self.assertEqual((bad, unclosed), ([], []), name)
+
+    def test_repair_page_with_no_messages_is_well_formed(self):
+        empty = RepairTicket.objects.create(
+            user=self.owner, customer_name='E', customer_email='do@example.com', customer_phone='0200000083', device='d')
+        bad, unclosed = self._unbalanced(self.client.get(reverse('track_repair', args=[empty.ticket_id])).content.decode())
+        self.assertEqual((bad, unclosed), ([], []))
+
+    def test_back_row_sits_after_the_chat_card_not_inside_it(self):
+        html = self.client.get(reverse('track_repair', args=[self.ticket.ticket_id])).content.decode()
+        chat_start = html.index('id="chat-box"')
+        back_row = html.index('Bottom Back Navigation')
+        chat_box_html = html[chat_start:back_row]
+        opens, closes = chat_box_html.count('<div'), chat_box_html.count('</div>')
+        self.assertGreaterEqual(closes, opens + 1, 'chat box and its card must be closed before the Back row')
+        self.assertEqual(html.count('class="flex flex-col items-end"') + html.count('class="flex flex-col items-start"'), 6)
