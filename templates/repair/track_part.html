@@ -21,19 +21,11 @@
 
         <!-- Back Navigation to Queue / Dashboard -->
         <div class="mb-6">
-            {% if user.is_authenticated and user.is_staff %}
-            <a href="{% url 'dashboard' %}?tab=hardware-parts-queue" 
+            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=hardware-parts-queue{% else %}{% url 'dashboard' %}{% endif %}" 
                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#12141a] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm hover:shadow hover:-translate-x-0.5 group">
                 <span class="text-[#008BC6] dark:text-[#38bdf8] group-hover:-translate-x-1 transition-transform font-bold text-sm">&larr;</span>
-                <span>Back to Hardware Parts Queue</span>
+                <span>Back</span>
             </a>
-            {% else %}
-            <a href="{% url 'dashboard' %}" 
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#12141a] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm hover:shadow hover:-translate-x-0.5 group">
-                <span class="text-[#008BC6] group-hover:-translate-x-1 transition-transform font-bold text-sm">&larr;</span>
-                <span>Back to Dashboard</span>
-            </a>
-            {% endif %}
         </div>
 
         <!-- Top Header & Status Banner -->
@@ -491,19 +483,11 @@
 
         <!-- Bottom Back Navigation -->
         <div class="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10 flex items-center justify-between">
-            {% if user.is_authenticated and user.is_staff %}
-            <a href="{% url 'dashboard' %}?tab=hardware-parts-queue" 
+            <a href="{% if user.is_authenticated and user.is_staff %}{% url 'dashboard' %}?tab=hardware-parts-queue{% else %}{% url 'dashboard' %}{% endif %}" 
                class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white dark:bg-[#12141a] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm hover:-translate-x-0.5 group">
                 <span class="text-[#008BC6] dark:text-[#38bdf8] group-hover:-translate-x-1 transition-transform font-bold text-sm">&larr;</span>
-                <span>Back to Hardware Parts Queue</span>
+                <span>Back</span>
             </a>
-            {% else %}
-            <a href="{% url 'dashboard' %}" 
-               class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white dark:bg-[#12141a] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm hover:-translate-x-0.5 group">
-                <span class="text-[#008BC6] group-hover:-translate-x-1 transition-transform font-bold text-sm">&larr;</span>
-                <span>Back to Dashboard</span>
-            </a>
-            {% endif %}
 
             <span class="text-xs text-slate-400 dark:text-gray-500 font-mono">Part Request #{{ part_request.request_id }}</span>
         </div>
