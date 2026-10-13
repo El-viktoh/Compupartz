@@ -1,5 +1,7 @@
+import hashlib
 import logging
 from django.conf import settings
+from django.core.cache import cache
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -45,9 +47,23 @@ def send_repair_email(ticket):
         return False
 
 
+def _quote_email_already_sent(kind, obj):
+    """True if this exact quote (same item, price and send time) was emailed moments ago.
+
+    Staff views and admin actions send the quote explicitly while the status change to
+    "Quoted" also triggers a status email, which used to deliver the quote twice.
+    A revised quote has a new send time and price, so it is never suppressed.
+    """
+    raw = f"{kind}:{obj.pk}:{obj.quoted_price}:{obj.quote_sent_at}"
+    key = "quote-email:" + hashlib.sha1(raw.encode()).hexdigest()  # hashed: always a valid key on any cache backend
+    return not cache.add(key, 1, 300)
+
+
 def send_formal_repair_quote_email(ticket):
     """Dedicated formal quotation email dispatched when an admin creates a repair quote."""
     if not ticket.customer_email:
+        return False
+    if _quote_email_already_sent("repair", ticket):
         return False
 
     try:
@@ -226,6 +242,8 @@ def send_part_request_email(part_request):
 def send_formal_part_quote_email(part_request):
     """Dedicated formal quotation email dispatched when an admin creates a part sourcing quote."""
     if not part_request.customer_email:
+        return False
+    if _quote_email_already_sent("part", part_request):
         return False
 
     try:

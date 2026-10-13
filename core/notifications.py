@@ -223,3 +223,63 @@ def send_admin_quote_approved_notification(item):
     except Exception as e:
         logger.error(f"Error sending quote-approved alert for {getattr(item, 'pk', 'unknown')}: {e}")
         return False
+
+
+def build_client_message_context(message):
+    """Context for the support alert sent when a client writes in a repair or part-sourcing chat."""
+    is_repair = hasattr(message, "ticket")
+    item = message.ticket if is_repair else message.part_request
+    if is_repair:
+        specifics = {
+            "kind": "Repair",
+            "reference": item.ticket_id,
+            "chat_label": "Repair Queue Chat",
+            "subject_label": "Device",
+            "subject_value": item.device,
+            "admin_path": "repairticket",
+        }
+    else:
+        specifics = {
+            "kind": "Part Sourcing",
+            "reference": item.request_id,
+            "chat_label": "Part Sourcing Chat",
+            "subject_label": "Part",
+            "subject_value": f"{item.part_needed} ({item.device_model})",
+            "admin_path": "partrequest",
+        }
+    return {
+        "notification_type": "client_message",
+        "chat_item": item,
+        "chat_text": message.message,
+        "is_repair": is_repair,
+        "thread_count": item.messages.count() if hasattr(item, "messages") else 0,
+        **specifics,
+    }
+
+
+def send_admin_client_message_notification(message):
+    """Alert support whenever a CLIENT sends a chat message on a repair ticket or part request."""
+    try:
+        ctx = build_client_message_context(message)
+        item = ctx["chat_item"]
+        support_email = get_support_email()
+        clean_phone = format_whatsapp_phone(item.customer_phone)
+        ctx.update({
+            "admin_url": f"{get_base_url()}/admin/repair/{ctx['admin_path']}/{item.id}/change/",
+            "whatsapp_url": f"https://wa.me/{clean_phone}" if clean_phone else "",
+            "domain": get_site_domain(),
+        })
+        email = EmailMessage(
+            subject=f"[Client Message] #{ctx['reference']} — {item.customer_name}",
+            body=render_to_string("emails/admin_notification.html", ctx),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[support_email],
+            reply_to=[item.customer_email] if item.customer_email else [],
+        )
+        email.content_subtype = "html"
+        email.send(fail_silently=True)
+        logger.info(f"Client-message alert dispatched for #{ctx['reference']} to {support_email}")
+        return True
+    except Exception as e:
+        logger.error(f"Error sending client-message alert for {getattr(message, 'pk', 'unknown')}: {e}")
+        return False

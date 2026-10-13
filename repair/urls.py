@@ -50,6 +50,7 @@ urlpatterns = [
     path('preview-admin-repair/', views.preview_admin_repair_email, name='preview_admin_repair_email'),
     path('preview-admin-part/', views.preview_admin_part_email, name='preview_admin_part_email'),
     path('preview-admin-quote-approved/', views.preview_admin_quote_approved_email, name='preview_admin_quote_approved_email'),
+    path('preview-admin-client-message/', views.preview_admin_client_message_email, name='preview_admin_client_message_email'),
     path('preview-admin-testimonial/', views.preview_admin_testimonial_email, name='preview_admin_testimonial_email'),
 ]
 

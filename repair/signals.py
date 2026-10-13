@@ -70,7 +70,9 @@ def notify_part_request_status_change(sender, instance, created, **kwargs):
 def notify_technician_message_sent(sender, instance, created, **kwargs):
     if created and instance.sender_is_admin:
         # Don't send double email if this is an automated system note
-        if any(instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")):
+        if not getattr(instance, "_force_notify", False) and any(
+            instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")
+        ):
             return
         logger.info(
             f"Technician sent note on Ticket {instance.ticket.ticket_id}. "
@@ -83,7 +85,9 @@ def notify_technician_message_sent(sender, instance, created, **kwargs):
 def notify_part_request_technician_message_sent(sender, instance, created, **kwargs):
     if created and instance.sender_is_admin:
         # Don't send double email if this is an automated system note
-        if any(instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")):
+        if not getattr(instance, "_force_notify", False) and any(
+            instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")
+        ):
             return
         logger.info(
             f"Technician / Sourcing Desk sent note on Part Request {instance.part_request.request_id}. "

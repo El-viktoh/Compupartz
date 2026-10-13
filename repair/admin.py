@@ -279,6 +279,8 @@ class RepairMessageAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.sender_is_admin = True
+            # typed on the admin screen by a person: always email the client, even if it starts with a status emoji
+            obj._force_notify = True
         super().save_model(request, obj, form, change)
 
 
@@ -484,6 +486,13 @@ class PartRequestMessageAdmin(admin.ModelAdmin):
     list_filter = ('sender_is_admin', 'created_at', 'part_request__status')
     search_fields = ('part_request__request_id', 'part_request__customer_name', 'part_request__customer_phone', 'message')
     readonly_fields = ('created_at',)
+
+    def save_model(self, request, obj, form, change):
+        # A message typed on the admin screen is a person writing to the client: always email it,
+        # even when it starts with an emoji the site uses for its own automatic notes.
+        if not change:
+            obj._force_notify = True
+        super().save_model(request, obj, form, change)
 
     def request_link(self, obj):
         return format_html(

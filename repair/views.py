@@ -7,7 +7,12 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
-from core.notifications import build_quote_approved_context, send_admin_quote_approved_notification
+from core.notifications import (
+    build_client_message_context,
+    build_quote_approved_context,
+    send_admin_client_message_notification,
+    send_admin_quote_approved_notification,
+)
 from .forms import RepairBookingForm, PartRequestForm
 from .models import RepairTicket, RepairMessage, PartRequest, PartRequestMessage
 from .utils import (
@@ -188,11 +193,15 @@ def track_repair(request, ticket_id):
     if request.method == "POST" and "message" in request.POST:
         message_text = request.POST.get("message", "").strip()
         if message_text:
-            RepairMessage.objects.create(
+            chat_message = RepairMessage(
                 ticket=ticket,
                 message=message_text,
                 sender_is_admin=request.user.is_authenticated and request.user.is_staff
             )
+            chat_message._force_notify = True  # typed by a person: email it even if it starts with an emoji
+            chat_message.save()
+            if not chat_message.sender_is_admin:
+                send_admin_client_message_notification(chat_message)
             messages.success(request, "Message sent successfully.")
 
         referer = request.META.get('HTTP_REFERER')
@@ -563,11 +572,15 @@ def track_part(request, request_id):
     if request.method == "POST" and "message" in request.POST:
         message_text = request.POST.get("message", "").strip()
         if message_text:
-            PartRequestMessage.objects.create(
+            chat_message = PartRequestMessage(
                 part_request=part_request,
                 message=message_text,
                 sender_is_admin=request.user.is_authenticated and request.user.is_staff
             )
+            chat_message._force_notify = True  # typed by a person: email it even if it starts with an emoji
+            chat_message.save()
+            if not chat_message.sender_is_admin:
+                send_admin_client_message_notification(chat_message)
             messages.success(request, "Message sent successfully.")
 
         referer = request.META.get('HTTP_REFERER')
@@ -886,6 +899,34 @@ def preview_admin_quote_approved_email(request):
         )
     ctx = build_quote_approved_context(item)
     ctx.update({
+        "admin_url": request.build_absolute_uri(f"/admin/repair/{ctx['admin_path']}/1/change/"),
+        "whatsapp_url": "https://wa.me/233242130666",
+        "domain": "compupartz.com",
+    })
+    return render(request, "emails/admin_notification.html", ctx)
+
+
+@staff_member_required
+def preview_admin_client_message_email(request):
+    """Preview of the staff alert sent when a client chats (sample data only). ?kind=repair for the repair version."""
+    if request.GET.get("kind") == "repair":
+        item = RepairTicket(
+            id=1, ticket_id="R-108", customer_name="Kwame Mensah", customer_email="kwame@example.com",
+            customer_phone="0244123456", device='MacBook Pro 16" M1 Pro (A2485)', status="in_progress",
+        )
+        message = RepairMessage(ticket=item, sender_is_admin=False,
+                                message="Hello, is my laptop ready for pickup?\nI can come by after 4pm today.")
+    else:
+        item = PartRequest(
+            id=1, request_id="P-3", customer_name="Stephen Mills", customer_email="stephenmills2019@gmail.com",
+            customer_phone="0242130666", part_needed="Mother board", device_model="Lenovo thinkpad x1 carbon",
+            status="in_progress",
+        )
+        message = PartRequestMessage(part_request=item, sender_is_admin=False,
+                                     message="Any update on the motherboard? I can pay a deposit today.")
+    ctx = build_client_message_context(message)
+    ctx.update({
+        "thread_count": 4,
         "admin_url": request.build_absolute_uri(f"/admin/repair/{ctx['admin_path']}/1/change/"),
         "whatsapp_url": "https://wa.me/233242130666",
         "domain": "compupartz.com",

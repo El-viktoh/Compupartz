@@ -805,3 +805,398 @@ class TrackingPageStructureTests(TestCase):
         opens, closes = chat_box_html.count('<div'), chat_box_html.count('</div>')
         self.assertGreaterEqual(closes, opens + 1, 'chat box and its card must be closed before the Back row')
         self.assertEqual(html.count('class="flex flex-col items-end"') + html.count('class="flex flex-col items-start"'), 6)
+
+
+class ChatEmailNotificationTests(TestCase):
+    """Who gets emailed when someone sends a chat message in the repair or part-sourcing queue."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.staff = User.objects.create_user('chatstaff', 'cs@example.com', 'x', is_staff=True)
+        self.ticket = RepairTicket.objects.create(
+            customer_name='Kofi', customer_email='kofi@example.com', customer_phone='0200000091', device='MBP',
+            status='in_progress')
+        self.part = PartRequest.objects.create(
+            customer_name='Esi', customer_email='esi@example.com', customer_phone='0200000092',
+            part_needed='Board', device_model='X1', status='in_progress')
+
+    def _client_for(self):
+        c = self.client_class()
+        c.post(reverse('track_repair_lookup'), {'ticket_id': self.ticket.ticket_id, 'phone': '0200000091'})
+        c.post(reverse('track_part_lookup'), {'request_id': self.part.request_id, 'phone': '0200000092'})
+        return c
+
+    def _emails_to(self, addr):
+        return [m for m in mail.outbox if m.to == [addr]]
+
+    def test_staff_chat_in_either_queue_emails_the_client(self):
+        self.client.force_login(self.staff)
+        for url, addr, subject in ((reverse('track_repair', args=[self.ticket.ticket_id]), 'kofi@example.com', 'Lab Bench Update'),
+                                   (reverse('track_part', args=[self.part.request_id]), 'esi@example.com', 'Sourcing Desk Update')):
+            mail.outbox.clear()
+            self.client.post(url, {'message': 'Please bring your charger.'})
+            sent = self._emails_to(addr)
+            self.assertEqual(len(sent), 1, url)
+            self.assertIn(subject, sent[0].subject)
+            self.assertIn('Please bring your charger.', sent[0].alternatives[0][0])
+
+    def test_staff_chat_starting_with_a_status_emoji_is_still_emailed(self):
+        self.client.force_login(self.staff)
+        for emoji in ('📦', '🔧', '✅', '❌', '📋'):
+            for url, addr in ((reverse('track_repair', args=[self.ticket.ticket_id]), 'kofi@example.com'),
+                              (reverse('track_part', args=[self.part.request_id]), 'esi@example.com')):
+                mail.outbox.clear()
+                self.client.post(url, {'message': f'{emoji} All good, come collect it.'})
+                self.assertEqual(len(self._emails_to(addr)), 1, (emoji, url))
+
+    def test_automatic_notes_do_not_double_email_the_client(self):
+        self.client.force_login(self.staff)
+        mail.outbox.clear()
+        self.client.post(reverse('staff_create_repair_quote', args=[self.ticket.ticket_id]),
+                         {'quoted_price': '100', 'diagnostic_notes': 'n', 'estimated_turnaround': '1d', 'warranty_period': '90d'})
+        self.assertEqual(len(self._emails_to('kofi@example.com')), 1)
+        mail.outbox.clear()
+        self.client.post(reverse('staff_update_repair_status', args=[self.ticket.ticket_id]), {'status': 'completed'})
+        self.assertEqual(len(self._emails_to('kofi@example.com')), 1)
+        mail.outbox.clear()
+        self.client.post(reverse('staff_create_part_quote', args=[self.part.request_id]),
+                         {'quoted_price': '50', 'admin_notes': 'n', 'estimated_delivery': '2d', 'warranty_period': '30d'})
+        self.assertEqual(len(self._emails_to('esi@example.com')), 1)
+
+    def test_client_chat_never_emails_the_client_back(self):
+        c = self._client_for()
+        mail.outbox.clear()
+        c.post(reverse('track_repair', args=[self.ticket.ticket_id]), {'message': 'Is it ready?'})
+        c.post(reverse('track_part', args=[self.part.request_id]), {'message': 'Any update?'})
+        self.assertEqual(self._emails_to('kofi@example.com'), [])
+        self.assertEqual(self._emails_to('esi@example.com'), [])
+
+    def test_editing_a_message_sends_no_email(self):
+        from .models import RepairMessage
+        msg = RepairMessage.objects.create(ticket=self.ticket, message='first', sender_is_admin=True)
+        self.client.force_login(self.staff)
+        mail.outbox.clear()
+        self.client.post(reverse('edit_repair_message', args=[msg.id]), {'message': 'edited'})
+        self.assertEqual(mail.outbox, [])
+
+
+    def test_a_revised_quote_is_still_emailed_but_never_twice(self):
+        self.client.force_login(self.staff)
+        form = {'quoted_price': '100', 'diagnostic_notes': 'n', 'estimated_turnaround': '1d', 'warranty_period': '90d'}
+        pform = {'quoted_price': '50', 'admin_notes': 'n', 'estimated_delivery': '2d', 'warranty_period': '30d'}
+        for price in ('100', '130'):
+            mail.outbox.clear()
+            self.client.post(reverse('staff_create_repair_quote', args=[self.ticket.ticket_id]), dict(form, quoted_price=price))
+            self.assertEqual(len(self._emails_to('kofi@example.com')), 1, price)
+        for price in ('50', '70'):
+            mail.outbox.clear()
+            self.client.post(reverse('staff_create_part_quote', args=[self.part.request_id]), dict(pform, quoted_price=price))
+            self.assertEqual(len(self._emails_to('esi@example.com')), 1, price)
+
+    def test_admin_send_formal_quote_actions_email_once(self):
+        admin_user = User.objects.create_superuser('chatadmin', 'ca@example.com', 'x')
+        self.client.force_login(admin_user)
+        self.ticket.quoted_price = 90
+        self.ticket.save()
+        self.part.quoted_price = 40
+        self.part.save()
+        mail.outbox.clear()
+        self.client.post(reverse('admin:repair_repairticket_changelist'),
+                         {'action': 'send_formal_quote', '_selected_action': [self.ticket.pk]})
+        self.assertEqual(len(self._emails_to('kofi@example.com')), 1)
+        mail.outbox.clear()
+        self.client.post(reverse('admin:repair_partrequest_changelist'),
+                         {'action': 'send_formal_part_quote', '_selected_action': [self.part.pk]})
+        self.assertEqual(len(self._emails_to('esi@example.com')), 1)
+
+    def test_part_intake_confirmation_is_not_affected_by_the_quote_dedupe(self):
+        c = self.client_class()
+        mail.outbox.clear()
+        for name in ('Ama', 'Yaw'):
+            c.post(reverse('request_part'), dict(customer_name=name, customer_email='same@example.com',
+                   customer_phone='0244000111', part_needed='Fan', device_model='Y', condition_preference='new'))
+        self.assertEqual(len(self._emails_to('same@example.com')), 2)
+
+
+class ExistingSupportAndClientEmailsStillWorkTests(TestCase):
+    """Guards every email the site already sent, so adding new alerts can never switch one off."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.staff = User.objects.create_user('matrixstaff', 'ms@example.com', 'x', is_staff=True)
+        self.cs = self.client_class()
+        self.cs.force_login(self.staff)
+
+    def _to(self, addr):
+        return [m for m in mail.outbox if m.to == [addr]]
+
+    def test_new_repair_booking_emails_client_and_support(self):
+        mail.outbox.clear()
+        self.client.post(reverse('book_repair'), dict(
+            customer_name='Ama', customer_email='ama@example.com', customer_phone='0244000401', device_category='laptop',
+            manufacturer='Apple', device='MBP', issue_description='No power', logistics_preference='drop_off'))
+        self.assertEqual(len(self._to('ama@example.com')), 1)
+        self.assertIn('[New Repair Ticket]', self._to('support@compupartz.com')[0].subject)
+
+    def test_new_part_request_emails_client_and_support(self):
+        mail.outbox.clear()
+        self.client.post(reverse('request_part'), dict(
+            customer_name='Yaw', customer_email='yaw@example.com', customer_phone='0244000402',
+            part_needed='Battery', device_model='A2338', condition_preference='new'))
+        self.assertEqual(len(self._to('yaw@example.com')), 1)
+        self.assertIn('[New Part Request]', self._to('support@compupartz.com')[0].subject)
+
+    def test_quotes_status_updates_and_chats_reach_the_client(self):
+        t = RepairTicket.objects.create(customer_name='K', customer_email='k@example.com', customer_phone='0244000403', device='d', status='in_progress')
+        p = PartRequest.objects.create(customer_name='E', customer_email='e@example.com', customer_phone='0244000404', part_needed='x', device_model='y', status='in_progress')
+        steps = [
+            (lambda: self.cs.post(reverse('staff_create_repair_quote', args=[t.ticket_id]), {'quoted_price': '90', 'diagnostic_notes': 'n', 'estimated_turnaround': '1d', 'warranty_period': '90d'}), 'k@example.com', 'Formal Repair Quotation'),
+            (lambda: self.cs.post(reverse('staff_create_part_quote', args=[p.request_id]), {'quoted_price': '40', 'admin_notes': 'n', 'estimated_delivery': '2d', 'warranty_period': '30d'}), 'e@example.com', 'Formal Part Sourcing Quotation'),
+            (lambda: self.cs.post(reverse('staff_update_repair_status', args=[t.ticket_id]), {'status': 'completed'}), 'k@example.com', 'Restoration Complete'),
+            (lambda: self.cs.post(reverse('staff_update_part_status', args=[p.request_id]), {'status': 'fulfilled'}), 'e@example.com', 'Procured'),
+            (lambda: self.cs.post(reverse('staff_update_repair_status', args=[t.ticket_id]), {'status': 'no_fix'}), 'k@example.com', 'No-Fix'),
+            (lambda: self.cs.post(reverse('track_repair', args=[t.ticket_id]), {'message': 'hello'}), 'k@example.com', 'Lab Bench Update'),
+            (lambda: self.cs.post(reverse('track_part', args=[p.request_id]), {'message': 'hello'}), 'e@example.com', 'Sourcing Desk Update'),
+        ]
+        for action, addr, subject in steps:
+            mail.outbox.clear()
+            action()
+            sent = self._to(addr)
+            self.assertEqual(len(sent), 1, subject)
+            self.assertIn(subject, sent[0].subject)
+
+    def test_client_quote_approval_alerts_support_and_a_review_alerts_support(self):
+        t = RepairTicket.objects.create(customer_name='K', customer_email='k@example.com', customer_phone='0244000405', device='d', status='quoted', quote_status='sent', quoted_price=90)
+        c = self.client_class()
+        c.post(reverse('track_repair_lookup'), {'ticket_id': t.ticket_id, 'phone': '0244000405'})
+        mail.outbox.clear()
+        c.post(reverse('customer_approve_repair_quote', args=[t.ticket_id]))
+        self.assertTrue(any('[Quote Approved]' in m.subject for m in self._to('support@compupartz.com')))
+        mail.outbox.clear()
+        self.client.post(reverse('submit_testimonial'), {'quote': 'Great', 'name': 'Rev', 'rating': '5'})
+        self.assertTrue(any('[New Review]' in m.subject for m in self._to('support@compupartz.com')))
+        mail.outbox.clear()
+        self.client.post(reverse('contact'), {'name': 'N', 'email': 'n@example.com', 'subject': 'Hi', 'message': 'x'})
+        self.assertTrue(any('[Contact Form]' in m.subject for m in self._to('support@compupartz.com')))
+
+
+class ClientChatAlertToSupportTests(TestCase):
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.staff = User.objects.create_user('alertchatstaff', 'acs@example.com', 'x', is_staff=True)
+        self.ticket = RepairTicket.objects.create(
+            customer_name='Kofi <b>Mensah</b>', customer_email='kofi@example.com', customer_phone='0244123456',
+            device='MacBook Pro', status='in_progress')
+        self.part = PartRequest.objects.create(
+            customer_name='Esi Boateng', customer_email='esi@example.com', customer_phone='0244000111',
+            part_needed='Mother board', device_model='Lenovo X1', status='in_progress')
+
+    def _client(self):
+        c = self.client_class()
+        c.post(reverse('track_repair_lookup'), {'ticket_id': self.ticket.ticket_id, 'phone': '0244123456'})
+        c.post(reverse('track_part_lookup'), {'request_id': self.part.request_id, 'phone': '0244000111'})
+        return c
+
+    def _support(self):
+        return [m for m in mail.outbox if m.to == ['support@compupartz.com']]
+
+    def test_support_is_emailed_when_a_client_chats_in_the_repair_queue(self):
+        mail.outbox.clear()
+        self._client().post(reverse('track_repair', args=[self.ticket.ticket_id]), {'message': 'Is my laptop ready?\nI can come at 4pm.'})
+        alerts = self._support()
+        self.assertEqual(len(alerts), 1)
+        a = alerts[0]
+        self.assertEqual(a.subject, f'[Client Message] #{self.ticket.ticket_id} — Kofi <b>Mensah</b>')
+        for text in ('New Client Message on Repair', 'Is my laptop ready?', 'I can come at 4pm.', 'MacBook Pro',
+                     f'/admin/repair/repairticket/{self.ticket.id}/change/', 'https://wa.me/233244123456'):
+            self.assertIn(text, a.body)
+        self.assertEqual(a.reply_to, ['kofi@example.com'])
+        self.assertIn('&lt;b&gt;Mensah&lt;/b&gt;', a.body)
+        self.assertNotIn('<b>Mensah</b>', a.body)
+
+    def test_support_is_emailed_when_a_client_chats_in_the_part_sourcing_queue(self):
+        mail.outbox.clear()
+        self._client().post(reverse('track_part', args=[self.part.request_id]), {'message': 'Any update on the board?'})
+        alerts = self._support()
+        self.assertEqual(len(alerts), 1)
+        for text in ('New Client Message on Part Sourcing', 'Any update on the board?', 'Mother board', 'Lenovo X1',
+                     f'/admin/repair/partrequest/{self.part.id}/change/'):
+            self.assertIn(text, alerts[0].body)
+        self.assertIn(f'[Client Message] #{self.part.request_id}', alerts[0].subject)
+
+    def test_a_logged_in_client_triggers_the_alert_too(self):
+        owner = User.objects.create_user('chatowner', 'co@example.com', 'x')
+        self.ticket.user = owner
+        self.ticket.save()
+        self.client.force_login(owner)
+        mail.outbox.clear()
+        self.client.post(reverse('track_repair', args=[self.ticket.ticket_id]), {'message': 'Hello from my account'})
+        self.assertEqual(len(self._support()), 1)
+
+    def test_message_text_is_escaped_in_the_alert(self):
+        mail.outbox.clear()
+        self._client().post(reverse('track_repair', args=[self.ticket.ticket_id]), {'message': '<script>alert(1)</script> hi'})
+        body = self._support()[0].body
+        self.assertNotIn('<script>alert(1)</script>', body)
+        self.assertIn('&lt;script&gt;alert(1)&lt;/script&gt;', body)
+
+    def test_no_alert_for_staff_messages_blank_messages_or_edits(self):
+        from .models import RepairMessage
+        self.client.force_login(self.staff)
+        mail.outbox.clear()
+        self.client.post(reverse('track_repair', args=[self.ticket.ticket_id]), {'message': 'We are on it.'})
+        self.client.post(reverse('track_part', args=[self.part.request_id]), {'message': 'Part located.'})
+        self.assertEqual(self._support(), [])
+        c = self._client()
+        c.post(reverse('track_repair', args=[self.ticket.ticket_id]), {'message': '   '})
+        self.assertEqual(self._support(), [])
+        msg = RepairMessage.objects.create(ticket=self.ticket, message='original', sender_is_admin=False)
+        c.post(reverse('edit_repair_message', args=[msg.id]), {'message': 'edited'})
+        self.assertEqual(self._support(), [])
+
+    def test_automatic_client_notes_do_not_trigger_the_chat_alert(self):
+        self.ticket.status, self.ticket.quote_status, self.ticket.quoted_price = 'quoted', 'sent', 100
+        self.ticket.save()
+        mail.outbox.clear()
+        self._client().post(reverse('customer_approve_repair_quote', args=[self.ticket.ticket_id]))
+        subjects = [m.subject for m in self._support()]
+        self.assertEqual(len(subjects), 1)
+        self.assertIn('[Quote Approved]', subjects[0])
+
+    def test_preview_page_is_staff_only_and_renders_both_versions(self):
+        url = reverse('preview_admin_client_message_email')
+        self.assertEqual(self.client.get(url).status_code, 302)
+        self.client.force_login(self.staff)
+        self.assertContains(self.client.get(url), 'New Client Message on Part Sourcing')
+        self.assertContains(self.client.get(url + '?kind=repair'), 'New Client Message on Repair')
+
+
+class SupportOnlyReceivesTheAgreedAlertsTests(TestCase):
+    """support@compupartz.com gets: new ticket, new part request, review, contact form,
+    approved quote and client chats. Quotations, status updates and staff messages go to the client alone."""
+
+    ALLOWED = ('[New Repair Ticket]', '[New Part Request]', '[New Review]', '[Contact Form]', '[Quote Approved]', '[Client Message]')
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.staff = User.objects.create_user('policystaff', 'ps@example.com', 'x', is_staff=True)
+        self.cs = self.client_class()
+        self.cs.force_login(self.staff)
+
+    def _support_subjects(self):
+        return [m.subject for m in mail.outbox if m.to == ['support@compupartz.com']]
+
+    def test_every_staff_action_reaches_the_client_and_never_support(self):
+        t = RepairTicket.objects.create(customer_name='K', customer_email='k@example.com', customer_phone='0244000611', device='d', status='in_progress')
+        p = PartRequest.objects.create(customer_name='E', customer_email='e@example.com', customer_phone='0244000612', part_needed='x', device_model='y', status='in_progress')
+        actions = [
+            lambda: self.cs.post(reverse('staff_create_repair_quote', args=[t.ticket_id]), {'quoted_price': '90', 'diagnostic_notes': 'n', 'estimated_turnaround': '1d', 'warranty_period': '90d'}),
+            lambda: self.cs.post(reverse('staff_create_part_quote', args=[p.request_id]), {'quoted_price': '40', 'admin_notes': 'n', 'estimated_delivery': '2d', 'warranty_period': '30d'}),
+            lambda: self.cs.post(reverse('staff_update_repair_status', args=[t.ticket_id]), {'status': 'completed', 'status_note': 'done'}),
+            lambda: self.cs.post(reverse('staff_update_part_status', args=[p.request_id]), {'status': 'fulfilled', 'admin_notes': 'ready'}),
+            lambda: self.cs.post(reverse('track_repair', args=[t.ticket_id]), {'message': 'hello'}),
+            lambda: self.cs.post(reverse('track_part', args=[p.request_id]), {'message': 'hello'}),
+        ]
+        for action in actions:
+            mail.outbox.clear()
+            action()
+            self.assertEqual(self._support_subjects(), [])
+            self.assertTrue(any(m.to in (['k@example.com'], ['e@example.com']) for m in mail.outbox))
+
+    def test_support_only_ever_receives_the_agreed_subjects(self):
+        guest = self.client_class()
+        mail.outbox.clear()
+        guest.post(reverse('book_repair'), dict(customer_name='Ama', customer_email='ama@example.com', customer_phone='0244000621',
+                   device_category='laptop', manufacturer='Apple', device='MBP', issue_description='No power', logistics_preference='drop_off'))
+        guest.post(reverse('request_part'), dict(customer_name='Yaw', customer_email='yaw@example.com', customer_phone='0244000622',
+                   part_needed='Battery', device_model='A2338', condition_preference='new'))
+        guest.post(reverse('submit_testimonial'), {'quote': 'Great', 'name': 'Rev', 'rating': '5'})
+        guest.post(reverse('contact'), {'name': 'N', 'email': 'n@example.com', 'subject': 'Hi', 'message': 'x'})
+        ticket = RepairTicket.objects.get(customer_name='Ama')
+        self.cs.post(reverse('staff_create_repair_quote', args=[ticket.ticket_id]), {'quoted_price': '90', 'diagnostic_notes': 'n', 'estimated_turnaround': '1d', 'warranty_period': '90d'})
+        guest.post(reverse('track_repair_lookup'), {'ticket_id': ticket.ticket_id, 'phone': '0244000621'})
+        guest.post(reverse('track_repair', args=[ticket.ticket_id]), {'message': 'Question from the client'})
+        guest.post(reverse('customer_approve_repair_quote', args=[ticket.ticket_id]))
+        self.cs.post(reverse('staff_update_repair_status', args=[ticket.ticket_id]), {'status': 'completed'})
+        subjects = self._support_subjects()
+        self.assertEqual(len(subjects), 6, subjects)
+        for subject in subjects:
+            self.assertTrue(subject.startswith(self.ALLOWED), subject)
+        for prefix in self.ALLOWED:
+            self.assertEqual(len([s for s in subjects if s.startswith(prefix)]), 1, prefix)
+
+
+    def test_a_status_update_note_stays_in_the_thread_and_sends_only_the_normal_status_email(self):
+        from .models import RepairMessage
+        t = RepairTicket.objects.create(customer_name='K', customer_email='k@example.com', customer_phone='0244000631', device='d', status='in_progress')
+        mail.outbox.clear()
+        self.cs.post(reverse('staff_update_repair_status', args=[t.ticket_id]), {'status': 'completed', 'status_note': 'Replaced the screen.'})
+        self.assertEqual(len([m for m in mail.outbox if m.to == ['k@example.com']]), 1)
+        self.assertEqual(self._support_subjects(), [])
+        self.assertTrue(RepairMessage.objects.filter(ticket=t, message__contains='Replaced the screen.').exists())
+
+
+class StaffChatAlwaysEmailsClientTests(TestCase):
+    """Whatever staff type to a client (any wording, any emoji, any screen) is emailed and kept in the thread."""
+
+    TEXTS = ['Your laptop is ready.', '✅ Your laptop is ready.', '🔧 Repair started.', '📦 Part arrived.',
+             '❌ Sorry, not fixable.', '📋 Please review the quote.', '👋 Quick question for you.']
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.staff = User.objects.create_user('alwaysstaff', 'as@example.com', 'x', is_staff=True)
+        self.admin = User.objects.create_superuser('alwaysadmin', 'aa@example.com', 'x')
+        self.ticket = RepairTicket.objects.create(
+            customer_name='Kofi', customer_email='kofi@example.com', customer_phone='0244000641', device='MBP', status='in_progress')
+        self.part = PartRequest.objects.create(
+            customer_name='Esi', customer_email='esi@example.com', customer_phone='0244000642',
+            part_needed='Fan', device_model='Y', status='in_progress')
+
+    def _to(self, addr):
+        return [m for m in mail.outbox if m.to == [addr]]
+
+    def test_chat_box_messages_with_or_without_an_emoji_all_email_the_client_and_stay_in_the_thread(self):
+        from .models import RepairMessage, PartRequestMessage
+        self.client.force_login(self.staff)
+        for text in self.TEXTS:
+            mail.outbox.clear()
+            self.client.post(reverse('track_repair', args=[self.ticket.ticket_id]), {'message': text})
+            self.assertEqual(len(self._to('kofi@example.com')), 1, text)
+            self.assertTrue(RepairMessage.objects.filter(ticket=self.ticket, message=text, sender_is_admin=True).exists())
+            mail.outbox.clear()
+            self.client.post(reverse('track_part', args=[self.part.request_id]), {'message': text})
+            self.assertEqual(len(self._to('esi@example.com')), 1, text)
+            self.assertTrue(PartRequestMessage.objects.filter(part_request=self.part, message=text, sender_is_admin=True).exists())
+
+    def test_messages_written_on_the_django_admin_screen_email_the_client_too(self):
+        self.client.force_login(self.admin)
+        for text in ('Plain admin message', '✅ Admin message starting with an emoji'):
+            mail.outbox.clear()
+            self.client.post(reverse('admin:repair_repairmessage_add'), {'ticket': self.ticket.pk, 'message': text, 'sender_is_admin': 'on'})
+            self.assertEqual(len(self._to('kofi@example.com')), 1, text)
+            mail.outbox.clear()
+            self.client.post(reverse('admin:repair_partrequestmessage_add'), {'part_request': self.part.pk, 'message': text, 'sender_is_admin': 'on'})
+            self.assertEqual(len(self._to('esi@example.com')), 1, text)
+
+    def test_the_email_shows_the_staff_text_and_links_to_the_tracking_page(self):
+        self.client.force_login(self.staff)
+        mail.outbox.clear()
+        self.client.post(reverse('track_repair', args=[self.ticket.ticket_id]), {'message': '✅ Ready for pickup after 2pm.'})
+        sent = self._to('kofi@example.com')[0]
+        self.assertIn('Ready for pickup after 2pm.', sent.alternatives[0][0])
+        self.assertIn('/accounts/login/?next=/repair/track/', sent.alternatives[0][0])
+
+    def test_automatic_system_notes_still_do_not_send_their_own_extra_email(self):
+        self.client.force_login(self.staff)
+        mail.outbox.clear()
+        self.client.post(reverse('staff_create_repair_quote', args=[self.ticket.ticket_id]),
+                         {'quoted_price': '90', 'diagnostic_notes': 'n', 'estimated_turnaround': '1d', 'warranty_period': '90d'})
+        self.assertEqual(len(self._to('kofi@example.com')), 1)
+        mail.outbox.clear()
+        self.client.post(reverse('staff_update_repair_status', args=[self.ticket.ticket_id]), {'status': 'completed'})
+        self.assertEqual(len(self._to('kofi@example.com')), 1)
