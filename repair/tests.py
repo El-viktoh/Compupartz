@@ -181,6 +181,80 @@ class AdminNotificationTests(TestCase):
         self.assertIn("OEM Battery for Dell XPS 13 9310", admin_email.subject)
         self.assertIn("52Wh 4-cell genuine battery", admin_email.body)
 
+    def test_book_repair_success_notification_and_messages(self):
+        # 1. Standard POST redirects back to book_repair (no success page redirect)
+        response = self.client.post(reverse('book_repair'), {
+            'customer_name': 'Kojo Antwi',
+            'customer_email': 'kojo@example.com',
+            'customer_phone': '0240998877',
+            'device_category': 'laptop',
+            'manufacturer': 'Apple',
+            'device': 'MacBook Pro M2 14-inch',
+            'issue_description': 'Screen backlight dark on left half.',
+            'logistics_preference': 'drop_off',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('/repair/book/', response.redirect_chain[0][0])
+        messages_list = [str(m) for m in response.context['messages']]
+        self.assertTrue(any('repair ticket' in m.lower() for m in messages_list))
+        self.assertTrue(any('Thank you for choosing us' in m for m in messages_list))
+        content = response.content.decode()
+        self.assertIn('TICKET SUBMITTED', content)
+        self.assertIn('repairSuccessAlert', content)
+
+        # 2. AJAX submission
+        ajax_res = self.client.post(reverse('book_repair'), {
+            'customer_name': 'Kojo Antwi 2',
+            'customer_email': 'kojo2@example.com',
+            'customer_phone': '0240998877',
+            'device_category': 'laptop',
+            'manufacturer': 'Apple',
+            'device': 'MacBook Pro M2 14-inch',
+            'issue_description': 'Screen backlight dark on left half.',
+            'logistics_preference': 'drop_off',
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(ajax_res.status_code, 200)
+        data = ajax_res.json()
+        self.assertTrue(data['success'])
+        self.assertIn('ticket_id', data)
+        self.assertIn('Thank you for choosing us', data['message'])
+
+    def test_request_part_success_notification_and_messages(self):
+        # 1. Standard POST redirects back to request_part (no success page redirect)
+        response = self.client.post(reverse('request_part'), {
+            'customer_name': 'Akosua Serwaa',
+            'customer_email': 'akosua@example.com',
+            'customer_phone': '0550112233',
+            'part_needed': 'Trackpad Cable for MacBook Air M1',
+            'device_model': 'MacBook Air A2337',
+            'condition_preference': 'new',
+            'additional_details': 'Original OEM flex ribbon.',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('/repair/request-part/', response.redirect_chain[0][0])
+        messages_list = [str(m) for m in response.context['messages']]
+        self.assertTrue(any('part request' in m.lower() for m in messages_list))
+        self.assertTrue(any('Thank you for choosing us' in m for m in messages_list))
+        content = response.content.decode()
+        self.assertIn('REQUEST SUBMITTED', content)
+        self.assertIn('partSuccessAlert', content)
+
+        # 2. AJAX submission
+        ajax_res = self.client.post(reverse('request_part'), {
+            'customer_name': 'Akosua Serwaa 2',
+            'customer_email': 'akosua2@example.com',
+            'customer_phone': '0550112233',
+            'part_needed': 'Trackpad Cable for MacBook Air M1',
+            'device_model': 'MacBook Air A2337',
+            'condition_preference': 'new',
+            'additional_details': 'Original OEM flex ribbon.',
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(ajax_res.status_code, 200)
+        data = ajax_res.json()
+        self.assertTrue(data['success'])
+        self.assertIn('request_id', data)
+        self.assertIn('Thank you for choosing us', data['message'])
+
 
 class NoFixStatusTests(TestCase):
     def setUp(self):

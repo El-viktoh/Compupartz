@@ -4,7 +4,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 
 from core.notifications import (
@@ -56,11 +58,28 @@ def book_repair(request):
             send_repair_email(ticket)
             send_admin_repair_notification(ticket)
 
-            return redirect("repair_success", ticket_id=ticket.id)
+            msg = "Your hardware repair ticket has been successfully submitted to our repair lab. Thank you for choosing us!."
+
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({
+                    "success": True,
+                    "ticket_id": ticket.ticket_id,
+                    "customer_email": ticket.customer_email,
+                    "message": msg,
+                })
+
+            messages.success(request, msg)
+            return redirect(f"{reverse('book_repair')}?submitted=1&ticket_id={ticket.ticket_id}")
+
+        else:
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                errors = {field: [str(e) for e in errs] for field, errs in form.errors.items()}
+                return JsonResponse({"success": False, "errors": errors}, status=400)
 
     else:
         initial = {}
-        if request.user.is_authenticated:
+        # Prefill user details only on initial fresh visit, not immediately after submitting
+        if request.user.is_authenticated and request.GET.get('submitted') != '1':
             full_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
             initial["customer_name"] = full_name
             if request.user.email:
@@ -89,14 +108,32 @@ def request_part(request):
 
             part_request.save()
 
+            _grant_part_request_access(request, part_request)
+
             send_part_request_email(part_request)
             send_admin_part_request_notification(part_request)
 
-            return redirect("part_request_success", request_id=part_request.id)
+            msg = "Your part request has been successfully submitted! A confirmation email has been sent. Thank you for choosing us!"
+
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({
+                    "success": True,
+                    "request_id": part_request.request_id,
+                    "customer_email": part_request.customer_email,
+                    "message": msg,
+                })
+
+            messages.success(request, msg)
+            return redirect(f"{reverse('request_part')}?submitted=1&request_id={part_request.request_id}")
+
+        else:
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                errors = {field: [str(e) for e in errs] for field, errs in form.errors.items()}
+                return JsonResponse({"success": False, "errors": errors}, status=400)
 
     else:
         initial = {}
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and request.GET.get('submitted') != '1':
             full_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
             initial["customer_name"] = full_name
             if request.user.email:

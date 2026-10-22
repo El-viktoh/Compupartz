@@ -83,8 +83,31 @@
         </div>
 
         <!-- Form & Sidebar Grid -->
-        <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <form id="repairBookingForm" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
             {% csrf_token %}
+
+            <!-- In-Page Success Notification Alert -->
+            <div id="repairSuccessAlert" class="{% if not request.GET.submitted %}hidden{% endif %} lg:col-span-12 bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 rounded-2xl p-5 sm:p-6 shadow-xl animate-fadeIn">
+                <div class="flex items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span>Repair Ticket Submitted Successfully!</span>
+                                <span id="repairSuccessTicketIdBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-mono font-bold">{% if request.GET.ticket_id %}#{{ request.GET.ticket_id }}{% endif %}</span>
+                            </h3>
+                            <p id="repairSuccessMessageText" class="text-xs sm:text-sm text-slate-600 dark:text-emerald-200/90 font-light mt-1">
+                                Your hardware repair ticket has been successfully submitted to our repair lab. Thank you for choosing us!.
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="document.getElementById('repairSuccessAlert').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl p-1 leading-none">&times;</button>
+                </div>
+            </div>
 
             <!-- Error Notification Banner (if any) -->
             {% if form.errors %}
@@ -336,11 +359,26 @@
                         </div>
                     </div>
 
-                    <button type="submit" 
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#FF7200] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white px-9 py-4 rounded-xl font-bold uppercase tracking-wider text-xs sm:text-sm shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 shrink-0 group">
-                        <span>SUBMIT REPAIR TICKET</span>
-                        <span class="transform group-hover:translate-x-1 transition-transform duration-200 font-bold">&rarr;</span>
-                    </button>
+                    <div class="w-full sm:w-auto flex flex-col items-center sm:items-end">
+                        <button type="submit" 
+                                id="repairSubmitBtn"
+                                class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 {% if request.GET.submitted %}bg-slate-400 dark:bg-slate-700 cursor-not-allowed opacity-60 pointer-events-none{% else %}bg-gradient-to-r from-[#FF7200] to-orange-500 hover:from-orange-600 hover:to-orange-500 hover:-translate-y-0.5 active:scale-95 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40{% endif %} text-white px-9 py-4 rounded-xl font-bold uppercase tracking-wider text-xs sm:text-sm transition-all duration-300 shrink-0 group"
+                                {% if request.GET.submitted %}disabled{% endif %}>
+                            <span id="repairSubmitBtnSpinner" class="hidden">
+                                <svg class="animate-spin w-4 h-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </span>
+                            <span id="repairSubmitBtnText">{% if request.GET.submitted %}✓ TICKET SUBMITTED{% else %}SUBMIT REPAIR TICKET{% endif %}</span>
+                            <span id="repairSubmitBtnArrow" class="{% if request.GET.submitted %}hidden{% endif %} transform group-hover:translate-x-1 transition-transform duration-200 font-bold">&rarr;</span>
+                        </button>
+
+                        <div id="repairSubmittingNotice" class="hidden mt-3 text-xs text-orange-600 dark:text-orange-400 font-medium flex items-center gap-2 animate-pulse">
+                            <span class="inline-block w-2 h-2 rounded-full bg-[#FF7200] animate-ping"></span>
+                            <span>Transmitting ticket to workshop lab... Please wait a moment.</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -431,7 +469,7 @@
 
 </div>
 
-<!-- Interactive JS for File Drag & Drop Feedback -->
+<!-- Interactive JS for File Drag & Drop Feedback, Button State, and Form Clear -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('diagnostic_image_input');
@@ -439,6 +477,164 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileSelectedBadge = document.getElementById('fileSelectedBadge');
     const fileNameDisplay = document.getElementById('fileNameDisplay');
     const fileUploadPrompt = document.getElementById('fileUploadPrompt');
+
+    const form = document.getElementById('repairBookingForm');
+    const submitBtn = document.getElementById('repairSubmitBtn');
+    const btnSpinner = document.getElementById('repairSubmitBtnSpinner');
+    const btnText = document.getElementById('repairSubmitBtnText');
+    const btnArrow = document.getElementById('repairSubmitBtnArrow');
+    const submittingNotice = document.getElementById('repairSubmittingNotice');
+    const successAlert = document.getElementById('repairSuccessAlert');
+
+    let isSubmitting = false;
+
+    function resetSubmitButton() {
+        isSubmitting = false;
+        if (!submitBtn) return;
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('bg-slate-400', 'dark:bg-slate-700', 'cursor-not-allowed', 'opacity-60', 'opacity-75', 'pointer-events-none');
+        submitBtn.classList.add('bg-gradient-to-r', 'from-[#FF7200]', 'to-orange-500', 'hover:from-orange-600', 'hover:to-orange-500', 'hover:-translate-y-0.5', 'active:scale-95', 'shadow-xl', 'shadow-orange-500/25');
+        if (btnSpinner) btnSpinner.classList.add('hidden');
+        if (btnArrow) btnArrow.classList.remove('hidden');
+        if (btnText) btnText.textContent = 'SUBMIT REPAIR TICKET';
+        if (submittingNotice) submittingNotice.classList.add('hidden');
+    }
+
+    function setButtonSubmitting() {
+        if (!submitBtn) return;
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('bg-gradient-to-r', 'from-[#FF7200]', 'to-orange-500', 'hover:from-orange-600', 'hover:to-orange-500', 'hover:-translate-y-0.5', 'active:scale-95', 'shadow-xl', 'shadow-orange-500/25');
+        submitBtn.classList.add('bg-slate-400', 'dark:bg-slate-700', 'cursor-not-allowed', 'opacity-75', 'pointer-events-none');
+        if (btnSpinner) btnSpinner.classList.remove('hidden');
+        if (btnArrow) btnArrow.classList.add('hidden');
+        if (btnText) btnText.textContent = 'SUBMITTING TICKET...';
+        if (submittingNotice) submittingNotice.classList.remove('hidden');
+    }
+
+    function setButtonSubmitted() {
+        isSubmitting = false;
+        if (!submitBtn) return;
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('bg-gradient-to-r', 'from-[#FF7200]', 'to-orange-500', 'hover:from-orange-600', 'hover:to-orange-500', 'hover:-translate-y-0.5', 'active:scale-95', 'shadow-xl', 'shadow-orange-500/25', 'opacity-75');
+        submitBtn.classList.add('bg-slate-400', 'dark:bg-slate-700', 'cursor-not-allowed', 'opacity-60', 'pointer-events-none');
+        if (btnSpinner) btnSpinner.classList.add('hidden');
+        if (btnArrow) btnArrow.classList.add('hidden');
+        if (btnText) btnText.textContent = '✓ TICKET SUBMITTED';
+        if (submittingNotice) submittingNotice.classList.add('hidden');
+    }
+
+    function clearRepairForm() {
+        if (!form) return;
+        form.reset();
+
+        const deviceInput = form.querySelector('[name="device"]');
+        if (deviceInput) deviceInput.value = '';
+
+        const issueDesc = form.querySelector('[name="issue_description"]');
+        if (issueDesc) issueDesc.value = '';
+
+        const manufacturer = form.querySelector('[name="manufacturer"]');
+        if (manufacturer) manufacturer.value = '';
+
+        const category = form.querySelector('[name="device_category"]');
+        if (category) category.selectedIndex = 0;
+
+        if (fileInput) fileInput.value = '';
+        if (fileSelectedBadge) fileSelectedBadge.classList.add('hidden');
+        if (fileUploadPrompt) fileUploadPrompt.classList.remove('hidden');
+        if (fileNameDisplay) fileNameDisplay.textContent = '';
+
+        const dropOffRadio = form.querySelector('input[name="logistics_preference"][value="drop_off"]');
+        if (dropOffRadio) dropOffRadio.checked = true;
+
+        const nameInput = form.querySelector('[name="customer_name"]');
+        if (nameInput) nameInput.value = '';
+        const emailInput = form.querySelector('[name="customer_email"]');
+        if (emailInput) emailInput.value = '';
+        const phoneInput = form.querySelector('[name="customer_phone"]');
+        if (phoneInput) phoneInput.value = '';
+    }
+
+    if (form) {
+        // If user interacts with form fields again, reset the button to active
+        form.addEventListener('input', function() {
+            if (submitBtn && submitBtn.disabled && btnText && btnText.textContent.includes('SUBMITTED')) {
+                resetSubmitButton();
+            }
+        });
+        form.addEventListener('change', function() {
+            if (submitBtn && submitBtn.disabled && btnText && btnText.textContent.includes('SUBMITTED')) {
+                resetSubmitButton();
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+            if (!form.checkValidity()) {
+                return;
+            }
+
+            e.preventDefault();
+            isSubmitting = true;
+            setButtonSubmitting();
+
+            const formData = new FormData(form);
+
+            fetch(form.action || window.location.pathname, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(function(res) {
+                return res.json().then(function(data) {
+                    return { ok: res.ok, data: data };
+                });
+            })
+            .then(function(result) {
+                if (result.ok && result.data.success) {
+                    clearRepairForm();
+                    setButtonSubmitted();
+
+                    if (successAlert) {
+                        if (result.data.ticket_id) {
+                            const badge = document.getElementById('repairSuccessTicketIdBadge');
+                            if (badge) badge.textContent = '#' + result.data.ticket_id;
+                        }
+                        if (result.data.message) {
+                            const msgEl = document.getElementById('repairSuccessMessageText');
+                            if (msgEl) msgEl.textContent = result.data.message;
+                        }
+                        successAlert.classList.remove('hidden');
+                        successAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    resetSubmitButton();
+                    alert('Please check your submission details and try again.');
+                }
+            })
+            .catch(function(err) {
+                // Fallback to normal submit on network error
+                form.submit();
+            });
+        });
+    }
+
+    {% if request.GET.submitted %}
+    setButtonSubmitted();
+    clearRepairForm();
+    {% endif %}
+
+    // Handle bfcache back/forward navigation
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            resetSubmitButton();
+        }
+    });
 
     if (fileInput && fileDropZone) {
         fileInput.addEventListener('change', function() {
