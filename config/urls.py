@@ -1,7 +1,8 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
 from django.contrib.auth import views as auth_views
 from core.auth_views import ThrottledPasswordResetView
 
@@ -29,6 +30,11 @@ if settings.ENABLE_STORE:
         path('order/', include('customer_orders.urls')),
         path('parts/', include('parts.urls')),
     ]
+
+# Serve uploaded media files (e.g., repair diagnostic photos)
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+]
 
 if settings.DEBUG:
     from django.shortcuts import render

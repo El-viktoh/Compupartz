@@ -53,7 +53,7 @@ class RepairTicketAdmin(admin.ModelAdmin):
         'issue_description',
         'diagnostic_notes',
     )
-    readonly_fields = ('ticket_id', 'created_at', 'quote_sent_at')
+    readonly_fields = ('ticket_id', 'created_at', 'quote_sent_at', 'diagnostic_image_preview')
     inlines = [RepairMessageInline]
     actions = [
         'mark_pending',
@@ -74,6 +74,7 @@ class RepairTicketAdmin(admin.ModelAdmin):
                 "device",
                 "issue_description",
                 "diagnostic_image",
+                "diagnostic_image_preview",
                 "logistics_preference",
                 "status",
             )
@@ -141,6 +142,18 @@ class RepairTicketAdmin(admin.ModelAdmin):
             return format_html('<strong>GH₵ {}</strong>', obj.quoted_price)
         return "—"
     quoted_price_display.short_description = "Quoted (GH₵)"
+
+    def diagnostic_image_preview(self, obj):
+        if obj.diagnostic_image:
+            return format_html(
+                '<a href="{}" target="_blank" rel="noopener noreferrer">'
+                '<img src="{}" alt="Diagnostic Photo" style="max-height: 220px; border-radius: 10px; border: 1px solid #cbd5e1;" />'
+                '</a>',
+                obj.diagnostic_image.url,
+                obj.diagnostic_image.url,
+            )
+        return "No diagnostic photo uploaded"
+    diagnostic_image_preview.short_description = "Diagnostic Photo Preview"
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)

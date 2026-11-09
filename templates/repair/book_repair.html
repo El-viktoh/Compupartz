@@ -83,7 +83,7 @@
         </div>
 
         <!-- Form & Sidebar Grid -->
-        <form id="repairBookingForm" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <form id="repairBookingForm" action="{% url 'book_repair' %}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
             {% csrf_token %}
 
             <!-- In-Page Success Notification Alert -->
@@ -236,10 +236,17 @@
                                     Photos of screen artifacts, damaged ports, or error codes help technicians expedite diagnostics
                                 </p>
 
+                                <div id="filePreviewContainer" class="hidden mt-4 flex flex-col items-center gap-2">
+                                    <div class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-white dark:bg-black/40 p-1">
+                                        <img id="filePreviewImage" src="" alt="Selected diagnostic photo preview" class="max-h-40 w-auto rounded-lg object-contain mx-auto">
+                                    </div>
+                                </div>
+
                                 <div id="fileSelectedBadge" class="hidden mt-3 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
                                     <span>📷</span>
                                     <span id="fileNameDisplay" class="truncate max-w-[220px]">image.jpg</span>
                                     <span class="text-slate-400 text-[10px]">Ready to upload</span>
+                                    <button type="button" id="clearFileBtn" class="ml-1 text-slate-400 hover:text-red-500 font-bold leading-none" title="Remove selected image">&times;</button>
                                 </div>
 
                                 {{ form.diagnostic_image }}
@@ -477,6 +484,52 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileSelectedBadge = document.getElementById('fileSelectedBadge');
     const fileNameDisplay = document.getElementById('fileNameDisplay');
     const fileUploadPrompt = document.getElementById('fileUploadPrompt');
+    const filePreviewContainer = document.getElementById('filePreviewContainer');
+    const filePreviewImage = document.getElementById('filePreviewImage');
+    const clearFileBtn = document.getElementById('clearFileBtn');
+    let currentPreviewUrl = null;
+
+    function clearFileSelection() {
+        if (fileInput) fileInput.value = '';
+        if (currentPreviewUrl) {
+            URL.revokeObjectURL(currentPreviewUrl);
+            currentPreviewUrl = null;
+        }
+        if (filePreviewImage) filePreviewImage.src = '';
+        if (filePreviewContainer) filePreviewContainer.classList.add('hidden');
+        if (fileSelectedBadge) fileSelectedBadge.classList.add('hidden');
+        if (fileUploadPrompt) fileUploadPrompt.classList.remove('hidden');
+        if (fileNameDisplay) fileNameDisplay.textContent = '';
+    }
+
+    function updateFileSelectionUI(file) {
+        if (!file) {
+            clearFileSelection();
+            return;
+        }
+        if (fileNameDisplay) fileNameDisplay.textContent = file.name;
+        if (fileSelectedBadge) fileSelectedBadge.classList.remove('hidden');
+        if (fileUploadPrompt) fileUploadPrompt.classList.add('hidden');
+
+        if (filePreviewImage && filePreviewContainer && file.type && file.type.startsWith('image/')) {
+            if (currentPreviewUrl) {
+                URL.revokeObjectURL(currentPreviewUrl);
+            }
+            currentPreviewUrl = URL.createObjectURL(file);
+            filePreviewImage.src = currentPreviewUrl;
+            filePreviewContainer.classList.remove('hidden');
+        } else if (filePreviewContainer) {
+            filePreviewContainer.classList.add('hidden');
+        }
+    }
+
+    if (clearFileBtn) {
+        clearFileBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            clearFileSelection();
+        });
+    }
 
     const form = document.getElementById('repairBookingForm');
     const submitBtn = document.getElementById('repairSubmitBtn');
@@ -539,10 +592,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const category = form.querySelector('[name="device_category"]');
         if (category) category.selectedIndex = 0;
 
-        if (fileInput) fileInput.value = '';
-        if (fileSelectedBadge) fileSelectedBadge.classList.add('hidden');
-        if (fileUploadPrompt) fileUploadPrompt.classList.remove('hidden');
-        if (fileNameDisplay) fileNameDisplay.textContent = '';
+        clearFileSelection();
 
         const dropOffRadio = form.querySelector('input[name="logistics_preference"][value="drop_off"]');
         if (dropOffRadio) dropOffRadio.checked = true;
@@ -614,7 +664,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 } else {
                     resetSubmitButton();
-                    alert('Please check your submission details and try again.');
+                    let errorMsg = 'Please check your submission details and try again.';
+                    if (result.data && result.data.errors) {
+                        const errList = Object.entries(result.data.errors).map(function(entry) {
+                            return entry[0] + ': ' + (Array.isArray(entry[1]) ? entry[1].join(', ') : entry[1]);
+                        });
+                        if (errList.length > 0) {
+                            errorMsg += '\n\n' + errList.join('\n');
+                        }
+                    }
+                    alert(errorMsg);
                 }
             })
             .catch(function(err) {
@@ -639,13 +698,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (fileInput && fileDropZone) {
         fileInput.addEventListener('change', function() {
             if (fileInput.files && fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                if (fileNameDisplay) fileNameDisplay.textContent = file.name;
-                if (fileSelectedBadge) fileSelectedBadge.classList.remove('hidden');
-                if (fileUploadPrompt) fileUploadPrompt.classList.add('hidden');
+                updateFileSelectionUI(fileInput.files[0]);
             } else {
-                if (fileSelectedBadge) fileSelectedBadge.classList.add('hidden');
-                if (fileUploadPrompt) fileUploadPrompt.classList.remove('hidden');
+                clearFileSelection();
             }
         });
 
@@ -669,11 +724,15 @@ document.addEventListener('DOMContentLoaded', function() {
         fileDropZone.addEventListener('drop', function(e) {
             const dt = e.dataTransfer;
             if (dt && dt.files && dt.files.length > 0) {
-                fileInput.files = dt.files;
-                const file = dt.files[0];
-                if (fileNameDisplay) fileNameDisplay.textContent = file.name;
-                if (fileSelectedBadge) fileSelectedBadge.classList.remove('hidden');
-                if (fileUploadPrompt) fileUploadPrompt.classList.add('hidden');
+                try {
+                    const transfer = new DataTransfer();
+                    transfer.items.add(dt.files[0]);
+                    fileInput.files = transfer.files;
+                } catch (err) {
+                    fileInput.files = dt.files;
+                }
+                updateFileSelectionUI(dt.files[0]);
+                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
             }
         });
     }

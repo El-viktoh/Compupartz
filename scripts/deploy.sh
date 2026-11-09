@@ -40,9 +40,10 @@ $VENV_DIR/bin/python manage.py migrate --noinput
 echo "🎨 Collecting static files..."
 $VENV_DIR/bin/python manage.py collectstatic --noinput
 
-# 7. Stabilize Logs and Database
-echo "📝 Stabilizing log files and database..."
+# 7. Stabilize Logs, Media, and Database
+echo "📝 Stabilizing log files, media directory, and database..."
 mkdir -p $PROJECT_DIR/logs
+mkdir -p $PROJECT_DIR/media/diagnostics
 touch $PROJECT_DIR/logs/error.log
 touch $PROJECT_DIR/stderr.log
 touch $PROJECT_DIR/django_errors.log

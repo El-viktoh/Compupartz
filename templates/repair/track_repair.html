@@ -353,6 +353,22 @@
                             <p class="text-xs text-slate-600 dark:text-gray-300 leading-relaxed font-light">{{ ticket.issue_description }}</p>
                         </div>
                         {% endif %}
+                        {% if ticket.diagnostic_image %}
+                        <div class="pt-3 border-t border-slate-100 dark:border-white/5">
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 flex items-center gap-1">
+                                    <span>📷</span> Uploaded Diagnostic Photo
+                                </span>
+                                <a href="{{ ticket.diagnostic_image.url }}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-[#008BC6] dark:text-[#38bdf8] hover:underline inline-flex items-center gap-1">
+                                    <span>Full Size</span>
+                                    <span>&nearr;</span>
+                                </a>
+                            </div>
+                            <a href="{{ ticket.diagnostic_image.url }}" target="_blank" rel="noopener noreferrer" class="block group/diag relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-slate-900/5 dark:bg-black/40 shadow-sm">
+                                <img src="{{ ticket.diagnostic_image.url }}" alt="Diagnostic photo for {{ ticket.device }}" loading="lazy" class="w-full max-h-56 object-cover group-hover/diag:scale-[1.02] transition-transform duration-300">
+                            </a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

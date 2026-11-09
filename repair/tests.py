@@ -1274,3 +1274,102 @@ class StaffChatAlwaysEmailsClientTests(TestCase):
         mail.outbox.clear()
         self.client.post(reverse('staff_update_repair_status', args=[self.ticket.ticket_id]), {'status': 'completed'})
         self.assertEqual(len(self._to('kofi@example.com')), 1)
+
+
+class DiagnosticImageUploadAndDashboardDisplayTests(TestCase):
+    """Verify uploaded diagnostic images on repair tickets are saved and reflected across dashboard & tracking views."""
+
+    def setUp(self):
+        import tempfile
+        import shutil
+        from django.conf import settings
+
+        self._temp_media = tempfile.mkdtemp()
+        self._orig_media_root = settings.MEDIA_ROOT
+        settings.MEDIA_ROOT = self._temp_media
+
+        self.user = User.objects.create_user(
+            username='imgclient',
+            email='imgclient@example.com',
+            password='TestPassword123!'
+        )
+        self.staff = User.objects.create_user(
+            username='imgstaff',
+            email='imgstaff@example.com',
+            password='TestPassword123!',
+            is_staff=True
+        )
+
+    def tearDown(self):
+        import shutil
+        from django.conf import settings
+
+        settings.MEDIA_ROOT = self._orig_media_root
+        shutil.rmtree(self._temp_media, ignore_errors=True)
+
+    def _make_test_image(self, filename='fault_photo.png'):
+        from io import BytesIO
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        buf = BytesIO()
+        img = Image.new('RGB', (64, 64), color=(255, 114, 0))
+        img.save(buf, format='PNG')
+        buf.seek(0)
+        return SimpleUploadedFile(filename, buf.read(), content_type='image/png')
+
+    def test_ajax_and_standard_book_repair_saves_diagnostic_image_and_reflects_in_dashboard(self):
+        self.client.force_login(self.user)
+
+        # 1. Submit repair ticket with image via AJAX (how book_repair.html submits by default)
+        uploaded_img = self._make_test_image('screen_glitch.png')
+        response = self.client.post(
+            reverse('book_repair'),
+            {
+                'customer_name': 'Kwame Boateng',
+                'customer_email': 'imgclient@example.com',
+                'customer_phone': '0541112233',
+                'device_category': 'laptop',
+                'manufacturer': 'Apple',
+                'device': 'MacBook Pro 14 M3',
+                'issue_description': 'Horizontal flickering lines on display panel.',
+                'logistics_preference': 'drop_off',
+                'diagnostic_image': uploaded_img,
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data.get('success'))
+
+        ticket = RepairTicket.objects.get(ticket_id=data['ticket_id'])
+        self.assertTrue(bool(ticket.diagnostic_image))
+        self.assertIn('diagnostics/', ticket.diagnostic_image.name)
+
+        # 2. Verify client dashboard renders the uploaded diagnostic image URL
+        dash_res = self.client.get(reverse('dashboard'))
+        self.assertEqual(dash_res.status_code, 200)
+        self.assertContains(dash_res, ticket.diagnostic_image.url)
+        self.assertContains(dash_res, 'Uploaded Diagnostic Photo')
+
+        # 3. Verify track_repair page renders the uploaded diagnostic image URL
+        track_res = self.client.get(reverse('track_repair', args=[ticket.ticket_id]))
+        self.assertEqual(track_res.status_code, 200)
+        self.assertContains(track_res, ticket.diagnostic_image.url)
+
+        # 4. Verify my_repairs page renders the uploaded diagnostic image URL
+        my_repairs_res = self.client.get(reverse('my_repairs'))
+        self.assertEqual(my_repairs_res.status_code, 200)
+        self.assertContains(my_repairs_res, ticket.diagnostic_image.url)
+
+        # 5. Verify staff Lab Process Queue does not show the image inline on the queue list,
+        #    and instead the technician sees the image when opening the ticket (track_repair).
+        self.client.force_login(self.staff)
+        staff_dash_res = self.client.get(reverse('dashboard'))
+        self.assertEqual(staff_dash_res.status_code, 200)
+        self.assertNotContains(staff_dash_res, 'View Uploaded Diagnostic Photo')
+
+        staff_ticket_res = self.client.get(reverse('track_repair', args=[ticket.ticket_id]))
+        self.assertEqual(staff_ticket_res.status_code, 200)
+        self.assertContains(staff_ticket_res, ticket.diagnostic_image.url)
+

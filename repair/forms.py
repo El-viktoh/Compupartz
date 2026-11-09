@@ -34,7 +34,7 @@ class RepairBookingForm(forms.ModelForm):
                 "placeholder": "Please describe the symptoms observed (e.g. no power, flashing charging LED, flickering screen, liquid spill, overheating, blue screen errors)...",
             }),
             "diagnostic_image": forms.FileInput(attrs={
-                "class": "hidden",
+                "class": "sr-only",
                 "id": "diagnostic_image_input",
                 "accept": "image/*",
             }),

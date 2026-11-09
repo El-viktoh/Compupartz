@@ -34,10 +34,16 @@
 
             <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
                 
-                <!-- STATUS ICON -->
+                <!-- STATUS ICON / UPLOADED DIAGNOSTIC IMAGE -->
+                {% if repair.diagnostic_image %}
+                <a href="{{ repair.diagnostic_image.url }}" target="_blank" rel="noopener noreferrer" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden shrink-0 border border-brandOrange/30 shadow-inner block bg-slate-900/5 dark:bg-black/40" title="View uploaded diagnostic photo">
+                    <img src="{{ repair.diagnostic_image.url }}" alt="Diagnostic photo for {{ repair.device }}" loading="lazy" class="w-full h-full object-cover">
+                </a>
+                {% else %}
                 <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-brandOrange/5 flex items-center justify-center shrink-0 border border-brandOrange/10 shadow-inner">
                     <span class="text-3xl sm:text-4xl">🛠️</span>
                 </div>
+                {% endif %}
 
                 <!-- REPAIR DETAILS -->
                 <div class="flex-1 text-center md:text-left">
@@ -46,6 +52,11 @@
                         <span class="text-[10px] font-black bg-brandOrange/10 text-brandOrange px-3 py-1 rounded-full uppercase tracking-widest">{{ repair.get_status_display }}</span>
                         {% if repair.logistics_preference %}
                         <span class="text-[10px] font-black bg-brandBlue/10 text-brandBlue px-3 py-1 rounded-full uppercase tracking-widest tracking-tighter">{{ repair.get_logistics_preference_display }}</span>
+                        {% endif %}
+                        {% if repair.diagnostic_image %}
+                        <a href="{{ repair.diagnostic_image.url }}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-black bg-brandBlue/10 text-brandBlue px-3 py-1 rounded-full uppercase tracking-widest hover:underline">
+                            📷 Diagnostic Photo
+                        </a>
                         {% endif %}
                     </div>
                     

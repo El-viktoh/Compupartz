@@ -4,6 +4,7 @@ module.exports = {
   content: [
     './templates/**/*.html',
     './**/templates/**/*.html',
+    './**/forms.py',
     '!./venv/**',
     '!./node_modules/**',
   ],
