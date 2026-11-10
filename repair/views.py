@@ -15,8 +15,10 @@ from core.notifications import (
     send_admin_client_message_notification,
     send_admin_quote_approved_notification,
 )
+from django.core.exceptions import ValidationError
 from .forms import RepairBookingForm, PartRequestForm
 from .models import RepairTicket, RepairMessage, PartRequest, PartRequestMessage
+from .validators import validate_chat_image
 from .utils import (
     send_repair_email,
     send_part_request_email,
@@ -227,12 +229,20 @@ def track_repair(request, ticket_id):
         messages.error(request, "Please verify your Ticket ID and phone number to view this ticket.")
         return redirect("track_repair_lookup")
 
-    if request.method == "POST" and "message" in request.POST:
+    if request.method == "POST" and ("message" in request.POST or "image" in request.FILES):
         message_text = request.POST.get("message", "").strip()
-        if message_text:
+        image_file = request.FILES.get("image")
+        if image_file:
+            try:
+                validate_chat_image(image_file)
+            except ValidationError as exc:
+                messages.error(request, exc.messages[0])
+                image_file = None
+        if message_text or image_file:
             chat_message = RepairMessage(
                 ticket=ticket,
                 message=message_text,
+                image=image_file,
                 sender_is_admin=request.user.is_authenticated and request.user.is_staff
             )
             chat_message._force_notify = True  # typed by a person: email it even if it starts with an emoji
@@ -606,12 +616,20 @@ def track_part(request, request_id):
         messages.error(request, "Please verify your Request ID and phone number to view this request.")
         return redirect("track_part_lookup")
 
-    if request.method == "POST" and "message" in request.POST:
+    if request.method == "POST" and ("message" in request.POST or "image" in request.FILES):
         message_text = request.POST.get("message", "").strip()
-        if message_text:
+        image_file = request.FILES.get("image")
+        if image_file:
+            try:
+                validate_chat_image(image_file)
+            except ValidationError as exc:
+                messages.error(request, exc.messages[0])
+                image_file = None
+        if message_text or image_file:
             chat_message = PartRequestMessage(
                 part_request=part_request,
                 message=message_text,
+                image=image_file,
                 sender_is_admin=request.user.is_authenticated and request.user.is_staff
             )
             chat_message._force_notify = True  # typed by a person: email it even if it starts with an emoji

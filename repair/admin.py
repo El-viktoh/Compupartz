@@ -13,19 +13,43 @@ from .utils import send_formal_repair_quote_email, send_formal_part_quote_email
 class RepairMessageInline(admin.TabularInline):
     model = RepairMessage
     extra = 1
-    fields = ('sender_is_admin', 'message', 'created_at')
-    readonly_fields = ('created_at',)
+    fields = ('sender_is_admin', 'message', 'image', 'image_preview', 'created_at')
+    readonly_fields = ('created_at', 'image_preview')
     verbose_name = "Direct Technician Message / Bench Note"
     verbose_name_plural = "Direct Technician Communication Thread"
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<a href="{}" target="_blank" rel="noopener noreferrer">'
+                '<img src="{}" style="max-height: 48px; border-radius: 6px; border: 1px solid #cbd5e1;" />'
+                '</a>',
+                obj.image.url,
+                obj.image.url
+            )
+        return "—"
+    image_preview.short_description = "Attachment"
 
 
 class PartRequestMessageInline(admin.TabularInline):
     model = PartRequestMessage
     extra = 1
-    fields = ('sender_is_admin', 'message', 'created_at')
-    readonly_fields = ('created_at',)
+    fields = ('sender_is_admin', 'message', 'image', 'image_preview', 'created_at')
+    readonly_fields = ('created_at', 'image_preview')
     verbose_name = "Direct Sourcing Message / Note"
     verbose_name_plural = "Direct Sourcing & Technician Communication Thread"
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<a href="{}" target="_blank" rel="noopener noreferrer">'
+                '<img src="{}" style="max-height: 48px; border-radius: 6px; border: 1px solid #cbd5e1;" />'
+                '</a>',
+                obj.image.url,
+                obj.image.url
+            )
+        return "—"
+    image_preview.short_description = "Attachment"
 
 
 # ==========================================
@@ -259,10 +283,22 @@ class RepairTicketAdmin(admin.ModelAdmin):
 # ==========================================
 @admin.register(RepairMessage)
 class RepairMessageAdmin(admin.ModelAdmin):
-    list_display = ('ticket_link', 'sender_role', 'message_snippet', 'created_at')
+    list_display = ('ticket_link', 'sender_role', 'message_snippet', 'image_preview', 'created_at')
     list_filter = ('sender_is_admin', 'created_at', 'ticket__status')
     search_fields = ('ticket__ticket_id', 'ticket__customer_name', 'ticket__customer_phone', 'message')
-    readonly_fields = ('created_at',)
+    readonly_fields = ('created_at', 'image_preview')
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<a href="{}" target="_blank" rel="noopener noreferrer">'
+                '<img src="{}" style="max-height: 48px; border-radius: 6px; border: 1px solid #cbd5e1;" />'
+                '</a>',
+                obj.image.url,
+                obj.image.url
+            )
+        return "—"
+    image_preview.short_description = "Attachment"
 
     def ticket_link(self, obj):
         return format_html(
@@ -495,10 +531,22 @@ class PartRequestAdmin(admin.ModelAdmin):
 
 @admin.register(PartRequestMessage)
 class PartRequestMessageAdmin(admin.ModelAdmin):
-    list_display = ('request_link', 'sender_role', 'message_snippet', 'created_at')
+    list_display = ('request_link', 'sender_role', 'message_snippet', 'image_preview', 'created_at')
     list_filter = ('sender_is_admin', 'created_at', 'part_request__status')
     search_fields = ('part_request__request_id', 'part_request__customer_name', 'part_request__customer_phone', 'message')
-    readonly_fields = ('created_at',)
+    readonly_fields = ('created_at', 'image_preview')
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<a href="{}" target="_blank" rel="noopener noreferrer">'
+                '<img src="{}" style="max-height: 48px; border-radius: 6px; border: 1px solid #cbd5e1;" />'
+                '</a>',
+                obj.image.url,
+                obj.image.url
+            )
+        return "—"
+    image_preview.short_description = "Attachment"
 
     def save_model(self, request, obj, form, change):
         # A message typed on the admin screen is a person writing to the client: always email it,

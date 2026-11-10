@@ -62,8 +62,23 @@
 
                     <!-- Message Quote Box -->
                     <div style="background-color: #F8FAFC; border-left: 3px solid #008BC6; border-radius: 0 12px 12px 0; padding: 18px 20px; margin: 20px 0; color: #0f172a; font-size: 14px; line-height: 1.6; font-style: italic;">
-                        &ldquo;{{ message_text }}&rdquo;
+                        {% if message_text %}
+                            &ldquo;{{ message_text }}&rdquo;
+                        {% else %}
+                            &ldquo;[Photo attachment shared with you]&rdquo;
+                        {% endif %}
                     </div>
+
+                    {% if message_image %}
+                    <div style="background-color: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 12px; padding: 14px 18px; margin: 18px 0; text-align: left;">
+                        <div style="font-size: 11px; font-weight: 700; color: #0284C7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+                            📷 Diagnostic Photo / Image Attached
+                        </div>
+                        <p style="font-size: 13px; color: #0369A1; margin: 0; line-height: 1.5;">
+                            An image has been attached to this message by the team. Click the button below to view the full image securely in your portal.
+                        </p>
+                    </div>
+                    {% endif %}
 
                     <!-- Compact Device Info -->
                     <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 12px; color: #64748b; margin: 20px 0;">

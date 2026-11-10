@@ -412,7 +412,17 @@
                     <div class="flex flex-col {% if msg.sender_is_admin %}items-start{% else %}items-end{% endif %}">
                         {% if msg.sender_is_admin %}
                             <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 sm:p-5 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white rounded-tl-sm border border-slate-200/60 dark:border-white/5 shadow-sm">
+                                {% if msg.image %}
+                                <div class="mb-2">
+                                    <a href="{{ msg.image.url }}" target="_blank" rel="noopener noreferrer" class="block group/img relative rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-900/5 dark:bg-black/40 hover:opacity-95 transition-opacity" title="Click to view full image">
+                                        <img src="{{ msg.image.url }}" alt="Attachment from sourcing specialist" loading="lazy" class="max-h-60 w-auto rounded-xl object-contain">
+                                        <span class="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-bold backdrop-blur-sm">View full &nearr;</span>
+                                    </a>
+                                </div>
+                                {% endif %}
+                                {% if msg.message %}
                                 <p class="text-sm font-normal leading-relaxed">{{ msg.message }}</p>
+                                {% endif %}
                             </div>
                             <span class="text-[10px] text-slate-400 dark:text-gray-500 mt-1.5 font-bold uppercase tracking-wider">
                                 🔧 Compupartz Sourcing Desk • {{ msg.created_at|date:"M d, g:i A" }}
@@ -433,7 +443,17 @@
                                 <span class="text-[10px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-wider">You • {{ msg.created_at|date:"M d, g:i A" }}</span>
                             </div>
                             <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-[#008BC6]/15 to-[#008BC6]/25 dark:from-[#008BC6]/30 dark:to-[#008BC6]/20 border border-[#008BC6]/30 text-slate-800 dark:text-white rounded-tr-sm shadow-sm w-full sm:w-auto">
+                                {% if msg.image %}
+                                <div class="mb-2">
+                                    <a href="{{ msg.image.url }}" target="_blank" rel="noopener noreferrer" class="block group/img relative rounded-xl overflow-hidden border border-white/20 bg-black/20 hover:opacity-95 transition-opacity" title="Click to view full image">
+                                        <img src="{{ msg.image.url }}" alt="Attachment" loading="lazy" class="max-h-60 w-auto rounded-xl object-contain">
+                                        <span class="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-bold backdrop-blur-sm">View full &nearr;</span>
+                                    </a>
+                                </div>
+                                {% endif %}
+                                {% if msg.message %}
                                 <div id="part-msg-display-{{ msg.id }}"><p class="text-sm font-normal leading-relaxed">{{ msg.message }}</p></div>
+                                {% endif %}
                                 <form id="part-msg-edit-form-{{ msg.id }}" action="{% url 'edit_part_request_message' msg.id %}" method="POST" class="hidden flex-col gap-2 w-full">
                                     {% csrf_token %}
                                     <textarea name="message" class="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/20 text-slate-800 dark:text-white text-sm rounded-lg p-3 outline-none focus:border-[#008BC6] resize-none" rows="2" required></textarea>
@@ -457,16 +477,34 @@
 
             <!-- Message Form Input -->
             <div class="p-4 sm:p-6 bg-slate-50/80 dark:bg-black/30 border-t border-slate-100 dark:border-white/5">
-                <form method="POST" action="{% url 'track_part' part_request.request_id %}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <form method="POST" action="{% url 'track_part' part_request.request_id %}" enctype="multipart/form-data" class="chat-submit-form flex flex-col gap-2.5">
                     {% csrf_token %}
-                    <input type="text" 
-                           name="message" 
-                           required 
-                           placeholder="Type a message, question, or note for the sourcing desk..." 
-                           class="flex-1 bg-white dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white text-sm rounded-xl px-4 py-3.5 outline-none focus:border-[#008BC6] focus:ring-4 focus:ring-[#008BC6]/10 transition-all shadow-sm">
-                    <button type="submit" class="bg-gradient-to-r from-[#008BC6] to-sky-600 hover:from-blue-600 hover:to-[#008BC6] text-white px-7 py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center shrink-0 active:scale-95">
-                        SEND &rarr;
-                    </button>
+                    
+                    <!-- Image Attachment Preview Bar -->
+                    <div class="chat-attachment-preview hidden flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 w-fit max-w-full">
+                        <img class="chat-preview-thumb w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-white/10 shadow-sm" src="" alt="Selected attachment preview">
+                        <span class="chat-preview-name text-[11px] font-mono text-slate-700 dark:text-gray-300 truncate max-w-[180px]"></span>
+                        <button type="button" class="chat-preview-clear text-slate-400 hover:text-red-500 font-bold px-1 text-base leading-none" title="Remove attachment">&times;</button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <!-- Attachment Button -->
+                        <label for="track-part-file" class="shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-gray-300 border border-slate-200/80 dark:border-white/10 flex items-center justify-center cursor-pointer transition-colors active:scale-95 shadow-sm" title="Attach hardware photo / image">
+                            <input type="file" id="track-part-file" name="image" accept="image/png,image/jpeg,image/webp,image/gif" class="sr-only chat-file-input">
+                            <svg class="w-5 h-5 text-slate-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </label>
+
+                        <input type="text" 
+                               name="message" 
+                               placeholder="Type a message, question, or note for the sourcing desk..." 
+                               class="chat-text-input flex-1 bg-white dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-[#008BC6] focus:ring-4 focus:ring-[#008BC6]/10 transition-all shadow-sm">
+                        
+                        <button type="submit" class="bg-gradient-to-r from-[#008BC6] to-sky-600 hover:from-blue-600 hover:to-[#008BC6] text-white px-7 py-3 rounded-xl font-bold uppercase text-xs tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center shrink-0 active:scale-95">
+                            SEND &rarr;
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -503,12 +541,66 @@ function cancelPartEdit(msgId) {
     form.classList.remove('flex');
 }
 
-// Auto-scroll chat box to bottom
+// Auto-scroll chat box to bottom & handle file upload preview
 document.addEventListener("DOMContentLoaded", function() {
     const chatBox = document.getElementById('part-chat-box');
     if (chatBox) {
         chatBox.scrollTop = chatBox.scrollHeight;
     }
+
+    document.querySelectorAll('.chat-submit-form').forEach(function(form) {
+        const fileInput = form.querySelector('.chat-file-input');
+        const previewContainer = form.querySelector('.chat-attachment-preview');
+        const previewThumb = form.querySelector('.chat-preview-thumb');
+        const previewName = form.querySelector('.chat-preview-name');
+        const clearBtn = form.querySelector('.chat-preview-clear');
+        const textInput = form.querySelector('.chat-text-input');
+        let currentUrl = null;
+
+        function clearAttachment() {
+            if (fileInput) fileInput.value = '';
+            if (currentUrl) {
+                URL.revokeObjectURL(currentUrl);
+                currentUrl = null;
+            }
+            if (previewThumb) previewThumb.src = '';
+            if (previewName) previewName.textContent = '';
+            if (previewContainer) previewContainer.classList.add('hidden');
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files && fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    if (currentUrl) URL.revokeObjectURL(currentUrl);
+                    currentUrl = URL.createObjectURL(file);
+                    if (previewThumb) previewThumb.src = currentUrl;
+                    if (previewName) previewName.textContent = file.name;
+                    if (previewContainer) previewContainer.classList.remove('hidden');
+                } else {
+                    clearAttachment();
+                }
+            });
+        }
+
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                clearAttachment();
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
+            const hasText = textInput && textInput.value.trim().length > 0;
+            const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+            if (!hasText && !hasFile) {
+                e.preventDefault();
+                if (textInput) textInput.focus();
+                alert('Please enter a message note or select an image to attach.');
+                return false;
+            }
+        });
+    });
 });
 </script>
 

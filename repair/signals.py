@@ -71,7 +71,7 @@ def notify_technician_message_sent(sender, instance, created, **kwargs):
     if created and instance.sender_is_admin:
         # Don't send double email if this is an automated system note
         if not getattr(instance, "_force_notify", False) and any(
-            instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")
+            (instance.message or "").startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")
         ):
             return
         logger.info(
@@ -86,7 +86,7 @@ def notify_part_request_technician_message_sent(sender, instance, created, **kwa
     if created and instance.sender_is_admin:
         # Don't send double email if this is an automated system note
         if not getattr(instance, "_force_notify", False) and any(
-            instance.message.startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")
+            (instance.message or "").startswith(prefix) for prefix in ("📋", "🔧", "✅", "❌", "📦")
         ):
             return
         logger.info(

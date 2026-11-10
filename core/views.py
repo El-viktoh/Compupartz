@@ -162,6 +162,13 @@ def dashboard(request):
     if request.user.is_staff:
         staff_bench_repairs = RepairTicket.objects.all().prefetch_related('messages').order_by('-created_at')[:150]
         staff_part_requests = PartRequest.objects.all().prefetch_related('messages').order_by('-created_at')[:150]
+        # Staff communication hub should include workshop tickets & part requests so admins can chat with clients
+        user_all_raised_tickets = staff_bench_repairs
+        user_part_requests = staff_part_requests
+        total_user_messages = (
+            RepairMessage.objects.count() +
+            PartRequestMessage.objects.count()
+        )
 
     # ✅ GET FORMS FOR MODAL
     u_form = UserUpdateForm(instance=request.user)

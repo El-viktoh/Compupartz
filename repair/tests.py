@@ -3,7 +3,7 @@ from django.core import mail
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from repair.models import RepairTicket, PartRequest, PartRequestMessage
+from repair.models import RepairTicket, RepairMessage, PartRequest, PartRequestMessage
 from core.models import Testimonial, FAQ
 from core.notifications import (
     send_admin_repair_notification,
@@ -1373,3 +1373,389 @@ class DiagnosticImageUploadAndDashboardDisplayTests(TestCase):
         self.assertEqual(staff_ticket_res.status_code, 200)
         self.assertContains(staff_ticket_res, ticket.diagnostic_image.url)
 
+
+class AdminChatImageUploadTests(TestCase):
+    """Verify that admins/technicians can upload images to clients via the chat sections."""
+
+    def setUp(self):
+        import tempfile
+        import shutil
+        from django.conf import settings
+
+        self._temp_media = tempfile.mkdtemp()
+        self._orig_media_root = settings.MEDIA_ROOT
+        settings.MEDIA_ROOT = self._temp_media
+
+        self.client_user = User.objects.create_user(
+            username='clientuser',
+            email='client@example.com',
+            password='Password123!'
+        )
+        self.staff_admin = User.objects.create_user(
+            username='staffadmin',
+            email='staff@example.com',
+            password='Password123!',
+            is_staff=True
+        )
+
+        self.ticket = RepairTicket.objects.create(
+            user=self.client_user,
+            customer_name='Client User',
+            customer_email='client@example.com',
+            customer_phone='0540001122',
+            device='ThinkPad X1 Carbon',
+            issue_description='Motherboard short circuit.',
+            status='in_progress',
+        )
+
+        self.part_req = PartRequest.objects.create(
+            user=self.client_user,
+            customer_name='Client User',
+            customer_email='client@example.com',
+            customer_phone='0540001122',
+            part_needed='OEM Replacement Battery',
+            device_model='ThinkPad X1 Carbon Gen 9',
+            status='in_progress',
+        )
+
+    def tearDown(self):
+        import shutil
+        from django.conf import settings
+
+        settings.MEDIA_ROOT = self._orig_media_root
+        shutil.rmtree(self._temp_media, ignore_errors=True)
+
+    def _make_test_image(self, filename='bench_photo.png'):
+        from io import BytesIO
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        buf = BytesIO()
+        img = Image.new('RGB', (64, 64), color=(0, 139, 198))
+        img.save(buf, format='PNG')
+        buf.seek(0)
+        return SimpleUploadedFile(filename, buf.read(), content_type='image/png')
+
+    def test_admin_can_upload_image_to_client_on_repair_ticket(self):
+        self.client.force_login(self.staff_admin)
+        mail.outbox.clear()
+
+        bench_img = self._make_test_image('microscope_fault.png')
+        response = self.client.post(
+            reverse('track_repair', args=[self.ticket.ticket_id]),
+            {
+                'message': 'Here is the microscope photo of the burned power rail component.',
+                'image': bench_img,
+            },
+            HTTP_REFERER='/dashboard/?tab=lab-communications',
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/dashboard/?tab=communications', response.url)
+
+        msg = RepairMessage.objects.filter(ticket=self.ticket).latest('created_at')
+        self.assertTrue(msg.sender_is_admin)
+        self.assertEqual(msg.message, 'Here is the microscope photo of the burned power rail component.')
+        self.assertTrue(bool(msg.image))
+        self.assertIn('chat_images/', msg.image.name)
+
+        # Verify email dispatched to client with photo attachment notification
+        client_emails = [m for m in mail.outbox if 'client@example.com' in m.to]
+        self.assertEqual(len(client_emails), 1)
+        self.assertIn('Diagnostic Photo / Image Attached', client_emails[0].alternatives[0][0])
+
+        # Verify image appears in dashboard communications view for client
+        self.client.force_login(self.client_user)
+        dash_res = self.client.get(reverse('dashboard'))
+        self.assertEqual(dash_res.status_code, 200)
+        self.assertContains(dash_res, msg.image.url)
+
+        # Verify image appears in tracking page
+        track_res = self.client.get(reverse('track_repair', args=[self.ticket.ticket_id]))
+        self.assertEqual(track_res.status_code, 200)
+        self.assertContains(track_res, msg.image.url)
+
+    def test_admin_can_upload_image_without_text_message(self):
+        self.client.force_login(self.staff_admin)
+        mail.outbox.clear()
+
+        bench_img = self._make_test_image('schematic.png')
+        response = self.client.post(
+            reverse('track_repair', args=[self.ticket.ticket_id]),
+            {
+                'message': '',
+                'image': bench_img,
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        msg = RepairMessage.objects.filter(ticket=self.ticket).latest('created_at')
+        self.assertTrue(bool(msg.image))
+        self.assertEqual(msg.message, '')
+
+        # Email notification should be sent and indicate photo attachment
+        client_emails = [m for m in mail.outbox if 'client@example.com' in m.to]
+        self.assertEqual(len(client_emails), 1)
+        self.assertIn('Photo attachment shared with you', client_emails[0].alternatives[0][0])
+
+    def test_admin_can_upload_image_on_part_request(self):
+        self.client.force_login(self.staff_admin)
+        mail.outbox.clear()
+
+        part_img = self._make_test_image('oem_battery_label.png')
+        response = self.client.post(
+            reverse('track_part', args=[self.part_req.request_id]),
+            {
+                'message': 'Distributor verified OEM part serial number photo attached.',
+                'image': part_img,
+            },
+            HTTP_REFERER='/dashboard/?tab=lab-communications',
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/dashboard/?tab=communications', response.url)
+
+        msg = PartRequestMessage.objects.filter(part_request=self.part_req).latest('created_at')
+        self.assertTrue(msg.sender_is_admin)
+        self.assertTrue(bool(msg.image))
+        self.assertIn('chat_images/', msg.image.name)
+
+        client_emails = [m for m in mail.outbox if 'client@example.com' in m.to]
+        self.assertEqual(len(client_emails), 1)
+        self.assertIn('Diagnostic Photo / Image Attached', client_emails[0].alternatives[0][0])
+
+
+
+
+class ChatAttachmentSecurityTests(TestCase):
+    """Chat attachments must be genuine, small images stored under safe random names."""
+
+    def setUp(self):
+        import tempfile
+        from django.test import override_settings
+        self._media = tempfile.mkdtemp(prefix='test_media_')
+        self._override = override_settings(MEDIA_ROOT=self._media)
+        self._override.enable()
+        self.addCleanup(self._override.disable)
+        import shutil
+        self.addCleanup(shutil.rmtree, self._media, ignore_errors=True)
+        self.ticket = RepairTicket.objects.create(
+            customer_name='Kofi', customer_email='kofi@example.com', customer_phone='0244000901', device='MBP', status='in_progress')
+        self.part = PartRequest.objects.create(
+            customer_name='Esi', customer_email='esi@example.com', customer_phone='0244000902',
+            part_needed='Fan', device_model='Y', status='in_progress')
+        self.guest = self.client_class()
+        self.guest.post(reverse('track_repair_lookup'), {'ticket_id': self.ticket.ticket_id, 'phone': '0244000901'})
+        self.guest.post(reverse('track_part_lookup'), {'request_id': self.part.request_id, 'phone': '0244000902'})
+
+    @staticmethod
+    def _png(extra=b''):
+        import io
+        from PIL import Image
+        buf = io.BytesIO()
+        Image.new('RGB', (4, 4), 'red').save(buf, 'PNG')
+        return buf.getvalue() + extra
+
+    @staticmethod
+    def _jpeg():
+        import io
+        from PIL import Image
+        buf = io.BytesIO()
+        Image.new('RGB', (4, 4), 'blue').save(buf, 'JPEG')
+        return buf.getvalue()
+
+    def _upload(self, kind, name, data, ctype, message=''):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        url = reverse('track_repair', args=[self.ticket.ticket_id]) if kind == 'repair' else reverse('track_part', args=[self.part.request_id])
+        return self.guest.post(url, {'message': message, 'image': SimpleUploadedFile(name, data, ctype)}, follow=True)
+
+    def _messages(self, kind):
+        from .models import RepairMessage, PartRequestMessage
+        return RepairMessage.objects.filter(ticket=self.ticket) if kind == 'repair' else PartRequestMessage.objects.filter(part_request=self.part)
+
+    def test_non_images_are_refused_in_both_chats(self):
+        bad = [
+            ('evil.html', b'<html><script>alert(1)</script></html>', 'text/html'),
+            ('evil.svg', b'<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>', 'image/svg+xml'),
+            ('fake.png', b'<html><script>alert(1)</script></html>', 'image/png'),
+            ('shell.php', b'<?php system($_GET["c"]); ?>', 'application/x-php'),
+            ('setup.exe', b'MZ' + b'\x00' * 200, 'application/octet-stream'),
+            ('notes.txt', b'hello', 'text/plain'),
+        ]
+        for kind in ('repair', 'part'):
+            for name, data, ctype in bad:
+                resp = self._upload(kind, name, data, ctype)
+                self.assertEqual(self._messages(kind).exclude(image='').exclude(image__isnull=True).count(), 0, (kind, name))
+                self.assertContains(resp, 'valid image')
+        import os
+        stored = [f for _, _, files in os.walk(self._media) for f in files]
+        self.assertEqual(stored, [])
+
+    def test_oversized_image_is_refused(self):
+        resp = self._upload('repair', 'big.png', self._png(b'\x00' * (6 * 1024 * 1024)), 'image/png')
+        self.assertContains(resp, 'under 5 MB')
+        self.assertEqual(self._messages('repair').count(), 0)
+
+    def test_text_is_still_sent_when_the_attachment_is_refused(self):
+        self._upload('repair', 'evil.html', b'<script>', 'text/html', message='Here is my photo')
+        sent = self._messages('repair')
+        self.assertEqual(sent.count(), 1)
+        self.assertEqual(sent[0].message, 'Here is my photo')
+        self.assertFalse(sent[0].image)
+
+    def test_real_images_are_accepted_and_stored_under_a_random_safe_name(self):
+        import re
+        for kind in ('repair', 'part'):
+            self._upload(kind, 'my private photo.png', self._png(), 'image/png')
+            self._upload(kind, 'IMG_0001.JPG', self._jpeg(), 'image/jpeg')
+            names = [m.image.name for m in self._messages(kind) if m.image]
+            self.assertEqual(len(names), 2, kind)
+            for name in names:
+                self.assertRegex(name, r'^chat_images/[0-9a-f]{32}\.(png|jpg|jpeg|gif|webp)$')
+                self.assertNotIn('private', name)
+
+    def test_a_real_image_named_like_a_web_page_is_stored_with_a_safe_extension(self):
+        self._upload('repair', 'evil.html', self._png(), 'text/html')
+        name = self._messages('repair').exclude(image='').first().image.name
+        self.assertTrue(name.endswith('.png'), name)
+
+    def test_staff_can_attach_images_too_and_the_same_rules_apply(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        staff = User.objects.create_user('attachstaff', 'as@example.com', 'x', is_staff=True)
+        self.client.force_login(staff)
+        url = reverse('track_repair', args=[self.ticket.ticket_id])
+        self.client.post(url, {'message': '', 'image': SimpleUploadedFile('ok.png', self._png(), 'image/png')})
+        self.client.post(url, {'message': '', 'image': SimpleUploadedFile('evil.html', b'<script>', 'text/html')})
+        images = [m for m in self._messages('repair') if m.image]
+        self.assertEqual(len(images), 1)
+        self.assertTrue(images[0].sender_is_admin)
+
+    def test_the_model_itself_rejects_non_images_so_the_admin_screen_is_protected_too(self):
+        from django.core.exceptions import ValidationError
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from .models import RepairMessage
+        msg = RepairMessage(ticket=self.ticket, message='x', sender_is_admin=True,
+                            image=SimpleUploadedFile('evil.html', b'<script>alert(1)</script>', 'text/html'))
+        with self.assertRaises(ValidationError):
+            msg.full_clean()
+        ok = RepairMessage(ticket=self.ticket, message='x', sender_is_admin=True,
+                           image=SimpleUploadedFile('ok.png', self._png(), 'image/png'))
+        ok.full_clean()
+
+    def test_a_photo_only_message_still_emails_the_client_and_alerts_support_correctly(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        staff = User.objects.create_user('photostaff', 'ps@example.com', 'x', is_staff=True)
+        self.client.force_login(staff)
+        mail.outbox.clear()
+        self.client.post(reverse('track_repair', args=[self.ticket.ticket_id]),
+                         {'message': '', 'image': SimpleUploadedFile('ok.png', self._png(), 'image/png')})
+        sent = [m for m in mail.outbox if m.to == ['kofi@example.com']]
+        self.assertEqual(len(sent), 1)
+        self.assertIn('Photo attachment', sent[0].alternatives[0][0])
+        mail.outbox.clear()
+        self._upload('repair', 'ok.png', self._png(), 'image/png', message='Look at this')
+        self.assertEqual(len([m for m in mail.outbox if m.to == ['support@compupartz.com']]), 1)
+
+
+class PublicBookingPhotoFormatTests(TestCase):
+    """The public booking form accepts a photo from anyone, so only everyday image formats may be opened."""
+
+    def setUp(self):
+        import tempfile, shutil
+        from django.test import override_settings
+        self._media = tempfile.mkdtemp(prefix='test_media_')
+        self._override = override_settings(MEDIA_ROOT=self._media)
+        self._override.enable()
+        self.addCleanup(self._override.disable)
+        self.addCleanup(shutil.rmtree, self._media, ignore_errors=True)
+
+    @staticmethod
+    def _image(fmt, name):
+        import io
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        buf = io.BytesIO()
+        Image.new('RGB', (4, 4), 'red').save(buf, fmt)
+        return SimpleUploadedFile(name, buf.getvalue(), 'image/x')
+
+    def _book(self, photo, name):
+        return self.client.post(reverse('book_repair'), dict(
+            customer_name=name, customer_email='photo@example.com', customer_phone='0244000951',
+            device_category='laptop', manufacturer='HP', device='EliteBook', issue_description='No power',
+            logistics_preference='drop_off', diagnostic_image=photo))
+
+    def test_everyday_formats_are_accepted(self):
+        for fmt, filename in (('PNG', 'a.png'), ('JPEG', 'a.jpg'), ('GIF', 'a.gif'), ('WEBP', 'a.webp')):
+            self._book(self._image(fmt, filename), f'Photo {fmt}')
+            self.assertTrue(RepairTicket.objects.filter(customer_name=f'Photo {fmt}').exists(), fmt)
+
+    def test_rarely_used_and_risky_formats_are_refused(self):
+        for fmt, filename in (('TIFF', 'a.tiff'), ('BMP', 'a.bmp'), ('PDF', 'a.pdf'), ('ICO', 'a.ico'), ('PPM', 'a.ppm')):
+            resp = self._book(self._image(fmt, filename), f'Photo {fmt}')
+            self.assertEqual(resp.status_code, 200, fmt)
+            self.assertFalse(RepairTicket.objects.filter(customer_name=f'Photo {fmt}').exists(), fmt)
+
+    def test_pillow_is_restricted_to_the_everyday_formats_for_the_whole_site(self):
+        from PIL import Image
+        self.assertEqual(set(Image.OPEN) - {'MPO'}, {'JPEG', 'PNG', 'GIF', 'WEBP'})
+
+
+class ChatAttachmentPrivacyTests(TestCase):
+    """Another customer, or an anonymous visitor, must never see or add to someone else's chat or photos."""
+
+    def setUp(self):
+        import io, tempfile, shutil
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.test import override_settings
+        from .models import RepairMessage, PartRequestMessage
+        self._media = tempfile.mkdtemp(prefix='test_media_')
+        self._override = override_settings(MEDIA_ROOT=self._media)
+        self._override.enable()
+        self.addCleanup(self._override.disable)
+        self.addCleanup(shutil.rmtree, self._media, ignore_errors=True)
+        self.alice = User.objects.create_user('alicepriv', 'alice@example.com', 'x')
+        self.bob = User.objects.create_user('bobpriv', 'bob@example.com', 'x')
+        self.ticket = RepairTicket.objects.create(user=self.alice, customer_name='Alice Secret', customer_email='alice@example.com',
+                                                  customer_phone='0207771111', device='AliceLaptop', status='in_progress')
+        self.part = PartRequest.objects.create(user=self.alice, customer_name='Alice Secret', customer_email='alice@example.com',
+                                               customer_phone='0207772222', part_needed='AlicePartX', device_model='M', status='in_progress')
+        buf = io.BytesIO()
+        Image.new('RGB', (4, 4), 'red').save(buf, 'PNG')
+        self.rm = RepairMessage.objects.create(ticket=self.ticket, message='ALICE-MSG', sender_is_admin=False,
+                                               image=SimpleUploadedFile('p.png', buf.getvalue(), 'image/png'))
+        self.pm = PartRequestMessage.objects.create(part_request=self.part, message='ALICE-PART-MSG', sender_is_admin=False,
+                                                    image=SimpleUploadedFile('p.png', buf.getvalue(), 'image/png'))
+        self.png = buf.getvalue()
+
+    def test_another_customer_cannot_see_the_ticket_the_chat_or_the_photo_links(self):
+        self.client.force_login(self.bob)
+        for url in (reverse('track_repair', args=[self.ticket.ticket_id]), reverse('track_part', args=[self.part.request_id])):
+            self.assertEqual(self.client.get(url).status_code, 302)
+        for url in ('/dashboard/', '/dashboard/?tab=communications', f'/dashboard/?ticket={self.ticket.id}', '/repair/my-repairs/'):
+            body = self.client.get(url).content.decode()
+            for secret in ('ALICE-MSG', 'ALICE-PART-MSG', 'Alice Secret', '0207771111', self.rm.image.name, self.pm.image.name):
+                self.assertNotIn(secret, body, (url, secret))
+
+    def test_another_customer_cannot_post_photos_or_edit_or_delete_messages_on_my_ticket(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from .models import RepairMessage
+        self.client.force_login(self.bob)
+        before = RepairMessage.objects.count()
+        self.client.post(reverse('track_repair', args=[self.ticket.ticket_id]),
+                         {'message': 'hi', 'image': SimpleUploadedFile('x.png', self.png, 'image/png')})
+        self.assertEqual(RepairMessage.objects.count(), before)
+        self.assertEqual(self.client.post(reverse('edit_repair_message', args=[self.rm.id]), {'message': 'hacked'}).status_code, 403)
+        self.assertEqual(self.client.post(reverse('delete_repair_message', args=[self.rm.id])).status_code, 403)
+        self.rm.refresh_from_db()
+        self.assertEqual(self.rm.message, 'ALICE-MSG')
+
+    def test_anonymous_visitors_cannot_post_to_a_ticket_they_have_not_verified(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from .models import RepairMessage
+        before = RepairMessage.objects.count()
+        resp = self.client.post(reverse('track_repair', args=[self.ticket.ticket_id]),
+                                {'message': 'hi', 'image': SimpleUploadedFile('x.png', self.png, 'image/png')})
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(RepairMessage.objects.count(), before)
+
+    def test_stored_photo_names_cannot_be_guessed_from_the_customer_or_ticket(self):
+        for msg in (self.rm, self.pm):
+            self.assertRegex(msg.image.name, r'^chat_images/[0-9a-f]{32}\.png$')

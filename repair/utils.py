@@ -173,6 +173,7 @@ def send_technician_message_email(message):
             context = {
                 "part_request": target,
                 "message_text": message.message,
+                "message_image": message.image if message.image else None,
                 "tracking_url": tracking_url,
             }
         else:
@@ -181,6 +182,7 @@ def send_technician_message_email(message):
             context = {
                 "ticket": target,
                 "message_text": message.message,
+                "message_image": message.image if message.image else None,
                 "tracking_url": tracking_url,
             }
 

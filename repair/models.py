@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from .validators import chat_image_upload_path, validate_chat_image
 
 
 class RepairTicket(models.Model):
@@ -259,7 +260,8 @@ class PartRequest(models.Model):
 class RepairMessage(models.Model):
     ticket = models.ForeignKey(RepairTicket, on_delete=models.CASCADE, related_name='messages')
     sender_is_admin = models.BooleanField(default=False)
-    message = models.TextField()
+    message = models.TextField(blank=True)
+    image = models.ImageField(upload_to=chat_image_upload_path, validators=[validate_chat_image], blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -272,7 +274,8 @@ class RepairMessage(models.Model):
 class PartRequestMessage(models.Model):
     part_request = models.ForeignKey(PartRequest, on_delete=models.CASCADE, related_name='messages')
     sender_is_admin = models.BooleanField(default=False)
-    message = models.TextField()
+    message = models.TextField(blank=True)
+    image = models.ImageField(upload_to=chat_image_upload_path, validators=[validate_chat_image], blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

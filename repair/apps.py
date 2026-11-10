@@ -7,3 +7,5 @@ class RepairConfig(AppConfig):
 
     def ready(self):
         import repair.signals  # noqa
+        from .validators import restrict_pillow_formats
+        restrict_pillow_formats()

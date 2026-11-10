@@ -44,6 +44,7 @@ $VENV_DIR/bin/python manage.py collectstatic --noinput
 echo "📝 Stabilizing log files, media directory, and database..."
 mkdir -p $PROJECT_DIR/logs
 mkdir -p $PROJECT_DIR/media/diagnostics
+mkdir -p $PROJECT_DIR/media/chat_images
 touch $PROJECT_DIR/logs/error.log
 touch $PROJECT_DIR/stderr.log
 touch $PROJECT_DIR/django_errors.log
