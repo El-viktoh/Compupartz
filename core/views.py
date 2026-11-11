@@ -102,6 +102,7 @@ from repair.models import RepairTicket, PartRequest, RepairMessage, PartRequestM
 from customer_orders.models import Order
 from .models import FAQ, Profile, Testimonial
 from .forms import UserUpdateForm, ProfileUpdateForm
+from .dashboard_requests import build_client_requests
 
 # =========================
 # ⭐ USER DASHBOARD & PROFILE
@@ -128,24 +129,30 @@ def dashboard(request):
         ).update(user=request.user)
 
     # Strictly tickets entered / raised by this logged-in user
-    user_tickets = RepairTicket.objects.filter(
-        user=request.user
-    ).prefetch_related('messages').order_by('-created_at')
+    # (finished ones the client has cleared stay out of the lists, but still count in the totals)
+    all_user_tickets = RepairTicket.objects.filter(user=request.user)
+    user_tickets = RepairTicket.visible_to_client(all_user_tickets).prefetch_related('messages').order_by('-created_at')
 
     active_repairs = user_tickets.filter(status__in=['pending', 'quoted', 'in_progress'])
-    past_repairs = user_tickets.filter(status='completed')
+    past_repairs = all_user_tickets.filter(status='completed')
 
     # All tickets raised by user for the lab communications center
     user_all_raised_tickets = user_tickets
     total_user_messages = (
-        RepairMessage.objects.filter(ticket__user=request.user).count() +
-        PartRequestMessage.objects.filter(part_request__user=request.user).count()
+        RepairMessage.objects.filter(ticket__in=user_tickets).count() +
+        PartRequestMessage.objects.filter(part_request__user=request.user).exclude(
+            part_request__cleared_by_client=True, part_request__status__in=PartRequest.DONE_STATUSES
+        ).count()
     )
 
     # Hardware Parts requested & bought by this user
-    user_part_requests = PartRequest.objects.filter(user=request.user).prefetch_related('messages').order_by('-created_at')
+    all_user_part_requests = PartRequest.objects.filter(user=request.user)
+    user_part_requests = PartRequest.visible_to_client(all_user_part_requests).prefetch_related('messages').order_by('-created_at')
     active_part_requests = user_part_requests.filter(status__in=['pending', 'quoted', 'in_progress'])
-    completed_part_requests = user_part_requests.filter(status='fulfilled')
+    completed_part_requests = all_user_part_requests.filter(status='fulfilled')
+
+    # One compact, sorted list of this account's own repairs and part requests for the dashboard
+    client_requests, client_counts = build_client_requests(user_tickets, user_part_requests)
 
     total_active_services = active_repairs.count() + active_part_requests.count()
     total_completed_restorations = past_repairs.count() + completed_part_requests.count()
@@ -181,6 +188,8 @@ def dashboard(request):
         "completed_part_requests": completed_part_requests,
         "total_active_services": total_active_services,
         "total_completed_restorations": total_completed_restorations,
+        "client_requests": client_requests,
+        "client_counts": client_counts,
         "user_all_raised_tickets": user_all_raised_tickets,
         "total_user_messages": total_user_messages,
         "user_part_requests": user_part_requests,

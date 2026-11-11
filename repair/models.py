@@ -125,6 +125,20 @@ class RepairTicket(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # Finished tickets the client has tidied off their dashboard. The lab keeps the record;
+    # a ticket that is reopened shows up again (see visible_to_client).
+    cleared_by_client = models.BooleanField(default=False)
+
+    DONE_STATUSES = ('completed', 'no_fix', 'cancelled')
+
+    @classmethod
+    def visible_to_client(cls, queryset):
+        return queryset.exclude(cleared_by_client=True, status__in=cls.DONE_STATUSES)
+
+    @property
+    def chat_hidden_from_client(self):
+        return self.cleared_by_client and self.status in self.DONE_STATUSES
+
     # ✅ AUTO GENERATE SIMPLE ID
     # Derived from the auto-incrementing PK (assigned atomically by the DB on
     # insert) instead of "last id + 1", so concurrent bookings can't compute
@@ -241,6 +255,19 @@ class PartRequest(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # Finished requests the client has tidied off their dashboard (see RepairTicket.cleared_by_client)
+    cleared_by_client = models.BooleanField(default=False)
+
+    DONE_STATUSES = ('fulfilled', 'declined')
+
+    @classmethod
+    def visible_to_client(cls, queryset):
+        return queryset.exclude(cleared_by_client=True, status__in=cls.DONE_STATUSES)
+
+    @property
+    def chat_hidden_from_client(self):
+        return self.cleared_by_client and self.status in self.DONE_STATUSES
 
     def save(self, *args, **kwargs):
         creating = self.pk is None

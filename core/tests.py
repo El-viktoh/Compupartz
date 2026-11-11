@@ -393,7 +393,8 @@ class DashboardCounterTests(TestCase):
     def test_a_quote_awaiting_approval_is_listed_with_its_authorize_button(self):
         self._ticket('quoted', quote_status='sent', quoted_price=450)
         resp = self.client.get(reverse('dashboard'))
-        self.assertContains(resp, 'Review & Authorize')
+        self.assertContains(resp, 'Review quote')
+        self.assertContains(resp, reverse('track_repair', args=[self.RepairTicket.objects.get(user=self.user).ticket_id]))
 
     def test_completing_a_ticket_moves_it_from_active_to_completed(self):
         t = self._ticket('in_progress')
@@ -503,4 +504,473 @@ class StaffQueueFilterTests(TestCase):
         self.assertNotIn('id="tab-btn-staff-workshop"', content_client)
         self.assertNotIn('id="tab-btn-hardware-parts-queue"', content_client)
         self.assertIn('id="tab-btn-raised-tickets"', content_client)
+
+
+
+class ClientRequestListBuilderTests(TestCase):
+    def setUp(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from repair.models import RepairTicket, PartRequest
+        self.user = User.objects.create_user('lister', 'lister@example.com', 'x')
+        self.now = timezone.now()
+
+        def ticket(status, days_ago, **kw):
+            t = RepairTicket.objects.create(user=self.user, customer_name='L', customer_email='lister@example.com',
+                                            customer_phone='0244', device=f'Laptop {status} {days_ago}', status=status, **kw)
+            RepairTicket.objects.filter(pk=t.pk).update(created_at=self.now - timedelta(days=days_ago))
+            return t
+
+        def part(status, days_ago, **kw):
+            p = PartRequest.objects.create(user=self.user, customer_name='L', customer_email='lister@example.com',
+                                           customer_phone='0244', part_needed=f'Part {status} {days_ago}', device_model='X1', status=status, **kw)
+            PartRequest.objects.filter(pk=p.pk).update(created_at=self.now - timedelta(days=days_ago))
+            return p
+
+        self.done_old = ticket('completed', 20)
+        self.active_new = ticket('in_progress', 1)
+        self.needs_action = ticket('quoted', 10, quote_status='sent', quoted_price=100)
+        self.declined = ticket('quoted', 5, quote_status='declined', quoted_price=100)
+        self.part_action = part('quoted', 3, quote_status='sent', quoted_price=50)
+        self.part_done = part('fulfilled', 8)
+        self.part_active = part('in_progress', 2)
+
+    def _build(self):
+        from repair.models import RepairTicket, PartRequest
+        from core.dashboard_requests import build_client_requests
+        return build_client_requests(
+            RepairTicket.objects.filter(user=self.user).prefetch_related('messages'),
+            PartRequest.objects.filter(user=self.user).prefetch_related('messages'))
+
+    def test_needs_action_first_then_active_then_done_newest_first_within_each(self):
+        rows, _ = self._build()
+        groups = [r['group'] for r in rows]
+        self.assertEqual(groups, sorted(groups, key=lambda g: {'action': 0, 'active': 1, 'done': 2}[g]))
+        self.assertEqual([r['ref'] for r in rows if r['group'] == 'action'], [self.part_action.request_id, self.needs_action.ticket_id])
+        self.assertEqual([r['ref'] for r in rows if r['group'] == 'done'], [self.part_done.request_id, self.done_old.ticket_id])
+
+    def test_a_sent_quote_needs_action_and_a_declined_quote_does_not(self):
+        rows = {r['ref']: r for r in self._build()[0]}
+        self.assertEqual(rows[self.needs_action.ticket_id]['group'], 'action')
+        self.assertIn('needs your approval', rows[self.needs_action.ticket_id]['status_label'])
+        self.assertEqual(rows[self.declined.ticket_id]['group'], 'active')
+        self.assertEqual(rows[self.declined.ticket_id]['status_label'], 'Quote declined')
+
+    def test_counts_match_the_rows(self):
+        rows, counts = self._build()
+        self.assertEqual(counts, {'all': 7, 'action': 2, 'active': 3, 'done': 2, 'repair': 4, 'part': 3})
+        self.assertEqual(counts['all'], len(rows))
+
+    def test_stage_and_search_text(self):
+        rows = {r['ref']: r for r in self._build()[0]}
+        self.assertEqual((rows[self.active_new.ticket_id]['stage'], rows[self.done_old.ticket_id]['stage']), (2, 3))
+        search = rows[self.part_active.request_id]['search']
+        self.assertIn(self.part_active.request_id.lower(), search)
+        self.assertIn('part in_progress 2'.lower(), search)
+        self.assertEqual(search, search.lower())
+
+    def test_message_counts_need_no_extra_queries_once_prefetched(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+        from repair.models import RepairMessage, RepairTicket, PartRequest
+        for _ in range(3):
+            RepairMessage.objects.create(ticket=self.active_new, message='hi', sender_is_admin=True)
+        tickets = list(RepairTicket.objects.filter(user=self.user).prefetch_related('messages'))
+        parts = list(PartRequest.objects.filter(user=self.user).prefetch_related('messages'))
+        from core.dashboard_requests import build_client_requests
+        with CaptureQueriesContext(connection) as ctx:
+            rows, _ = build_client_requests(tickets, parts)
+        self.assertEqual(len(ctx), 0)
+        self.assertEqual({r['ref']: r['message_count'] for r in rows}[self.active_new.ticket_id], 3)
+
+
+class ClientDashboardRequestListTests(TestCase):
+    def setUp(self):
+        from repair.models import RepairTicket, PartRequest
+        self.user = User.objects.create_user('dashclient', 'dc@example.com', 'x')
+        self.other = User.objects.create_user('dashother', 'do@example.com', 'x')
+        self.client.force_login(self.user)
+        self.tickets = [RepairTicket.objects.create(user=self.user, customer_name='Me', customer_email='dc@example.com', customer_phone='0244',
+                                                    device=f'MyLaptop{i}', status=('quoted' if i == 0 else 'in_progress' if i < 6 else 'completed'),
+                                                    quote_status=('sent' if i == 0 else 'none'), quoted_price=(120 if i == 0 else None)) for i in range(10)]
+        self.parts = [PartRequest.objects.create(user=self.user, customer_name='Me', customer_email='dc@example.com', customer_phone='0244',
+                                                 part_needed=f'MyPart{i}', device_model='M', status=('fulfilled' if i < 3 else 'pending')) for i in range(8)]
+        RepairTicket.objects.create(user=self.other, customer_name='Other Person', customer_email='do@example.com', customer_phone='0201',
+                                    device='OtherSecretLaptop', status='in_progress')
+
+    def test_the_page_lists_every_request_in_one_compact_list_with_counts(self):
+        resp = self.client.get(reverse('dashboard'))
+        self.assertEqual(resp.context['client_counts'], {'all': 18, 'action': 1, 'active': 10, 'done': 7, 'repair': 10, 'part': 8})
+        html = resp.content.decode()
+        self.assertEqual(html.count('class="req-row'), 18)
+        self.assertIn('My Requests', html)
+        self.assertIn('1 quote waiting for your approval', html)
+        self.assertIn('Search by ID, device or part', html)
+        self.assertIn('data-page-size="6"', html)
+
+    def test_the_old_one_card_per_ticket_layout_is_gone(self):
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertNotIn('Open Diagnostic Monitoring Report', html)
+        self.assertNotIn('Live Lab Ticket', html)
+
+    def test_quote_rows_link_to_the_right_page_and_chat_buttons_use_the_right_functions(self):
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertIn(reverse('track_repair', args=[self.tickets[0].ticket_id]), html)
+        self.assertIn(reverse('track_part', args=[self.parts[0].request_id]), html)
+        self.assertIn(f"openTicketChat('{self.tickets[0].id}')", html)
+        self.assertIn(f"openPartChat('{self.parts[0].id}')", html)
+        self.assertIn('Review quote', html)
+
+    def test_other_customers_requests_never_appear(self):
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertNotIn('OtherSecretLaptop', html)
+        self.assertNotIn('Other Person', html)
+
+    def test_a_client_with_no_requests_sees_a_friendly_empty_state(self):
+        self.client.force_login(self.other)
+        from repair.models import RepairTicket
+        RepairTicket.objects.filter(user=self.other).delete()
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertIn('No requests yet', html)
+        self.assertIn(reverse('book_repair'), html)
+        self.assertIn(reverse('request_part'), html)
+        self.assertNotIn('id="client-requests"', html)
+
+    def test_the_dashboard_markup_is_well_formed_for_clients_and_staff(self):
+        from html.parser import HTMLParser
+        void = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr',
+                'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'stop'}
+
+        class P(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.stack, self.bad = [], []
+
+            def handle_starttag(self, tag, attrs):
+                if tag not in void:
+                    self.stack.append(tag)
+
+            def handle_endtag(self, tag):
+                if tag in void:
+                    return
+                if self.stack and self.stack[-1] == tag:
+                    self.stack.pop()
+                else:
+                    self.bad.append(tag)
+
+        staff = User.objects.create_user('dashstaff', 'ds@example.com', 'x', is_staff=True)
+        for account in (self.user, staff):
+            self.client.force_login(account)
+            p = P()
+            p.feed(self.client.get(reverse('dashboard')).content.decode())
+            self.assertEqual((p.bad, p.stack), ([], []), account.username)
+
+    def test_staff_dashboard_still_shows_their_own_requests_in_the_same_panel(self):
+        from repair.models import RepairTicket
+        staff = User.objects.create_user('dashstaff2', 'ds2@example.com', 'x', is_staff=True)
+        RepairTicket.objects.create(user=staff, customer_name='Staff Own', customer_email='ds2@example.com', customer_phone='0244', device='StaffOwnLaptop', status='pending')
+        self.client.force_login(staff)
+        resp = self.client.get(reverse('dashboard'))
+        self.assertEqual(resp.context['client_counts']['all'], 1)
+        self.assertEqual([r['title'] for r in resp.context['client_requests']], ['StaffOwnLaptop'])
+        html = resp.content.decode()
+        my_requests_list = html[html.index('id="req-list"'):html.index('</ul>', html.index('id="req-list"'))]
+        self.assertIn('StaffOwnLaptop', my_requests_list)
+        self.assertNotIn('MyLaptop0', my_requests_list)  # other clients' tickets live only in the separate staff workshop tab
+
+
+class ClientRequestRowPhotoTests(TestCase):
+    def test_a_repair_with_a_diagnostic_photo_shows_a_thumbnail_link_in_its_row(self):
+        import io, tempfile, shutil
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.test import override_settings
+        from repair.models import RepairTicket
+        media = tempfile.mkdtemp(prefix='test_media_')
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        buf = io.BytesIO()
+        Image.new('RGB', (4, 4), 'red').save(buf, 'PNG')
+        user = User.objects.create_user('photoclient', 'pc@example.com', 'x')
+        with override_settings(MEDIA_ROOT=media):
+            t = RepairTicket.objects.create(user=user, customer_name='P', customer_email='pc@example.com', customer_phone='0244',
+                                            device='PhotoLaptop', status='pending',
+                                            diagnostic_image=SimpleUploadedFile('f.png', buf.getvalue(), 'image/png'))
+            RepairTicket.objects.create(user=user, customer_name='P', customer_email='pc@example.com', customer_phone='0245',
+                                        device='NoPhotoLaptop', status='pending')
+            self.client.force_login(user)
+            html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertEqual(html.count('Uploaded Diagnostic Photo'), 2)  # link title + image alt, for the one ticket with a photo
+        self.assertIn(t.diagnostic_image.url, html)
+
+
+class CommsTabPageTests(TestCase):
+    def setUp(self):
+        from repair.models import RepairTicket, PartRequest, RepairMessage
+        self.user = User.objects.create_user('commsclient', 'cc@example.com', 'x')
+        self.other = User.objects.create_user('commsother', 'co@example.com', 'x')
+        self.t1 = RepairTicket.objects.create(user=self.user, customer_name='C', customer_email='cc@example.com', customer_phone='0244', device='ClientLaptopOne', status='in_progress')
+        self.t2 = RepairTicket.objects.create(user=self.user, customer_name='C', customer_email='cc@example.com', customer_phone='0245', device='ClientLaptopTwo', status='pending')
+        self.p1 = PartRequest.objects.create(user=self.user, customer_name='C', customer_email='cc@example.com', customer_phone='0246', part_needed='ClientPart', device_model='M', status='pending')
+        RepairMessage.objects.create(ticket=self.t1, message='Lab says hello', sender_is_admin=True)
+        other_ticket = RepairTicket.objects.create(user=self.other, customer_name='Other', customer_email='co@example.com', customer_phone='0201', device='OtherSecretLaptop', status='in_progress')
+        RepairMessage.objects.create(ticket=other_ticket, message='OTHER-PRIVATE-MSG', sender_is_admin=True)
+        self.client.force_login(self.user)
+
+    def test_clients_and_staff_both_get_the_same_service_thread_strip(self):
+        staff = User.objects.create_user('commsstaff', 'cs@example.com', 'x', is_staff=True)
+        for account in (self.user, staff):
+            self.client.force_login(account)
+            html = self.client.get(reverse('dashboard')).content.decode()
+            self.assertIn('Service Threads:', html, account.username)
+            self.assertEqual(html.count('comms-ticket-tab px-4'), 3 if account.is_staff else 2, account.username)  # one pill per ticket
+            for needle in (f'id="comms-tab-btn-{self.t1.id}"', f'id="comms-tab-btn-{self.t2.id}"',
+                           f'id="comms-ticket-container-{self.t1.id}"', f'id="comms-ticket-container-{self.t2.id}"'):
+                self.assertIn(needle, html, account.username)
+            # the conversation picker is gone for everyone
+            for marker in ('id="comms-picker"', 'class="comms-item-tab comms-thread-row', 'id="comms-search"', 'Needs reply', 'Lab replied'):
+                self.assertNotIn(marker, html, account.username)
+
+    def test_a_client_sees_their_part_request_pill_and_chat(self):
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertIn(f'id="comms-part-tab-btn-{self.p1.id}"', html)
+        self.assertIn(f'id="comms-part-container-{self.p1.id}"', html)
+        self.assertIn('Lab says hello', html)
+
+    def test_deep_link_handling_is_present(self):
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertIn("urlParams.get('ticket')", html)
+        self.assertIn('selectCommsTicket(ticketParam)', html)
+
+    def test_other_customers_conversations_never_appear_for_clients(self):
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertNotIn('OtherSecretLaptop', html)
+        self.assertNotIn('OTHER-PRIVATE-MSG', html)
+
+    def test_page_markup_stays_well_formed_for_clients_and_staff(self):
+        from html.parser import HTMLParser
+        void = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr',
+                'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'stop'}
+
+        class P(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.stack, self.bad = [], []
+
+            def handle_starttag(self, tag, attrs):
+                if tag not in void:
+                    self.stack.append(tag)
+
+            def handle_endtag(self, tag):
+                if tag in void:
+                    return
+                if self.stack and self.stack[-1] == tag:
+                    self.stack.pop()
+                else:
+                    self.bad.append(tag)
+
+        staff = User.objects.create_user('commsstaff2', 'cs2@example.com', 'x', is_staff=True)
+        for account in (self.user, staff):
+            self.client.force_login(account)
+            p = P()
+            p.feed(self.client.get(reverse('dashboard')).content.decode())
+            self.assertEqual((p.bad, p.stack), ([], []), account.username)
+
+
+class ClearFinishedRequestsTests(TestCase):
+    """Clients can tidy finished requests off their dashboard; nothing is ever deleted."""
+
+    def setUp(self):
+        from repair.models import RepairTicket, PartRequest, RepairMessage
+        self.user = User.objects.create_user('clearme', 'clearme@example.com', 'x')
+        self.other = User.objects.create_user('clearother', 'clearother@example.com', 'x')
+        self.staff = User.objects.create_user('clearstaff', 'clearstaff@example.com', 'x', is_staff=True)
+        mk = dict(customer_name='C', customer_email='clearme@example.com', customer_phone='0244')
+        self.done_t = RepairTicket.objects.create(user=self.user, device='DoneLaptop', status='completed', **mk)
+        self.nofix_t = RepairTicket.objects.create(user=self.user, device='NoFixLaptop', status='no_fix', **mk)
+        self.live_t = RepairTicket.objects.create(user=self.user, device='LiveLaptop', status='in_progress', **mk)
+        self.done_p = PartRequest.objects.create(user=self.user, part_needed='DonePart', device_model='M', status='fulfilled', **mk)
+        self.live_p = PartRequest.objects.create(user=self.user, part_needed='LivePart', device_model='M', status='pending', **mk)
+        self.foreign_t = RepairTicket.objects.create(user=self.other, device='ForeignLaptop', status='completed',
+                                                     customer_name='O', customer_email='clearother@example.com', customer_phone='0201')
+        RepairMessage.objects.create(ticket=self.done_t, sender_is_admin=True, message='all fixed')
+        self.client.force_login(self.user)
+
+    def _refresh(self, *objs):
+        for o in objs:
+            o.refresh_from_db()
+
+    def test_clearing_one_finished_repair_hides_it_but_keeps_the_record(self):
+        resp = self.client.post(reverse('clear_repair_request', args=[self.done_t.ticket_id]))
+        self.assertRedirects(resp, reverse('dashboard') + '?tab=raised-tickets', fetch_redirect_response=False)
+        self._refresh(self.done_t)
+        self.assertTrue(self.done_t.cleared_by_client)
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertNotIn('DoneLaptop', html)
+        self.assertIn('NoFixLaptop', html)
+        self.assertEqual(self.done_t.messages.count(), 1)  # chat history kept
+        # still reachable by its tracking id
+        self.assertEqual(self.client.get(reverse('track_repair', args=[self.done_t.ticket_id])).status_code, 200)
+
+    def test_clearing_one_finished_part_request(self):
+        self.client.post(reverse('clear_part_request', args=[self.done_p.request_id]))
+        self._refresh(self.done_p)
+        self.assertTrue(self.done_p.cleared_by_client)
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertNotIn('DonePart', html)
+        self.assertIn('LivePart', html)
+
+    def test_clear_all_finished_only_touches_finished_requests_of_this_user(self):
+        resp = self.client.post(reverse('clear_finished_requests'), follow=True)
+        self.assertContains(resp, '3 finished requests cleared')
+        self._refresh(self.done_t, self.nofix_t, self.live_t, self.done_p, self.live_p, self.foreign_t)
+        self.assertTrue(self.done_t.cleared_by_client and self.nofix_t.cleared_by_client and self.done_p.cleared_by_client)
+        self.assertFalse(self.live_t.cleared_by_client)
+        self.assertFalse(self.live_p.cleared_by_client)
+        self.assertFalse(self.foreign_t.cleared_by_client)
+
+    def test_unfinished_requests_cannot_be_cleared(self):
+        resp = self.client.post(reverse('clear_repair_request', args=[self.live_t.ticket_id]), follow=True)
+        self.assertContains(resp, 'Only finished requests can be cleared')
+        resp = self.client.post(reverse('clear_part_request', args=[self.live_p.request_id]), follow=True)
+        self.assertContains(resp, 'Only finished requests can be cleared')
+        self._refresh(self.live_t, self.live_p)
+        self.assertFalse(self.live_t.cleared_by_client or self.live_p.cleared_by_client)
+
+    def test_a_client_cannot_clear_someone_elses_request(self):
+        resp = self.client.post(reverse('clear_repair_request', args=[self.foreign_t.ticket_id]))
+        self.assertEqual(resp.status_code, 404)
+        self._refresh(self.foreign_t)
+        self.assertFalse(self.foreign_t.cleared_by_client)
+
+    def test_staff_clearing_does_not_touch_a_clients_dashboard(self):
+        self.client.force_login(self.staff)
+        self.assertEqual(self.client.post(reverse('clear_repair_request', args=[self.done_t.ticket_id])).status_code, 404)
+        self._refresh(self.done_t)
+        self.assertFalse(self.done_t.cleared_by_client)
+
+    def test_clearing_needs_post_and_login(self):
+        url = reverse('clear_repair_request', args=[self.done_t.ticket_id])
+        self.client.get(url)
+        self.client.get(reverse('clear_finished_requests'))
+        self._refresh(self.done_t)
+        self.assertFalse(self.done_t.cleared_by_client)
+        self.client.logout()
+        resp = self.client.post(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn('/login', resp['Location'])
+        self._refresh(self.done_t)
+        self.assertFalse(self.done_t.cleared_by_client)
+
+    def test_clear_requires_csrf_token(self):
+        from django.test import Client
+        strict = Client(enforce_csrf_checks=True)
+        strict.force_login(self.user)
+        self.assertEqual(strict.post(reverse('clear_finished_requests')).status_code, 403)
+        self._refresh(self.done_t)
+        self.assertFalse(self.done_t.cleared_by_client)
+
+    def test_a_cleared_request_comes_back_if_the_lab_reopens_it(self):
+        self.client.post(reverse('clear_repair_request', args=[self.done_t.ticket_id]))
+        self.assertNotIn('DoneLaptop', self.client.get(reverse('dashboard')).content.decode())
+        self.done_t.status = 'in_progress'
+        self.done_t.save()
+        self.assertIn('DoneLaptop', self.client.get(reverse('dashboard')).content.decode())
+
+    def test_cleared_requests_leave_the_conversation_list_and_counts_but_not_the_lab_queue(self):
+        self.client.post(reverse('clear_finished_requests'))
+        resp = self.client.get(reverse('dashboard'))
+        self.assertEqual(resp.context['client_counts']['done'], 0)
+        self.assertEqual(resp.context['client_counts']['all'], 2)
+        self.assertNotIn(f'id="comms-tab-btn-{self.done_t.id}"', resp.content.decode())
+        self.assertIn(f'id="comms-tab-btn-{self.live_t.id}"', resp.content.decode())
+        self.assertNotIn(f'comms-ticket-container-{self.done_t.id}"', resp.content.decode())
+        self.assertIn(f'comms-ticket-container-{self.live_t.id}"', resp.content.decode())
+        self.assertEqual(resp.context['total_user_messages'], 0)
+        # the lab still sees every ticket
+        self.client.force_login(self.staff)
+        staff_html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertIn('DoneLaptop', staff_html)
+        # the lifetime "repaired" tile still counts the work that was done
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(reverse('dashboard')).context['past_repairs'].count(), 1)
+
+    def test_buttons_show_only_for_finished_requests(self):
+        html = self.client.get(reverse('dashboard')).content.decode()
+        self.assertIn(reverse('clear_finished_requests'), html)
+        self.assertIn('Clear completed (3)', html)
+        self.assertIn(reverse('clear_repair_request', args=[self.done_t.ticket_id]), html)
+        self.assertIn(reverse('clear_part_request', args=[self.done_p.request_id]), html)
+        self.assertNotIn(reverse('clear_repair_request', args=[self.live_t.ticket_id]), html)
+        self.assertNotIn(reverse('clear_part_request', args=[self.live_p.request_id]), html)
+        self.client.post(reverse('clear_finished_requests'))
+        self.assertNotIn('Clear completed', self.client.get(reverse('dashboard')).content.decode())
+
+    def test_my_repairs_page_also_hides_cleared_tickets(self):
+        self.client.post(reverse('clear_repair_request', args=[self.done_t.ticket_id]))
+        html = self.client.get(reverse('my_repairs')).content.decode()
+        self.assertNotIn('DoneLaptop', html)
+        self.assertIn('LiveLaptop', html)
+
+
+class ClearedRequestChatTests(TestCase):
+    """Clearing a finished request also takes its Lab Communications chat away from the client."""
+
+    def setUp(self):
+        from repair.models import RepairTicket, PartRequest, RepairMessage, PartRequestMessage
+        self.user = User.objects.create_user('chatclear', 'chatclear@example.com', 'x')
+        self.staff = User.objects.create_user('chatstaff', 'chatstaff@example.com', 'x', is_staff=True)
+        mk = dict(user=self.user, customer_name='C', customer_email='chatclear@example.com', customer_phone='0244')
+        self.t = RepairTicket.objects.create(device='ChatLaptop', status='completed', **mk)
+        self.p = PartRequest.objects.create(part_needed='ChatPart', device_model='M', status='fulfilled', **mk)
+        self.tm = RepairMessage.objects.create(ticket=self.t, sender_is_admin=False, message='client-secret-note')
+        self.pm = PartRequestMessage.objects.create(part_request=self.p, sender_is_admin=False, message='client-part-note')
+        self.client.force_login(self.user)
+        self.client.post(reverse('clear_finished_requests'))
+
+    def test_client_no_longer_sees_the_chat_on_the_tracking_pages(self):
+        for url, text in ((reverse('track_repair', args=[self.t.ticket_id]), 'client-secret-note'),
+                          (reverse('track_part', args=[self.p.request_id]), 'client-part-note')):
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200)
+            self.assertTrue(resp.context['chat_hidden'])
+            html = resp.content.decode()
+            self.assertNotIn(text, html)
+            self.assertNotIn('enctype="multipart/form-data"', html)
+            self.assertIn('conversation for this request is closed', html)
+
+    def test_client_cannot_post_edit_or_delete_in_a_closed_chat(self):
+        resp = self.client.post(reverse('track_repair', args=[self.t.ticket_id]), {'message': 'sneaky'}, follow=True)
+        self.assertContains(resp, 'its conversation is closed')
+        self.assertEqual(self.t.messages.count(), 1)
+        resp = self.client.post(reverse('track_part', args=[self.p.request_id]), {'message': 'sneaky'}, follow=True)
+        self.assertEqual(self.p.messages.count(), 1)
+        self.assertEqual(self.client.post(reverse('edit_repair_message', args=[self.tm.id]), {'message': 'x'}).status_code, 403)
+        self.assertEqual(self.client.post(reverse('delete_repair_message', args=[self.tm.id])).status_code, 403)
+        self.assertEqual(self.client.post(reverse('edit_part_request_message', args=[self.pm.id]), {'message': 'x'}).status_code, 403)
+        self.assertEqual(self.client.post(reverse('delete_part_request_message', args=[self.pm.id])).status_code, 403)
+        self.tm.refresh_from_db()
+        self.assertEqual(self.tm.message, 'client-secret-note')
+
+    def test_the_lab_still_sees_and_can_use_the_chat(self):
+        self.client.force_login(self.staff)
+        resp = self.client.get(reverse('track_repair', args=[self.t.ticket_id]))
+        self.assertFalse(resp.context['chat_hidden'])
+        self.assertContains(resp, 'client-secret-note')
+        self.client.post(reverse('track_repair', args=[self.t.ticket_id]), {'message': 'lab note'})
+        self.assertEqual(self.t.messages.count(), 2)
+
+    def test_the_chat_returns_if_the_request_is_reopened(self):
+        self.t.status = 'in_progress'
+        self.t.save()
+        resp = self.client.get(reverse('track_repair', args=[self.t.ticket_id]))
+        self.assertFalse(resp.context['chat_hidden'])
+        self.assertContains(resp, 'client-secret-note')
+
+    def test_an_uncleared_finished_request_keeps_its_chat(self):
+        from repair.models import RepairTicket
+        other = RepairTicket.objects.create(user=self.user, device='KeptLaptop', status='completed',
+                                            customer_name='C', customer_email='chatclear@example.com', customer_phone='0244')
+        resp = self.client.get(reverse('track_repair', args=[other.ticket_id]))
+        self.assertFalse(resp.context['chat_hidden'])
+        self.assertContains(resp, 'enctype="multipart/form-data"')
 

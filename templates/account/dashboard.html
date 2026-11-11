@@ -260,9 +260,9 @@
                                 id="tab-btn-raised-tickets"
                                 class="dash-tab-btn px-3.5 sm:px-4 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent">
                             <span>🛠️</span>
-                            <span>My Raised Tickets</span>
+                            <span>My Requests</span>
                             <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-orange-500/10 text-[#FF7200] font-mono font-bold" data-inactive-class="bg-orange-500/10 text-[#FF7200]">
-                                {{ active_repairs.count }}
+                                {{ client_counts.action|add:client_counts.active }}
                             </span>
                         </button>
                     </div>
@@ -303,9 +303,9 @@
                                 id="tab-btn-raised-tickets"
                                 class="dash-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 bg-[#FF7200] text-white shadow-md shadow-orange-500/20">
                             <span>🛠️</span>
-                            <span>My Raised Tickets</span>
+                            <span>My Requests</span>
                             <span class="dash-tab-badge px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono font-bold" data-inactive-class="bg-orange-500/10 text-[#FF7200]">
-                                {{ active_repairs.count }}
+                                {{ client_counts.action|add:client_counts.active }}
                             </span>
                         </button>
 
@@ -341,366 +341,210 @@
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80 dark:border-white/10">
                         <div>
                             <h2 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white">
-                                My Raised Lab Tickets
+                                My Requests
                             </h2>
                             <p class="text-xs text-slate-500 dark:text-gray-400 font-light mt-0.5">
-                                Diagnostic monitoring and bench progress for hardware submitted under your account.
+                                {{ client_counts.action }} need action &bull; {{ client_counts.active }} in progress &bull; {{ client_counts.done }} completed
                             </p>
                         </div>
-                        <span class="text-xs text-[#008BC6] dark:text-[#38bdf8] font-bold">
-                            {{ active_repairs.count }} Active &bull; {{ past_repairs.count }} Restored
-                        </span>
+                        {% if client_counts.done %}
+                        <form method="post" action="{% url 'clear_finished_requests' %}"
+                              onsubmit="return confirm('Clear {{ client_counts.done }} completed request{{ client_counts.done|pluralize }} from your dashboard?\n\nTheir conversations are hidden too. They stay in our records, and you can still open them with their tracking ID.');">
+                            {% csrf_token %}
+                            <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200/80 dark:border-white/10 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">&#129529; Clear completed ({{ client_counts.done }})</button>
+                        </form>
+                        {% endif %}
                     </div>
 
-                    {% if active_repairs %}
-                        {% for ticket in active_repairs %}
-                        <div class="bg-white dark:bg-[#12141a] rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.03)] relative overflow-hidden transition-all duration-300">
-                            
-                            <!-- Top Accent Gradient Line -->
-                            <div class="h-1.5 w-full bg-gradient-to-r from-[#008BC6] via-blue-500 to-[#FF7200]"></div>
+                    {% if client_requests %}
+                    <!-- ================= COMPACT REQUEST LIST (repairs + part requests) ================= -->
+                    <div id="client-requests" data-page-size="6" class="space-y-4">
 
-                            <div class="p-6 sm:p-8">
-                                
-                                <!-- Header Bar: Ticket Meta & Status -->
-                                <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-white/5">
-                                    <div class="flex flex-wrap items-center gap-2.5">
-                                        <span class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8] bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
-                                            Live Lab Ticket
-                                        </span>
-                                        <span class="font-mono text-xs font-bold text-slate-500 dark:text-gray-400 bg-slate-100 dark:bg-white/10 px-2.5 py-1 rounded-md">
-                                            {{ ticket.ticket_id }}
-                                        </span>
-                                        <span class="text-sm font-bold text-slate-900 dark:text-white pl-1">
-                                            {{ ticket.device }}
-                                        </span>
-                                    </div>
+                        {% if client_counts.action %}
+                        <button type="button" data-req-filter="action"
+                                class="req-jump w-full flex items-center justify-between gap-3 text-left rounded-2xl border border-[#008BC6]/30 bg-[#008BC6]/10 px-4 py-3 text-sm font-bold text-[#006a96] dark:text-[#38bdf8] hover:bg-[#008BC6]/15 transition-colors">
+                            <span>&#128203; {{ client_counts.action }} quote{{ client_counts.action|pluralize }} waiting for your approval</span>
+                            <span class="text-xs uppercase tracking-wider">Show &rarr;</span>
+                        </button>
+                        {% endif %}
 
-                                    <!-- Status Badge -->
-                                    {% if ticket.status == 'in_progress' %}
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-[#FF7200] border border-orange-500/20">
-                                        <span class="w-2 h-2 rounded-full bg-[#FF7200] animate-pulse"></span>
-                                        In Progress (Restoration)
-                                    </span>
-                                    {% elif ticket.status == 'completed' %}
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                        Ready for Collection
-                                    </span>
+                        <!-- Search + filters -->
+                        <div class="space-y-3">
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">&#128269;</span>
+                                <input id="req-search" type="search" autocomplete="off" placeholder="Search by ID, device or part..."
+                                       class="w-full rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#12141a] pl-11 pr-4 py-3 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#008BC6]/40">
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" data-req-filter="all" aria-pressed="true" class="req-chip">All <span class="opacity-70">{{ client_counts.all }}</span></button>
+                                <button type="button" data-req-filter="action" aria-pressed="false" class="req-chip">Needs action <span class="opacity-70">{{ client_counts.action }}</span></button>
+                                <button type="button" data-req-filter="active" aria-pressed="false" class="req-chip">In progress <span class="opacity-70">{{ client_counts.active }}</span></button>
+                                <button type="button" data-req-filter="done" aria-pressed="false" class="req-chip">Completed <span class="opacity-70">{{ client_counts.done }}</span></button>
+                                <span class="hidden sm:block h-5 w-px bg-slate-200 dark:bg-white/10 mx-1"></span>
+                                <button type="button" data-req-type="all" aria-pressed="true" class="req-chip">All types</button>
+                                <button type="button" data-req-type="repair" aria-pressed="false" class="req-chip">&#128736;&#65039; Repairs <span class="opacity-70">{{ client_counts.repair }}</span></button>
+                                <button type="button" data-req-type="part" aria-pressed="false" class="req-chip">&#128230; Parts <span class="opacity-70">{{ client_counts.part }}</span></button>
+                            </div>
+                        </div>
+
+                        <!-- The list -->
+                        <ul id="req-list" class="space-y-3">
+                            {% for r in client_requests %}
+                            <li class="req-row rounded-2xl border bg-white dark:bg-[#12141a] p-4 transition-shadow hover:shadow-md {% if r.group == 'action' %}border-[#008BC6]/40 ring-1 ring-[#008BC6]/20 {% else %}border-slate-200/80 dark:border-white/10 {% endif %}"
+                                data-group="{{ r.group }}" data-type="{{ r.kind }}" data-search="{{ r.search }}">
+                                <div class="flex items-start gap-3">
+                                    {% if r.image_url %}
+                                    <a href="{{ r.image_url }}" target="_blank" rel="noopener noreferrer" title="Uploaded Diagnostic Photo" class="w-10 h-10 shrink-0 rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5">
+                                        <img src="{{ r.image_url }}" alt="Uploaded Diagnostic Photo" loading="lazy" class="w-full h-full object-cover">
+                                    </a>
                                     {% else %}
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                                        Intake Pending Process
-                                    </span>
+                                    <div class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-lg bg-slate-100 dark:bg-white/5">{% if r.kind == 'repair' %}&#128736;&#65039;{% else %}&#128230;{% endif %}</div>
                                     {% endif %}
-                                </div>
 
-                                <!-- Diagnostic Specs Grid -->
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                                    <div class="bg-[#F8FAFC] dark:bg-white/[0.04] p-3.5 rounded-2xl border border-slate-200/60 dark:border-white/5">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 block mb-0.5">Category</span>
-                                        <span class="text-xs font-bold text-slate-800 dark:text-white capitalize">{{ ticket.get_device_category_display|default:ticket.device_category }}</span>
-                                    </div>
-                                    <div class="bg-[#F8FAFC] dark:bg-white/[0.04] p-3.5 rounded-2xl border border-slate-200/60 dark:border-white/5">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 block mb-0.5">Intake Date</span>
-                                        <span class="text-xs font-bold text-slate-800 dark:text-white">{{ ticket.created_at|date:"M d, Y" }}</span>
-                                    </div>
-                                    <div class="bg-[#F8FAFC] dark:bg-white/[0.04] p-3.5 rounded-2xl border border-slate-200/60 dark:border-white/5">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 block mb-0.5">Logistics</span>
-                                        <span class="text-xs font-bold text-slate-800 dark:text-white capitalize">{{ ticket.get_logistics_preference_display|default:"Lab Drop-off" }}</span>
-                                    </div>
-                                    <div class="bg-[#F8FAFC] dark:bg-white/[0.04] p-3.5 rounded-2xl border border-slate-200/60 dark:border-white/5">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 block mb-0.5">Warranty</span>
-                                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">90 Days</span>
-                                    </div>
-                                </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                            <h4 class="text-sm font-bold text-slate-900 dark:text-white truncate max-w-full">{{ r.title }}</h4>
+                                            <span class="font-mono text-[10px] font-bold text-slate-500 dark:text-gray-400 bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded-md">{{ r.ref }}</span>
+                                        </div>
+                                        <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5 break-words">
+                                            {{ r.created_at|date:"M d, Y" }}{% if r.subtitle %} &bull; {{ r.subtitle }}{% endif %}{% if r.extra %} &bull; {{ r.extra }}{% endif %}{% if r.quoted_price %} &bull; Quote GH&#8373; {{ r.quoted_price }}{% endif %}
+                                        </p>
 
-                                {% if ticket.quoted_price %}
-                                <!-- Formal Quote Highlight Banner -->
-                                <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-orange-500/10 border border-[#008BC6]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-10 h-10 rounded-xl bg-[#008BC6]/10 text-[#008BC6] flex items-center justify-center font-bold text-lg">📄</span>
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-xs font-bold text-slate-800 dark:text-white">Formal Repair Quote:</span>
-                                                <span class="text-sm font-black text-[#FF7200] font-mono">GH₵ {{ ticket.quoted_price }}</span>
-                                            </div>
-                                            <p class="text-[11px] text-slate-500 dark:text-gray-400 font-light truncate max-w-md">
-                                                {{ ticket.diagnostic_notes|default:"Diagnostic bench testing completed. Turnaround: 24 - 48 Hours." }}
-                                            </p>
+                                        <div class="mt-2.5 flex flex-wrap items-center gap-3">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
+                                                {% if r.tone == 'amber' %}bg-amber-500/10 text-amber-600 dark:text-amber-400
+                                                {% elif r.tone == 'sky' %}bg-sky-500/10 text-sky-600 dark:text-sky-400
+                                                {% elif r.tone == 'blue' %}bg-[#008BC6]/15 text-[#006a96] dark:text-[#38bdf8]
+                                                {% elif r.tone == 'orange' %}bg-orange-500/10 text-[#FF7200]
+                                                {% elif r.tone == 'green' %}bg-emerald-500/10 text-emerald-600 dark:text-emerald-400
+                                                {% else %}bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 {% endif %}">{{ r.status_label }}</span>
+                                            <span class="flex items-center gap-1" aria-label="Stage {{ r.stage }} of 3" title="Stage {{ r.stage }} of 3">
+                                                <span class="h-1.5 w-7 rounded-full {% if r.stage >= 1 %} {% if r.group == 'done' %}bg-emerald-500 {% else %}bg-[#008BC6] {% endif %} {% else %}bg-slate-200 dark:bg-white/10 {% endif %}"></span>
+                                                <span class="h-1.5 w-7 rounded-full {% if r.stage >= 2 %} {% if r.group == 'done' %}bg-emerald-500 {% else %}bg-[#FF7200] {% endif %} {% else %}bg-slate-200 dark:bg-white/10 {% endif %}"></span>
+                                                <span class="h-1.5 w-7 rounded-full {% if r.stage >= 3 %}bg-emerald-500 {% else %}bg-slate-200 dark:bg-white/10 {% endif %}"></span>
+                                            </span>
                                         </div>
                                     </div>
-                                    <div class="self-end sm:self-auto shrink-0">
-                                        {% if ticket.quote_status == 'sent' %}
-                                            <a href="{% url 'track_repair' ticket.ticket_id %}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95">
-                                                <span>Review & Authorize &rarr;</span>
-                                            </a>
-                                        {% elif ticket.quote_status == 'approved' %}
-                                            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                                <span>✓ Authorized by You</span>
-                                            </span>
+
+                                    <div class="shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                        {% if r.kind == 'repair' %}
+                                        <a href="{% url 'track_repair' r.ref %}"
+                                           class="inline-flex items-center justify-center gap-1 px-4 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-colors {% if r.group == 'action' %}bg-emerald-600 hover:bg-emerald-700 text-white {% else %}bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 {% endif %}">{% if r.group == 'action' %}Review quote{% else %}Open{% endif %} &rarr;</a>
+                                        <button type="button" onclick="openTicketChat('{{ r.obj_id }}')" title="Message the lab"
+                                                class="inline-flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">&#128172; {{ r.message_count }}</button>
+                                        {% if r.group == 'done' %}
+                                        <form method="post" action="{% url 'clear_repair_request' r.ref %}">
+                                            {% csrf_token %}
+                                            <button type="submit" title="Clear from my dashboard" aria-label="Clear {{ r.ref }} from my dashboard"
+                                                    class="w-full inline-flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-xs font-bold text-slate-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-colors">&#10005; <span class="sm:hidden">Clear</span></button>
+                                        </form>
+                                        {% endif %}
                                         {% else %}
-                                            <span class="text-xs font-bold text-slate-400 capitalize">{{ ticket.get_quote_status_display }}</span>
+                                        <a href="{% url 'track_part' r.ref %}"
+                                           class="inline-flex items-center justify-center gap-1 px-4 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-colors {% if r.group == 'action' %}bg-emerald-600 hover:bg-emerald-700 text-white {% else %}bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 {% endif %}">{% if r.group == 'action' %}Review quote{% else %}Open{% endif %} &rarr;</a>
+                                        <button type="button" onclick="openPartChat('{{ r.obj_id }}')" title="Message the sourcing desk"
+                                                class="inline-flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">&#128172; {{ r.message_count }}</button>
+                                        {% if r.group == 'done' %}
+                                        <form method="post" action="{% url 'clear_part_request' r.ref %}">
+                                            {% csrf_token %}
+                                            <button type="submit" title="Clear from my dashboard" aria-label="Clear {{ r.ref }} from my dashboard"
+                                                    class="w-full inline-flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-xs font-bold text-slate-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-colors">&#10005; <span class="sm:hidden">Clear</span></button>
+                                        </form>
+                                        {% endif %}
                                         {% endif %}
                                     </div>
                                 </div>
-                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
 
-                                <!-- Reported Issue Quote & Diagnostic Photo -->
-                                <div class="mb-8 p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 relative">
-                                    <span class="text-[10px] font-black uppercase tracking-widest text-[#FF7200] block mb-1.5 flex items-center gap-1.5">
-                                        <span>⚠️</span> Reported Diagnostic Issue
-                                    </span>
-                                    <p class="text-xs sm:text-sm text-slate-700 dark:text-gray-300 font-light leading-relaxed">
-                                        {{ ticket.issue_description }}
-                                    </p>
-
-                                    {% if ticket.diagnostic_image %}
-                                    <div class="mt-4 pt-4 border-t border-slate-200/60 dark:border-white/10">
-                                        <div class="flex items-center justify-between gap-2 mb-2.5">
-                                            <span class="text-[10px] font-black uppercase tracking-widest text-[#008BC6] dark:text-[#38bdf8] flex items-center gap-1.5">
-                                                <span>📷</span> Uploaded Diagnostic Photo
-                                            </span>
-                                            <a href="{{ ticket.diagnostic_image.url }}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-[#008BC6] dark:text-[#38bdf8] hover:underline inline-flex items-center gap-1">
-                                                <span>View Full Photo</span>
-                                                <span>&nearr;</span>
-                                            </a>
-                                        </div>
-                                        <a href="{{ ticket.diagnostic_image.url }}" target="_blank" rel="noopener noreferrer" class="block group/img relative rounded-xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-slate-900/5 dark:bg-black/40 max-w-sm">
-                                            <img src="{{ ticket.diagnostic_image.url }}" alt="Diagnostic photo for {{ ticket.device }}" loading="lazy" class="w-full max-h-56 object-cover group-hover/img:scale-[1.02] transition-transform duration-300">
-                                        </a>
-                                    </div>
-                                    {% endif %}
-                                </div>
-
-                                <!-- Milestone Progress Stepper -->
-                                <div class="mb-8 p-6 rounded-2xl bg-[#F8FAFC] dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5">
-                                    <div class="flex items-center justify-between mb-6">
-                                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400">
-                                            Pipeline Milestone
-                                        </span>
-                                        <span class="text-[10px] font-mono text-[#008BC6] dark:text-[#38bdf8] font-bold">
-                                            Stage {% if ticket.status == 'completed' %}3 of 3{% elif ticket.status == 'in_progress' %}2 of 3{% else %}1 of 3{% endif %}
-                                        </span>
-                                    </div>
-
-                                    <div class="relative pl-8 space-y-6 before:content-[''] before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-white/10">
-
-                                        <!-- Step 1 -->
-                                        <div class="relative">
-                                            <div class="absolute -left-8 top-0.5 w-7 h-7 rounded-full bg-[#008BC6] text-white flex items-center justify-center text-xs font-bold shadow-md shadow-blue-500/20">
-                                                ✓
-                                            </div>
-                                            <div>
-                                                <h4 class="text-xs font-bold text-[#008BC6] dark:text-[#38bdf8] uppercase tracking-wider">
-                                                    01. Device Received & Intake Logged
-                                                </h4>
-                                                <p class="text-[11px] text-slate-500 dark:text-gray-400 font-light mt-0.5">
-                                                    Intake completed on {{ ticket.created_at|date:"M d, Y" }}. Bench priority established.
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <!-- Step 2 -->
-                                        <div class="relative">
-                                            <div class="absolute -left-8 top-0.5 w-7 h-7 rounded-full {% if ticket.status in 'in_progress completed' %}bg-[#FF7200] text-white shadow-md shadow-orange-500/30 animate-pulse{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold">
-                                                {% if ticket.status == 'in_progress' %}⚙️{% elif ticket.status == 'completed' %}✓{% else %}2{% endif %}
-                                            </div>
-                                            <div>
-                                                <h4 class="text-xs font-bold {% if ticket.status in 'in_progress completed' %}text-[#FF7200]{% else %}text-slate-400 dark:text-gray-500{% endif %} uppercase tracking-wider">
-                                                    02. Diagnostic Process & Component Restoration
-                                                </h4>
-                                                <p class="text-[11px] text-slate-500 dark:text-gray-400 font-light mt-0.5">
-                                                    Technicians inspecting schematics, repairing circuitry, or swapping OEM components.
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <!-- Step 3 -->
-                                        <div class="relative">
-                                            <div class="absolute -left-8 top-0.5 w-7 h-7 rounded-full {% if ticket.status == 'completed' %}bg-emerald-500 text-white shadow-md shadow-emerald-500/30{% else %}bg-slate-200 dark:bg-white/10 text-slate-400{% endif %} flex items-center justify-center text-xs font-bold">
-                                                {% if ticket.status == 'completed' %}✓{% else %}3{% endif %}
-                                            </div>
-                                            <div>
-                                                <h4 class="text-xs font-bold {% if ticket.status == 'completed' %}text-emerald-500{% else %}text-slate-400 dark:text-gray-500{% endif %} uppercase tracking-wider">
-                                                    03. Quality Testing & Final Verification
-                                                </h4>
-                                                <p class="text-[11px] text-slate-500 dark:text-gray-400 font-light mt-0.5">
-                                                    Stress tests passed and device packaged with 90-day warranty seal.
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <!-- Action Buttons: Communicate with Lab & Full Report -->
-                                <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
-                                    <button type="button" 
-                                            onclick="openTicketChat('{{ ticket.id }}')" 
-                                            class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#008BC6] to-sky-600 hover:from-blue-600 hover:to-[#008BC6] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-blue-500/20 hover:shadow-blue-500/35 hover:-translate-y-0.5 active:scale-95">
-                                        <span>💬</span>
-                                        <span>Communicate with Lab ({% with mc=ticket.messages.count %}{{ mc }} Note{{ mc|pluralize }}{% endwith %})</span>
-                                    </button>
-
-                                    <a href="{% url 'track_repair' ticket.ticket_id %}" 
-                                       class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:-translate-y-0.5">
-                                        <span>Open Diagnostic Monitoring Report</span>
-                                        <span>&rarr;</span>
-                                    </a>
-                                </div>
-
-                            </div>
+                        <!-- Nothing matches the current search / filters -->
+                        <div id="req-empty" class="hidden text-center py-10 rounded-2xl border border-dashed border-slate-200 dark:border-white/10">
+                            <p class="text-sm font-bold text-slate-700 dark:text-gray-200">No requests match your search</p>
+                            <button type="button" id="req-clear" class="mt-2 text-xs font-bold uppercase tracking-wider text-[#008BC6] hover:underline">Clear search &amp; filters</button>
                         </div>
-                        {% endfor %}
+
+                        <!-- Show more -->
+                        <div id="req-more-wrap" class="hidden flex items-center justify-between gap-3 pt-1">
+                            <span id="req-count" class="text-xs text-slate-500 dark:text-gray-400"></span>
+                            <button type="button" id="req-more"
+                                    class="px-5 py-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Show more</button>
+                        </div>
+                    </div>
+
+                    <script>
+                    (function () {
+                        var root = document.getElementById('client-requests');
+                        if (!root) return;
+                        var rows = Array.prototype.slice.call(root.querySelectorAll('.req-row'));
+                        var PAGE = parseInt(root.getAttribute('data-page-size'), 10) || 6;
+                        var state = { group: 'all', type: 'all', q: '', limit: PAGE };
+                        var ON = ['bg-slate-900', 'text-white', 'dark:bg-white', 'dark:text-slate-900', 'border-transparent'];
+                        var OFF = ['bg-white', 'dark:bg-white/5', 'text-slate-600', 'dark:text-gray-300', 'border-slate-200/80', 'dark:border-white/10'];
+                        var base = ['req-chip', 'inline-flex', 'items-center', 'gap-1.5', 'px-3.5', 'py-2', 'rounded-full', 'border', 'text-xs', 'font-bold', 'transition-colors'];
+                        var chips = Array.prototype.slice.call(root.querySelectorAll('.req-chip'));
+                        chips.forEach(function (c) { base.forEach(function (k) { c.classList.add(k); }); });
+
+                        function paintChips() {
+                            chips.forEach(function (c) {
+                                var on = c.hasAttribute('data-req-filter') ? c.getAttribute('data-req-filter') === state.group
+                                                                          : c.getAttribute('data-req-type') === state.type;
+                                c.setAttribute('aria-pressed', on ? 'true' : 'false');
+                                ON.forEach(function (k) { c.classList.toggle(k, on); });
+                                OFF.forEach(function (k) { c.classList.toggle(k, !on); });
+                            });
+                        }
+
+                        function render() {
+                            var q = state.q.trim().toLowerCase();
+                            var matched = rows.filter(function (r) {
+                                return (state.group === 'all' || r.getAttribute('data-group') === state.group) &&
+                                       (state.type === 'all' || r.getAttribute('data-type') === state.type) &&
+                                       (!q || r.getAttribute('data-search').indexOf(q) !== -1);
+                            });
+                            rows.forEach(function (r) { r.classList.add('hidden'); });
+                            matched.slice(0, state.limit).forEach(function (r) { r.classList.remove('hidden'); });
+                            var shown = Math.min(matched.length, state.limit);
+                            document.getElementById('req-empty').classList.toggle('hidden', matched.length !== 0);
+                            var wrap = document.getElementById('req-more-wrap');
+                            wrap.classList.toggle('hidden', matched.length <= PAGE);
+                            document.getElementById('req-count').textContent = 'Showing ' + shown + ' of ' + matched.length;
+                            var more = document.getElementById('req-more');
+                            more.classList.toggle('hidden', shown >= matched.length);
+                            more.textContent = 'Show ' + Math.min(PAGE, matched.length - shown) + ' more';
+                            paintChips();
+                        }
+
+                        root.addEventListener('click', function (e) {
+                            var f = e.target.closest('[data-req-filter]');
+                            var t = e.target.closest('[data-req-type]');
+                            if (f) { state.group = f.getAttribute('data-req-filter'); state.limit = PAGE; render(); return; }
+                            if (t) { state.type = t.getAttribute('data-req-type'); state.limit = PAGE; render(); }
+                        });
+                        document.getElementById('req-search').addEventListener('input', function (e) {
+                            state.q = e.target.value; state.limit = PAGE; render();
+                        });
+                        document.getElementById('req-more').addEventListener('click', function () { state.limit += PAGE; render(); });
+                        document.getElementById('req-clear').addEventListener('click', function () {
+                            state = { group: 'all', type: 'all', q: '', limit: PAGE };
+                            document.getElementById('req-search').value = '';
+                            render();
+                        });
+                        render();
+                    })();
+                    </script>
                     {% else %}
-                        <!-- No Active Repairs State -->
-                        <div class="bg-white dark:bg-[#12141a] rounded-3xl p-10 sm:p-14 text-center border border-slate-200/80 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.03)] relative overflow-hidden">
-                            <div class="w-16 h-16 rounded-2xl bg-orange-500/10 text-[#FF7200] flex items-center justify-center text-3xl mx-auto mb-4">
-                                🔌
-                            </div>
-                            <h2 class="text-xl sm:text-2xl font-display font-black text-slate-900 dark:text-white mb-2">
-                                No Active Lab Tickets
-                            </h2>
-                            <p class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm font-light max-w-md mx-auto mb-8 leading-relaxed">
-                                All your registered hardware is operating smoothly. If you require chip-level diagnostics, screen refurbishment, or liquid cleaning, submit an intake ticket below.
-                            </p>
-                            <a href="{% url 'book_repair' %}" 
-                               class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-[#FF7200] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all">
-                                <span>Initialize New Lab Ticket</span>
-                                <span>&rarr;</span>
-                            </a>
+                    <!-- ================= NO REQUESTS YET ================= -->
+                    <div class="text-center py-14 px-6 rounded-3xl border border-dashed border-slate-300 dark:border-white/15 bg-white dark:bg-[#12141a]">
+                        <div class="text-4xl mb-3">&#128736;&#65039;</div>
+                        <h2 class="text-xl font-display font-black text-slate-900 dark:text-white mb-1">No requests yet</h2>
+                        <p class="text-sm text-slate-500 dark:text-gray-400 mb-6">Book a repair or ask us to source a part, and you can follow it here.</p>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                            <a href="{% url 'book_repair' %}" class="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-gradient-to-r from-[#FF7200] to-orange-500 text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-opacity">Book a Repair</a>
+                            <a href="{% url 'request_part' %}" class="inline-flex items-center justify-center px-6 py-3 rounded-2xl border border-slate-200 dark:border-white/15 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Request a Part</a>
                         </div>
+                    </div>
                     {% endif %}
-
-                    <!-- ================= SERVICE HISTORY ARCHIVE ================= -->
-                    <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.03)]">
-                        <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100 dark:border-white/5">
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">📁</span>
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white">
-                                    Hardware History Archive
-                                </h3>
-                            </div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 bg-slate-100 dark:bg-white/5 px-2.5 py-1 rounded-md">
-                                {{ past_repairs.count }} {% if past_repairs.count == 1 %}Record{% else %}Records{% endif %}
-                            </span>
-                        </div>
-
-                        <div class="space-y-3">
-                            {% for repair in past_repairs %}
-                            <div class="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/20 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
-                                <div class="flex items-center gap-4">
-                                    {% if repair.diagnostic_image %}
-                                    <a href="{{ repair.diagnostic_image.url }}" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-emerald-500/30 bg-slate-900/5 dark:bg-black/40 block" title="View uploaded diagnostic photo">
-                                        <img src="{{ repair.diagnostic_image.url }}" alt="Diagnostic photo for {{ repair.device }}" loading="lazy" class="w-full h-full object-cover">
-                                    </a>
-                                    {% else %}
-                                    <div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    </div>
-                                    {% endif %}
-                                    <div>
-                                        <h4 class="text-sm font-bold text-slate-900 dark:text-white tracking-wide mb-1 group-hover:text-[#008BC6] transition-colors">
-                                            {{ repair.device }}
-                                        </h4>
-                                        <div class="flex flex-wrap items-center gap-2">
-                                            <span class="text-[9px] font-mono font-bold bg-white dark:bg-white/10 text-slate-700 dark:text-white px-2 py-0.5 rounded border border-slate-200 dark:border-white/5">
-                                                {{ repair.ticket_id }}
-                                            </span>
-                                            <span class="text-xs text-slate-400 dark:text-gray-500">
-                                                Completed on {{ repair.created_at|date:"M d, Y" }}
-                                            </span>
-                                            {% if repair.diagnostic_image %}
-                                            <a href="{{ repair.diagnostic_image.url }}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-[#008BC6] dark:text-[#38bdf8] hover:underline inline-flex items-center gap-1">
-                                                <span>📷 Photo</span>
-                                            </a>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <a href="{% url 'track_repair' repair.ticket_id %}" 
-                                   class="inline-flex items-center gap-1.5 text-xs font-bold text-[#008BC6] hover:text-blue-600 dark:text-[#38bdf8] uppercase tracking-wider transition-colors self-end sm:self-center">
-                                    <span>Inspect Log</span>
-                                    <span>&rarr;</span>
-                                </a>
-                            </div>
-                            {% empty %}
-                            <div class="text-center py-8">
-                                <span class="text-3xl block mb-2 opacity-30">📂</span>
-                                <p class="text-xs text-slate-500 dark:text-gray-400 font-light mb-4">
-                                    No past completed repair archives found on this account yet.
-                                </p>
-                                <a href="{% url 'book_repair' %}" 
-                                   class="inline-flex items-center gap-1 text-xs font-bold text-[#FF7200] hover:underline uppercase tracking-wider">
-                                    <span>Book Your First Repair</span>
-                                    <span>&rarr;</span>
-                                </a>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <!-- ================= MY HARDWARE PART REQUESTS ================= -->
-                    <div class="bg-white dark:bg-[#12141a] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.03)]">
-                        <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100 dark:border-white/5">
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">📦</span>
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white">
-                                    Hardware Parts Sourced & Requested
-                                </h3>
-                            </div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 bg-slate-100 dark:bg-white/5 px-2.5 py-1 rounded-md">
-                                {{ user_part_requests.count }} {% if user_part_requests.count == 1 %}Item{% else %}Items{% endif %}
-                            </span>
-                        </div>
-
-                        <div class="space-y-3">
-                            {% for req in user_part_requests %}
-                            <div class="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/20 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
-                                <div class="space-y-1">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="text-[10px] font-mono font-bold bg-white dark:bg-white/10 text-slate-700 dark:text-white px-2 py-0.5 rounded border border-slate-200 dark:border-white/5">
-                                            {{ req.request_id }}
-                                        </span>
-                                        <h4 class="text-sm font-bold text-slate-900 dark:text-white tracking-wide group-hover:text-[#008BC6] transition-colors">
-                                            {{ req.part_needed }}
-                                        </h4>
-                                        <span class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if req.status == 'fulfilled' %}bg-emerald-500/10 text-emerald-600{% elif req.status == 'quoted' %}bg-sky-500/10 text-sky-600{% elif req.status == 'in_progress' %}bg-orange-500/10 text-[#FF7200]{% elif req.status == 'declined' %}bg-rose-500/10 text-rose-600{% else %}bg-amber-500/10 text-amber-600{% endif %}">
-                                            {{ req.get_status_display }}
-                                        </span>
-                                        {% if req.messages.count > 0 %}
-                                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-[#008BC6]">
-                                            💬 {{ req.messages.count }} note{{ req.messages.count|pluralize }}
-                                        </span>
-                                        {% endif %}
-                                    </div>
-                                    <p class="text-xs text-slate-400 dark:text-gray-500">
-                                        Device: {{ req.device_model }} &bull; Intake: {{ req.created_at|date:"M d, Y" }}
-                                    </p>
-                                </div>
-                                <div class="flex items-center gap-2 self-end sm:self-center">
-                                    <button type="button" 
-                                            onclick="openPartChat('{{ req.id }}')" 
-                                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#008BC6] to-sky-600 hover:from-blue-600 hover:to-[#008BC6] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm">
-                                        <span>💬 Chat</span>
-                                    </button>
-                                    <a href="{% url 'track_part' req.request_id %}" 
-                                       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider transition-all">
-                                        <span>Track &rarr;</span>
-                                    </a>
-                                </div>
-                            </div>
-                            {% empty %}
-                            <div class="text-center py-6">
-                                <p class="text-xs text-slate-400 font-light mb-3">No hardware part requests submitted yet.</p>
-                                <a href="{% url 'request_part' %}" class="inline-flex items-center gap-1 text-xs font-bold text-[#008BC6] hover:underline uppercase tracking-wider">
-                                    <span>Request an OEM Hardware Part</span>
-                                    <span>&rarr;</span>
-                                </a>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
 
                 </div>
 

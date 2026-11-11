@@ -455,6 +455,12 @@
 
         </div>
 
+        {% if chat_hidden %}
+        <div class="mb-16 rounded-3xl border border-dashed border-slate-200/80 dark:border-white/10 p-8 text-center">
+            <p class="text-sm font-bold text-slate-700 dark:text-gray-200">The conversation for this request is closed</p>
+            <p class="text-xs text-slate-500 dark:text-gray-400 mt-1">You cleared it from your dashboard. Need something? Contact our support team and we will reopen it.</p>
+        </div>
+        {% else %}
         <!-- ================= TWO-WAY REPAIR CHAT PANEL ================= -->
         <div class="bg-white dark:bg-[#12141a] rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)] overflow-hidden mb-16">
             <div class="p-6 md:p-8 border-b border-slate-100 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/60 dark:bg-black/20">
@@ -574,6 +580,8 @@
                 </form>
             </div>
         </div>
+
+        {% endif %}
 
         <!-- Bottom Back Navigation -->
         <div class="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10 flex items-center justify-between">

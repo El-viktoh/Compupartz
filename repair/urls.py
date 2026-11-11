@@ -18,6 +18,11 @@ urlpatterns = [
     path('track/<str:ticket_id>/', views.track_repair, name='track_repair'),
     path('my-repairs/', views.my_repairs, name='my_repairs'),
 
+    # Clear finished requests from the client dashboard (hides them, never deletes)
+    path('clear/repair/<str:ticket_id>/', views.clear_repair_request, name='clear_repair_request'),
+    path('clear/part/<str:request_id>/', views.clear_part_request, name='clear_part_request'),
+    path('clear/finished/', views.clear_finished_requests, name='clear_finished_requests'),
+
     # Chat Edit / Delete
     path('message/<int:message_id>/edit/', views.edit_repair_message, name='edit_repair_message'),
     path('message/<int:message_id>/delete/', views.delete_repair_message, name='delete_repair_message'),

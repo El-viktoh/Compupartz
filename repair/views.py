@@ -166,6 +166,11 @@ def _can_access_ticket(request, ticket):
     return ticket.ticket_id in verified_tickets
 
 
+def _chat_closed_for(request, obj):
+    """A request the client cleared keeps its chat for the lab, but the client no longer sees or writes in it."""
+    return obj.chat_hidden_from_client and not (request.user.is_authenticated and request.user.is_staff)
+
+
 def _grant_ticket_access(request, ticket):
     verified_tickets = request.session.setdefault("verified_repair_tickets", [])
     if ticket.ticket_id not in verified_tickets:
@@ -229,7 +234,12 @@ def track_repair(request, ticket_id):
         messages.error(request, "Please verify your Ticket ID and phone number to view this ticket.")
         return redirect("track_repair_lookup")
 
+    chat_hidden = _chat_closed_for(request, ticket)
+
     if request.method == "POST" and ("message" in request.POST or "image" in request.FILES):
+        if chat_hidden:
+            messages.error(request, "This request was cleared from your dashboard, so its conversation is closed.")
+            return redirect("track_repair", ticket_id=ticket.ticket_id)
         message_text = request.POST.get("message", "").strip()
         image_file = request.FILES.get("image")
         if image_file:
@@ -257,7 +267,8 @@ def track_repair(request, ticket_id):
         return redirect("track_repair", ticket_id=ticket.ticket_id)
 
     return render(request, "repair/track_repair.html", {
-        "ticket": ticket
+        "ticket": ticket,
+        "chat_hidden": chat_hidden,
     })
 
 
@@ -616,7 +627,12 @@ def track_part(request, request_id):
         messages.error(request, "Please verify your Request ID and phone number to view this request.")
         return redirect("track_part_lookup")
 
+    chat_hidden = _chat_closed_for(request, part_request)
+
     if request.method == "POST" and ("message" in request.POST or "image" in request.FILES):
+        if chat_hidden:
+            messages.error(request, "This request was cleared from your dashboard, so its conversation is closed.")
+            return redirect("track_part", request_id=part_request.request_id)
         message_text = request.POST.get("message", "").strip()
         image_file = request.FILES.get("image")
         if image_file:
@@ -644,17 +660,70 @@ def track_part(request, request_id):
         return redirect("track_part", request_id=part_request.request_id)
 
     return render(request, "repair/track_part.html", {
-        "part_request": part_request
+        "part_request": part_request,
+        "chat_hidden": chat_hidden,
     })
 
 
 @login_required
 def my_repairs(request):
-    repairs = RepairTicket.objects.filter(user=request.user).order_by("-created_at")
+    repairs = RepairTicket.visible_to_client(RepairTicket.objects.filter(user=request.user)).order_by("-created_at")
 
     return render(request, "repair/my_repairs.html", {
         "repairs": repairs
     })
+
+
+# ===========================
+# 🧹 CLEAR FINISHED REQUESTS FROM THE CLIENT DASHBOARD
+# ===========================
+# Clearing only hides a finished request from the owner's dashboard. The record, its chat, the
+# tracking page and the lab's own queues are untouched, and staff never clear on someone's behalf.
+def _clear_done(queryset, model):
+    return queryset.filter(status__in=model.DONE_STATUSES, cleared_by_client=False)
+
+
+def _back_to_requests():
+    return redirect(f"{reverse('dashboard')}?tab=raised-tickets")
+
+
+@login_required
+def clear_repair_request(request, ticket_id):
+    if request.method != "POST":
+        return _back_to_requests()
+    ticket = get_object_or_404(RepairTicket, ticket_id=ticket_id, user=request.user)
+    if _clear_done(RepairTicket.objects.filter(pk=ticket.pk), RepairTicket).update(cleared_by_client=True):
+        messages.success(request, f"{ticket.ticket_id} cleared from your dashboard.")
+    else:
+        messages.error(request, "Only finished requests can be cleared.")
+    return _back_to_requests()
+
+
+@login_required
+def clear_part_request(request, request_id):
+    if request.method != "POST":
+        return _back_to_requests()
+    part_request = get_object_or_404(PartRequest, request_id=request_id, user=request.user)
+    if _clear_done(PartRequest.objects.filter(pk=part_request.pk), PartRequest).update(cleared_by_client=True):
+        messages.success(request, f"{part_request.request_id} cleared from your dashboard.")
+    else:
+        messages.error(request, "Only finished requests can be cleared.")
+    return _back_to_requests()
+
+
+@login_required
+def clear_finished_requests(request):
+    if request.method != "POST":
+        return _back_to_requests()
+    cleared = (
+        _clear_done(RepairTicket.objects.filter(user=request.user), RepairTicket).update(cleared_by_client=True)
+        + _clear_done(PartRequest.objects.filter(user=request.user), PartRequest).update(cleared_by_client=True)
+    )
+    if cleared:
+        messages.success(request, f"{cleared} finished request{'s' if cleared != 1 else ''} cleared from your dashboard.")
+    else:
+        messages.info(request, "You have no finished requests to clear.")
+    return _back_to_requests()
 
 
 def edit_repair_message(request, message_id):
@@ -670,6 +739,8 @@ def edit_repair_message(request, message_id):
         is_owner = True
 
     if request.method != "POST" or not is_owner:
+        raise PermissionDenied
+    if _chat_closed_for(request, message.ticket):
         raise PermissionDenied
 
     new_text = request.POST.get("message", "").strip()
@@ -698,6 +769,8 @@ def delete_repair_message(request, message_id):
 
     if request.method != "POST" or not is_owner:
         raise PermissionDenied
+    if _chat_closed_for(request, message.ticket):
+        raise PermissionDenied
 
     ticket_id = message.ticket.ticket_id
     ticket_pk = message.ticket.id
@@ -723,6 +796,8 @@ def edit_part_request_message(request, message_id):
         is_owner = True
 
     if request.method != "POST" or not is_owner:
+        raise PermissionDenied
+    if _chat_closed_for(request, message.part_request):
         raise PermissionDenied
 
     new_text = request.POST.get("message", "").strip()
@@ -750,6 +825,8 @@ def delete_part_request_message(request, message_id):
         is_owner = True
 
     if request.method != "POST" or not is_owner:
+        raise PermissionDenied
+    if _chat_closed_for(request, message.part_request):
         raise PermissionDenied
 
     request_id = message.part_request.request_id
